@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
@@ -393,5 +396,45 @@ void main() {
       expect(all.where((s) => s.key == 'theme'), hasLength(1));
       expect(all.firstWhere((s) => s.key == 'theme').value, 'dark');
     });
+  });
+
+  group('ContentPackImporter', () {
+    late AppDatabase db;
+
+    setUp(() => db = _openTestDb());
+    tearDown(() => db.close());
+
+    test(
+      'imports the 14-day demo pack transactionally and idempotently',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final importer = ContentPackImporter(db);
+
+        final firstResult = await importer.importPackJson(source);
+        final secondResult = await importer.importPackJson(source);
+
+        expect(firstResult.packId, 'calendar-vn-demo-2026');
+        expect(firstResult.imported, isTrue);
+        expect(secondResult.imported, isFalse);
+        expect(await db.select(db.calendarDays).get(), hasLength(14));
+        expect(await db.select(db.celebrations).get(), hasLength(14));
+        expect(await db.select(db.readings).get(), hasLength(31));
+        expect(await db.select(db.actionRules).get(), hasLength(5));
+
+        final readings = await db.select(db.readings).get();
+        expect(
+          readings.every((reading) => reading.textContent == null),
+          isTrue,
+        );
+
+        final manifest =
+            await (db.select(db.userSettings)
+                  ..where((t) => t.key.equals('active_content_pack_manifest')))
+                .getSingle();
+        expect(manifest.value, contains('calendar-vn-demo-2026'));
+      },
+    );
   });
 }
