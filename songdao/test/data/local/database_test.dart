@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart' hide isNull, isNotNull;
@@ -5,10 +6,187 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
+import 'package:songdao/data/local/daily_action_engine.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
 void main() {
+  group('DailyActionEngine', () {
+    late AppDatabase db;
+    late DailyActionEngine engine;
+
+    setUp(() {
+      db = _openTestDb();
+      engine = DailyActionEngine(db);
+    });
+    tearDown(() => db.close());
+
+    test('selects Sunday action before seasonal action', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'sunday_mass_intention_vi',
+        priority: 20,
+        when: {'weekday': 'sunday', 'is_sunday': true},
+        action: {
+          'type': 'mass_preparation',
+          'prompt': 'Chuẩn bị một ý nguyện trước Thánh lễ.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-03');
+
+      expect(action.sourceRule, 'sunday_mass_intention_vi');
+      expect(action.type, 'mass_preparation');
+    });
+
+    test('selects Friday sacrifice action', () async {
+      await _insertCalendarDay(db, '2026-05-01', season: 'easter');
+      await _insertRule(
+        db,
+        id: 'friday_small_sacrifice_vi',
+        priority: 30,
+        when: {'weekday': 'friday', 'is_sunday': false},
+        action: {
+          'type': 'sacrifice',
+          'prompt': 'Chọn một điều nhỏ để tiết chế hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-01');
+
+      expect(action.sourceRule, 'friday_small_sacrifice_vi');
+      expect(action.prompt, 'Chọn một điều nhỏ để tiết chế hôm nay.');
+    });
+
+    test('selects solemnity action before Sunday action', () async {
+      await _insertCalendarDay(db, '2026-05-10', season: 'easter');
+      await _insertCelebration(db, '2026-05-10', rank: 'solemnity');
+      await _insertRule(
+        db,
+        id: 'solemnity_collect_intention_vi',
+        priority: 10,
+        when: {'is_solemnity': true},
+        action: {
+          'type': 'solemnity',
+          'prompt': 'Dâng ngày hôm nay trong một ý nguyện rõ ràng.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'sunday_mass_intention_vi',
+        priority: 20,
+        when: {'weekday': 'sunday', 'is_sunday': true},
+        action: {
+          'type': 'mass_preparation',
+          'prompt': 'Chuẩn bị một ý nguyện trước Thánh lễ.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-10');
+
+      expect(action.sourceRule, 'solemnity_collect_intention_vi');
+      expect(action.type, 'solemnity');
+    });
+
+    test('selects seasonal action before default weekday action', () async {
+      await _insertCalendarDay(db, '2026-04-28', season: 'easter');
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'default_weekday_prayer_vi',
+        priority: 100,
+        when: {'is_sunday': false, 'is_solemnity': false},
+        action: {'type': 'prayer', 'prompt': 'Dành năm phút cầu nguyện.'},
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-04-28');
+
+      expect(action.sourceRule, 'easter_weekday_gospel_note_vi');
+      expect(action.type, 'reflection');
+    });
+
+    test(
+      'selects default weekday action when no specific rule matches',
+      () async {
+        await _insertCalendarDay(db, '2026-06-02', season: 'ordinary');
+        await _insertRule(
+          db,
+          id: 'default_weekday_prayer_vi',
+          priority: 100,
+          when: {'is_sunday': false, 'is_solemnity': false},
+          action: {'type': 'prayer', 'prompt': 'Dành năm phút cầu nguyện.'},
+        );
+
+        final action = await engine.getOrCreateActionForDate('2026-06-02');
+
+        expect(action.sourceRule, 'default_weekday_prayer_vi');
+        expect(action.priority, 100);
+      },
+    );
+
+    test('persists generated action for repeatable offline reads', () async {
+      await _insertCalendarDay(db, '2026-06-03', season: 'ordinary');
+      await _insertRule(
+        db,
+        id: 'default_weekday_prayer_vi',
+        priority: 100,
+        when: {'is_sunday': false},
+        action: {'type': 'prayer', 'prompt': 'Dành năm phút cầu nguyện.'},
+      );
+
+      final first = await engine.getOrCreateActionForDate('2026-06-03');
+      final second = await engine.getOrCreateActionForDate('2026-06-03');
+      final stored = await db.select(db.dailyActions).get();
+
+      expect(second.id, first.id);
+      expect(stored, hasLength(1));
+      expect(stored.single.sourceRule, 'default_weekday_prayer_vi');
+    });
+
+    test('missing calendar data produces a gentle fallback action', () async {
+      final action = await engine.getOrCreateActionForDate('2026-07-01');
+
+      expect(action.sourceRule, DailyActionEngine.fallbackSourceRule);
+      expect(action.prompt, DailyActionEngine.fallbackPrompt);
+      expect(action.type, DailyActionEngine.fallbackType);
+
+      final calendarDay = await (db.select(
+        db.calendarDays,
+      )..where((t) => t.date.equals('2026-07-01'))).getSingle();
+      expect(calendarDay.season, 'unknown');
+    });
+  });
+
   group('ActionLogs', () {
     late AppDatabase db;
 
@@ -437,4 +615,62 @@ void main() {
       },
     );
   });
+}
+
+Future<void> _insertCalendarDay(
+  AppDatabase db,
+  String date, {
+  required String season,
+}) {
+  return db
+      .into(db.calendarDays)
+      .insert(
+        CalendarDaysCompanion.insert(
+          date: date,
+          season: season,
+          liturgicalWeek: 1,
+          color: 'green',
+          cycleYear: 'C',
+          locale: 'vi',
+        ),
+      );
+}
+
+Future<void> _insertCelebration(
+  AppDatabase db,
+  String date, {
+  required String rank,
+}) {
+  return db
+      .into(db.celebrations)
+      .insert(
+        CelebrationsCompanion.insert(
+          id: 'celebration-$date-$rank',
+          date: date,
+          name: 'Lễ thử nghiệm',
+          rank: rank,
+          locale: 'vi',
+        ),
+      );
+}
+
+Future<void> _insertRule(
+  AppDatabase db, {
+  required String id,
+  required int priority,
+  required Map<String, Object?> when,
+  required Map<String, Object?> action,
+}) {
+  return db
+      .into(db.actionRules)
+      .insert(
+        ActionRulesCompanion.insert(
+          id: id,
+          type: action['type']! as String,
+          triggerCondition: jsonEncode(when),
+          templatePrompt: jsonEncode(action),
+          priority: priority,
+          locale: const Value('vi'),
+        ),
+      );
 }
