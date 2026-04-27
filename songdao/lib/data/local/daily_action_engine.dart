@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import 'app_database.dart';
+import 'widget_snapshot_service.dart';
 
 class DailyActionEngine {
   DailyActionEngine(this.db);
@@ -21,10 +22,11 @@ class DailyActionEngine {
   }) async {
     final existing = await _existingAction(date, locale);
     if (existing != null) {
+      await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
       return existing;
     }
 
-    return db.transaction(() async {
+    final action = await db.transaction(() async {
       final insideTransactionExisting = await _existingAction(date, locale);
       if (insideTransactionExisting != null) {
         return insideTransactionExisting;
@@ -44,6 +46,8 @@ class DailyActionEngine {
       await db.into(db.dailyActions).insertOnConflictUpdate(companion);
       return (await _existingAction(date, locale))!;
     });
+    await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
+    return action;
   }
 
   Future<DailyAction?> _existingAction(String date, String locale) {

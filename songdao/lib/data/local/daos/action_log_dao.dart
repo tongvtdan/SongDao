@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/action_logs.dart';
 import '../tables/daily_actions.dart';
+import '../widget_snapshot_service.dart';
 
 part 'action_log_dao.g.dart';
 
@@ -43,6 +44,9 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
         ),
       );
     }
+    await WidgetSnapshotService(
+      db,
+    ).regenerateForDate(action.date, locale: action.locale);
   }
 
   Future<void> saveNote(String actionId, String note) async {
@@ -65,6 +69,9 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
       await (update(actionLogs)..where((t) => t.actionId.equals(actionId)))
           .write(ActionLogsCompanion(note: Value(note), updatedAt: Value(now)));
     }
+    await WidgetSnapshotService(
+      db,
+    ).regenerateForDate(action.date, locale: action.locale);
   }
 
   Future<void> markSkipped(String actionId) async {
@@ -93,6 +100,9 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
         ),
       );
     }
+    await WidgetSnapshotService(
+      db,
+    ).regenerateForDate(action.date, locale: action.locale);
   }
 
   Future<List<ActionLog>> getLogsForDate(String date) =>

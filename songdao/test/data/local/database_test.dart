@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
+import 'package:songdao/data/local/widget_snapshot_service.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
@@ -575,6 +576,90 @@ void main() {
       expect(reading.sourceUrl, 'https://example.org/readings/2026-04-27');
       expect(reading.license, 'reference-only');
     });
+  });
+
+  group('WidgetSnapshotService', () {
+    late AppDatabase db;
+
+    setUp(() => db = _openTestDb());
+    tearDown(() => db.close());
+
+    test('writes compact Today payload from local data', () async {
+      await _insertCalendarDay(db, '2026-04-27', season: 'easter');
+      await _insertCelebration(db, '2026-04-27', rank: 'solemnity');
+      await db
+          .into(db.readings)
+          .insert(
+            ReadingsCompanion.insert(
+              id: 'reading-widget-gospel',
+              date: '2026-04-27',
+              type: 'gospel',
+              citation: 'Ga 3,1-8',
+              displayLabel: const Value('Tin Mừng'),
+              license: 'reference-only',
+              locale: 'vi',
+            ),
+          );
+      await db
+          .into(db.dailyActions)
+          .insert(
+            DailyActionsCompanion.insert(
+              id: 'daily_action_2026-04-27_vi',
+              date: '2026-04-27',
+              sourceRule: 'easter_weekday_gospel_note_vi',
+              prompt: 'Viết một câu về Tin Mừng hôm nay.',
+              type: 'reflection',
+              priority: 50,
+              locale: 'vi',
+            ),
+          );
+
+      final snapshot = await WidgetSnapshotService(
+        db,
+      ).regenerateForDate('2026-04-27');
+      final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+      final action = payload['action']! as Map<String, Object?>;
+      final context = payload['liturgical_context']! as Map<String, Object?>;
+      final readings = payload['readings']! as List<Object?>;
+
+      expect(payload['date'], '2026-04-27');
+      expect(payload['schema_version'], 1);
+      expect(context['celebration'], 'Lễ thử nghiệm');
+      expect(action['prompt'], 'Viết một câu về Tin Mừng hôm nay.');
+      expect(action['completed'], isFalse);
+      expect(readings, hasLength(1));
+      expect(snapshot.generatedAt, isNotNull);
+    });
+
+    test(
+      'refreshes snapshot completion state after action log changes',
+      () async {
+        await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+        await db
+            .into(db.dailyActions)
+            .insert(
+              DailyActionsCompanion.insert(
+                id: 'action-widget-complete',
+                date: '2026-04-27',
+                sourceRule: 'default_weekday_prayer_vi',
+                prompt: 'Dành năm phút cầu nguyện.',
+                type: 'prayer',
+                priority: 100,
+                locale: 'vi',
+              ),
+            );
+
+        await WidgetSnapshotService(db).regenerateForDate('2026-04-27');
+        await db.actionLogDao.markCompleted('action-widget-complete');
+
+        final snapshot = await db.todayDao.getWidgetSnapshot('2026-04-27');
+        final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+        final action = payload['action']! as Map<String, Object?>;
+
+        expect(action['completed'], isTrue);
+        expect(action['status'], 'completed');
+      },
+    );
   });
 
   group('UserSettings', () {

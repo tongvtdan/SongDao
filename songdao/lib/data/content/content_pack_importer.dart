@@ -4,6 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 
 import '../local/app_database.dart';
+import '../local/daily_action_engine.dart';
+import '../local/widget_snapshot_service.dart';
 
 class ContentPackImportResult {
   const ContentPackImportResult({
@@ -83,12 +85,32 @@ class ContentPackImporter {
           );
     });
 
+    await _regenerateNextWidgetSnapshots();
+
     return ContentPackImportResult(
       packId: packId,
       version: version,
       checksum: checksum,
       imported: true,
     );
+  }
+
+  Future<void> _regenerateNextWidgetSnapshots() async {
+    final engine = DailyActionEngine(db);
+    final snapshots = WidgetSnapshotService(db);
+    final startDate = DateTime.now();
+    for (var offset = 0; offset < 14; offset += 1) {
+      final date = _dateKey(startDate.add(Duration(days: offset)));
+      final action = await engine.getOrCreateActionForDate(date);
+      await snapshots.regenerateForDate(date, locale: action.locale);
+    }
+  }
+
+  String _dateKey(DateTime date) {
+    final year = date.year.toString().padLeft(4, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final day = date.day.toString().padLeft(2, '0');
+    return '$year-$month-$day';
   }
 
   void _validatePack(Map<String, Object?> pack) {
