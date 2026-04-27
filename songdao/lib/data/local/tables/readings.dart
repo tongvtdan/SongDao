@@ -5,9 +5,11 @@ class Readings extends Table {
   TextColumn get id => text()();
   TextColumn get date => text().references(CalendarDays, #date)();
   TextColumn get type => text()(); // gospel | first | second | psalm | alleluia
-  TextColumn get reference => text()(); // e.g. "Jn 3:16-21"
-  TextColumn get title => text().nullable()();
-  TextColumn get body => text()();
+  TextColumn get citation => text()(); // e.g. "Ga 3,1-8"
+  TextColumn get displayLabel => text().nullable()();
+  TextColumn get textContent => text().nullable()();
+  TextColumn get sourceUrl => text().nullable()();
+  TextColumn get license => text()();
   TextColumn get locale => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 

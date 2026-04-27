@@ -37,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -53,6 +53,28 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(actionRules);
         await m.createTable(userSettings);
         await m.createTable(widgetSnapshots);
+      }
+      if (from < 3) {
+        await m.alterTable(
+          TableMigration(
+            dailyActions,
+            newColumns: [dailyActions.locale, dailyActions.createdAt],
+            columnTransformer: {
+              dailyActions.locale: const Constant('vi'),
+              dailyActions.createdAt: currentDateAndTime,
+            },
+          ),
+        );
+        await m.alterTable(
+          TableMigration(
+            actionLogs,
+            newColumns: [actionLogs.date, actionLogs.updatedAt],
+            columnTransformer: {
+              actionLogs.date: const Constant(''),
+              actionLogs.updatedAt: currentDateAndTime,
+            },
+          ),
+        );
       }
     },
   );

@@ -903,30 +903,56 @@ class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _referenceMeta = const VerificationMeta(
-    'reference',
+  static const VerificationMeta _citationMeta = const VerificationMeta(
+    'citation',
   );
   @override
-  late final GeneratedColumn<String> reference = GeneratedColumn<String>(
-    'reference',
+  late final GeneratedColumn<String> citation = GeneratedColumn<String>(
+    'citation',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  static const VerificationMeta _displayLabelMeta = const VerificationMeta(
+    'displayLabel',
+  );
   @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-    'title',
+  late final GeneratedColumn<String> displayLabel = GeneratedColumn<String>(
+    'display_label',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  static const VerificationMeta _textContentMeta = const VerificationMeta(
+    'textContent',
+  );
   @override
-  late final GeneratedColumn<String> body = GeneratedColumn<String>(
-    'body',
+  late final GeneratedColumn<String> textContent = GeneratedColumn<String>(
+    'text_content',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceUrlMeta = const VerificationMeta(
+    'sourceUrl',
+  );
+  @override
+  late final GeneratedColumn<String> sourceUrl = GeneratedColumn<String>(
+    'source_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _licenseMeta = const VerificationMeta(
+    'license',
+  );
+  @override
+  late final GeneratedColumn<String> license = GeneratedColumn<String>(
+    'license',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -958,9 +984,11 @@ class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
     id,
     date,
     type,
-    reference,
-    title,
-    body,
+    citation,
+    displayLabel,
+    textContent,
+    sourceUrl,
+    license,
     locale,
     createdAt,
   ];
@@ -997,27 +1025,45 @@ class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
-    if (data.containsKey('reference')) {
+    if (data.containsKey('citation')) {
       context.handle(
-        _referenceMeta,
-        reference.isAcceptableOrUnknown(data['reference']!, _referenceMeta),
+        _citationMeta,
+        citation.isAcceptableOrUnknown(data['citation']!, _citationMeta),
       );
     } else if (isInserting) {
-      context.missing(_referenceMeta);
+      context.missing(_citationMeta);
     }
-    if (data.containsKey('title')) {
+    if (data.containsKey('display_label')) {
       context.handle(
-        _titleMeta,
-        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+        _displayLabelMeta,
+        displayLabel.isAcceptableOrUnknown(
+          data['display_label']!,
+          _displayLabelMeta,
+        ),
       );
     }
-    if (data.containsKey('body')) {
+    if (data.containsKey('text_content')) {
       context.handle(
-        _bodyMeta,
-        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+        _textContentMeta,
+        textContent.isAcceptableOrUnknown(
+          data['text_content']!,
+          _textContentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_url')) {
+      context.handle(
+        _sourceUrlMeta,
+        sourceUrl.isAcceptableOrUnknown(data['source_url']!, _sourceUrlMeta),
+      );
+    }
+    if (data.containsKey('license')) {
+      context.handle(
+        _licenseMeta,
+        license.isAcceptableOrUnknown(data['license']!, _licenseMeta),
       );
     } else if (isInserting) {
-      context.missing(_bodyMeta);
+      context.missing(_licenseMeta);
     }
     if (data.containsKey('locale')) {
       context.handle(
@@ -1054,17 +1100,25 @@ class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
         DriftSqlType.string,
         data['${effectivePrefix}type'],
       )!,
-      reference: attachedDatabase.typeMapping.read(
+      citation: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}reference'],
+        data['${effectivePrefix}citation'],
       )!,
-      title: attachedDatabase.typeMapping.read(
+      displayLabel: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}title'],
+        data['${effectivePrefix}display_label'],
       ),
-      body: attachedDatabase.typeMapping.read(
+      textContent: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}body'],
+        data['${effectivePrefix}text_content'],
+      ),
+      sourceUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_url'],
+      ),
+      license: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}license'],
       )!,
       locale: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1087,18 +1141,22 @@ class Reading extends DataClass implements Insertable<Reading> {
   final String id;
   final String date;
   final String type;
-  final String reference;
-  final String? title;
-  final String body;
+  final String citation;
+  final String? displayLabel;
+  final String? textContent;
+  final String? sourceUrl;
+  final String license;
   final String locale;
   final DateTime createdAt;
   const Reading({
     required this.id,
     required this.date,
     required this.type,
-    required this.reference,
-    this.title,
-    required this.body,
+    required this.citation,
+    this.displayLabel,
+    this.textContent,
+    this.sourceUrl,
+    required this.license,
     required this.locale,
     required this.createdAt,
   });
@@ -1108,11 +1166,17 @@ class Reading extends DataClass implements Insertable<Reading> {
     map['id'] = Variable<String>(id);
     map['date'] = Variable<String>(date);
     map['type'] = Variable<String>(type);
-    map['reference'] = Variable<String>(reference);
-    if (!nullToAbsent || title != null) {
-      map['title'] = Variable<String>(title);
+    map['citation'] = Variable<String>(citation);
+    if (!nullToAbsent || displayLabel != null) {
+      map['display_label'] = Variable<String>(displayLabel);
     }
-    map['body'] = Variable<String>(body);
+    if (!nullToAbsent || textContent != null) {
+      map['text_content'] = Variable<String>(textContent);
+    }
+    if (!nullToAbsent || sourceUrl != null) {
+      map['source_url'] = Variable<String>(sourceUrl);
+    }
+    map['license'] = Variable<String>(license);
     map['locale'] = Variable<String>(locale);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -1123,11 +1187,17 @@ class Reading extends DataClass implements Insertable<Reading> {
       id: Value(id),
       date: Value(date),
       type: Value(type),
-      reference: Value(reference),
-      title: title == null && nullToAbsent
+      citation: Value(citation),
+      displayLabel: displayLabel == null && nullToAbsent
           ? const Value.absent()
-          : Value(title),
-      body: Value(body),
+          : Value(displayLabel),
+      textContent: textContent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(textContent),
+      sourceUrl: sourceUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceUrl),
+      license: Value(license),
       locale: Value(locale),
       createdAt: Value(createdAt),
     );
@@ -1142,9 +1212,11 @@ class Reading extends DataClass implements Insertable<Reading> {
       id: serializer.fromJson<String>(json['id']),
       date: serializer.fromJson<String>(json['date']),
       type: serializer.fromJson<String>(json['type']),
-      reference: serializer.fromJson<String>(json['reference']),
-      title: serializer.fromJson<String?>(json['title']),
-      body: serializer.fromJson<String>(json['body']),
+      citation: serializer.fromJson<String>(json['citation']),
+      displayLabel: serializer.fromJson<String?>(json['displayLabel']),
+      textContent: serializer.fromJson<String?>(json['textContent']),
+      sourceUrl: serializer.fromJson<String?>(json['sourceUrl']),
+      license: serializer.fromJson<String>(json['license']),
       locale: serializer.fromJson<String>(json['locale']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -1156,9 +1228,11 @@ class Reading extends DataClass implements Insertable<Reading> {
       'id': serializer.toJson<String>(id),
       'date': serializer.toJson<String>(date),
       'type': serializer.toJson<String>(type),
-      'reference': serializer.toJson<String>(reference),
-      'title': serializer.toJson<String?>(title),
-      'body': serializer.toJson<String>(body),
+      'citation': serializer.toJson<String>(citation),
+      'displayLabel': serializer.toJson<String?>(displayLabel),
+      'textContent': serializer.toJson<String?>(textContent),
+      'sourceUrl': serializer.toJson<String?>(sourceUrl),
+      'license': serializer.toJson<String>(license),
       'locale': serializer.toJson<String>(locale),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -1168,18 +1242,22 @@ class Reading extends DataClass implements Insertable<Reading> {
     String? id,
     String? date,
     String? type,
-    String? reference,
-    Value<String?> title = const Value.absent(),
-    String? body,
+    String? citation,
+    Value<String?> displayLabel = const Value.absent(),
+    Value<String?> textContent = const Value.absent(),
+    Value<String?> sourceUrl = const Value.absent(),
+    String? license,
     String? locale,
     DateTime? createdAt,
   }) => Reading(
     id: id ?? this.id,
     date: date ?? this.date,
     type: type ?? this.type,
-    reference: reference ?? this.reference,
-    title: title.present ? title.value : this.title,
-    body: body ?? this.body,
+    citation: citation ?? this.citation,
+    displayLabel: displayLabel.present ? displayLabel.value : this.displayLabel,
+    textContent: textContent.present ? textContent.value : this.textContent,
+    sourceUrl: sourceUrl.present ? sourceUrl.value : this.sourceUrl,
+    license: license ?? this.license,
     locale: locale ?? this.locale,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -1188,9 +1266,15 @@ class Reading extends DataClass implements Insertable<Reading> {
       id: data.id.present ? data.id.value : this.id,
       date: data.date.present ? data.date.value : this.date,
       type: data.type.present ? data.type.value : this.type,
-      reference: data.reference.present ? data.reference.value : this.reference,
-      title: data.title.present ? data.title.value : this.title,
-      body: data.body.present ? data.body.value : this.body,
+      citation: data.citation.present ? data.citation.value : this.citation,
+      displayLabel: data.displayLabel.present
+          ? data.displayLabel.value
+          : this.displayLabel,
+      textContent: data.textContent.present
+          ? data.textContent.value
+          : this.textContent,
+      sourceUrl: data.sourceUrl.present ? data.sourceUrl.value : this.sourceUrl,
+      license: data.license.present ? data.license.value : this.license,
       locale: data.locale.present ? data.locale.value : this.locale,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
@@ -1202,9 +1286,11 @@ class Reading extends DataClass implements Insertable<Reading> {
           ..write('id: $id, ')
           ..write('date: $date, ')
           ..write('type: $type, ')
-          ..write('reference: $reference, ')
-          ..write('title: $title, ')
-          ..write('body: $body, ')
+          ..write('citation: $citation, ')
+          ..write('displayLabel: $displayLabel, ')
+          ..write('textContent: $textContent, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
           ..write('locale: $locale, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -1212,8 +1298,18 @@ class Reading extends DataClass implements Insertable<Reading> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, date, type, reference, title, body, locale, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    date,
+    type,
+    citation,
+    displayLabel,
+    textContent,
+    sourceUrl,
+    license,
+    locale,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1221,9 +1317,11 @@ class Reading extends DataClass implements Insertable<Reading> {
           other.id == this.id &&
           other.date == this.date &&
           other.type == this.type &&
-          other.reference == this.reference &&
-          other.title == this.title &&
-          other.body == this.body &&
+          other.citation == this.citation &&
+          other.displayLabel == this.displayLabel &&
+          other.textContent == this.textContent &&
+          other.sourceUrl == this.sourceUrl &&
+          other.license == this.license &&
           other.locale == this.locale &&
           other.createdAt == this.createdAt);
 }
@@ -1232,9 +1330,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
   final Value<String> id;
   final Value<String> date;
   final Value<String> type;
-  final Value<String> reference;
-  final Value<String?> title;
-  final Value<String> body;
+  final Value<String> citation;
+  final Value<String?> displayLabel;
+  final Value<String?> textContent;
+  final Value<String?> sourceUrl;
+  final Value<String> license;
   final Value<String> locale;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -1242,9 +1342,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
     this.id = const Value.absent(),
     this.date = const Value.absent(),
     this.type = const Value.absent(),
-    this.reference = const Value.absent(),
-    this.title = const Value.absent(),
-    this.body = const Value.absent(),
+    this.citation = const Value.absent(),
+    this.displayLabel = const Value.absent(),
+    this.textContent = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    this.license = const Value.absent(),
     this.locale = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1253,25 +1355,29 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
     required String id,
     required String date,
     required String type,
-    required String reference,
-    this.title = const Value.absent(),
-    required String body,
+    required String citation,
+    this.displayLabel = const Value.absent(),
+    this.textContent = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    required String license,
     required String locale,
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
        type = Value(type),
-       reference = Value(reference),
-       body = Value(body),
+       citation = Value(citation),
+       license = Value(license),
        locale = Value(locale);
   static Insertable<Reading> custom({
     Expression<String>? id,
     Expression<String>? date,
     Expression<String>? type,
-    Expression<String>? reference,
-    Expression<String>? title,
-    Expression<String>? body,
+    Expression<String>? citation,
+    Expression<String>? displayLabel,
+    Expression<String>? textContent,
+    Expression<String>? sourceUrl,
+    Expression<String>? license,
     Expression<String>? locale,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -1280,9 +1386,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
       if (id != null) 'id': id,
       if (date != null) 'date': date,
       if (type != null) 'type': type,
-      if (reference != null) 'reference': reference,
-      if (title != null) 'title': title,
-      if (body != null) 'body': body,
+      if (citation != null) 'citation': citation,
+      if (displayLabel != null) 'display_label': displayLabel,
+      if (textContent != null) 'text_content': textContent,
+      if (sourceUrl != null) 'source_url': sourceUrl,
+      if (license != null) 'license': license,
       if (locale != null) 'locale': locale,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -1293,9 +1401,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
     Value<String>? id,
     Value<String>? date,
     Value<String>? type,
-    Value<String>? reference,
-    Value<String?>? title,
-    Value<String>? body,
+    Value<String>? citation,
+    Value<String?>? displayLabel,
+    Value<String?>? textContent,
+    Value<String?>? sourceUrl,
+    Value<String>? license,
     Value<String>? locale,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
@@ -1304,9 +1414,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
       id: id ?? this.id,
       date: date ?? this.date,
       type: type ?? this.type,
-      reference: reference ?? this.reference,
-      title: title ?? this.title,
-      body: body ?? this.body,
+      citation: citation ?? this.citation,
+      displayLabel: displayLabel ?? this.displayLabel,
+      textContent: textContent ?? this.textContent,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      license: license ?? this.license,
       locale: locale ?? this.locale,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -1325,14 +1437,20 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
-    if (reference.present) {
-      map['reference'] = Variable<String>(reference.value);
+    if (citation.present) {
+      map['citation'] = Variable<String>(citation.value);
     }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
+    if (displayLabel.present) {
+      map['display_label'] = Variable<String>(displayLabel.value);
     }
-    if (body.present) {
-      map['body'] = Variable<String>(body.value);
+    if (textContent.present) {
+      map['text_content'] = Variable<String>(textContent.value);
+    }
+    if (sourceUrl.present) {
+      map['source_url'] = Variable<String>(sourceUrl.value);
+    }
+    if (license.present) {
+      map['license'] = Variable<String>(license.value);
     }
     if (locale.present) {
       map['locale'] = Variable<String>(locale.value);
@@ -1352,9 +1470,11 @@ class ReadingsCompanion extends UpdateCompanion<Reading> {
           ..write('id: $id, ')
           ..write('date: $date, ')
           ..write('type: $type, ')
-          ..write('reference: $reference, ')
-          ..write('title: $title, ')
-          ..write('body: $body, ')
+          ..write('citation: $citation, ')
+          ..write('displayLabel: $displayLabel, ')
+          ..write('textContent: $textContent, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
           ..write('locale: $locale, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -1995,6 +2115,27 @@ class $DailyActionsTable extends DailyActions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2003,6 +2144,8 @@ class $DailyActionsTable extends DailyActions
     prompt,
     type,
     priority,
+    locale,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2061,6 +2204,20 @@ class $DailyActionsTable extends DailyActions
     } else if (isInserting) {
       context.missing(_priorityMeta);
     }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
     return context;
   }
 
@@ -2094,6 +2251,14 @@ class $DailyActionsTable extends DailyActions
         DriftSqlType.int,
         data['${effectivePrefix}priority'],
       )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -2110,6 +2275,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
   final String prompt;
   final String type;
   final int priority;
+  final String locale;
+  final DateTime createdAt;
   const DailyAction({
     required this.id,
     required this.date,
@@ -2117,6 +2284,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
     required this.prompt,
     required this.type,
     required this.priority,
+    required this.locale,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2127,6 +2296,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
     map['prompt'] = Variable<String>(prompt);
     map['type'] = Variable<String>(type);
     map['priority'] = Variable<int>(priority);
+    map['locale'] = Variable<String>(locale);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -2138,6 +2309,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
       prompt: Value(prompt),
       type: Value(type),
       priority: Value(priority),
+      locale: Value(locale),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -2153,6 +2326,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
       prompt: serializer.fromJson<String>(json['prompt']),
       type: serializer.fromJson<String>(json['type']),
       priority: serializer.fromJson<int>(json['priority']),
+      locale: serializer.fromJson<String>(json['locale']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -2165,6 +2340,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
       'prompt': serializer.toJson<String>(prompt),
       'type': serializer.toJson<String>(type),
       'priority': serializer.toJson<int>(priority),
+      'locale': serializer.toJson<String>(locale),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
@@ -2175,6 +2352,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
     String? prompt,
     String? type,
     int? priority,
+    String? locale,
+    DateTime? createdAt,
   }) => DailyAction(
     id: id ?? this.id,
     date: date ?? this.date,
@@ -2182,6 +2361,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
     prompt: prompt ?? this.prompt,
     type: type ?? this.type,
     priority: priority ?? this.priority,
+    locale: locale ?? this.locale,
+    createdAt: createdAt ?? this.createdAt,
   );
   DailyAction copyWithCompanion(DailyActionsCompanion data) {
     return DailyAction(
@@ -2193,6 +2374,8 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
       prompt: data.prompt.present ? data.prompt.value : this.prompt,
       type: data.type.present ? data.type.value : this.type,
       priority: data.priority.present ? data.priority.value : this.priority,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -2204,13 +2387,24 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
           ..write('sourceRule: $sourceRule, ')
           ..write('prompt: $prompt, ')
           ..write('type: $type, ')
-          ..write('priority: $priority')
+          ..write('priority: $priority, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, date, sourceRule, prompt, type, priority);
+  int get hashCode => Object.hash(
+    id,
+    date,
+    sourceRule,
+    prompt,
+    type,
+    priority,
+    locale,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2220,7 +2414,9 @@ class DailyAction extends DataClass implements Insertable<DailyAction> {
           other.sourceRule == this.sourceRule &&
           other.prompt == this.prompt &&
           other.type == this.type &&
-          other.priority == this.priority);
+          other.priority == this.priority &&
+          other.locale == this.locale &&
+          other.createdAt == this.createdAt);
 }
 
 class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
@@ -2230,6 +2426,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
   final Value<String> prompt;
   final Value<String> type;
   final Value<int> priority;
+  final Value<String> locale;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const DailyActionsCompanion({
     this.id = const Value.absent(),
@@ -2238,6 +2436,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
     this.prompt = const Value.absent(),
     this.type = const Value.absent(),
     this.priority = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DailyActionsCompanion.insert({
@@ -2247,13 +2447,16 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
     required String prompt,
     required String type,
     required int priority,
+    required String locale,
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        date = Value(date),
        sourceRule = Value(sourceRule),
        prompt = Value(prompt),
        type = Value(type),
-       priority = Value(priority);
+       priority = Value(priority),
+       locale = Value(locale);
   static Insertable<DailyAction> custom({
     Expression<String>? id,
     Expression<String>? date,
@@ -2261,6 +2464,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
     Expression<String>? prompt,
     Expression<String>? type,
     Expression<int>? priority,
+    Expression<String>? locale,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2270,6 +2475,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
       if (prompt != null) 'prompt': prompt,
       if (type != null) 'type': type,
       if (priority != null) 'priority': priority,
+      if (locale != null) 'locale': locale,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2281,6 +2488,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
     Value<String>? prompt,
     Value<String>? type,
     Value<int>? priority,
+    Value<String>? locale,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return DailyActionsCompanion(
@@ -2290,6 +2499,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
       prompt: prompt ?? this.prompt,
       type: type ?? this.type,
       priority: priority ?? this.priority,
+      locale: locale ?? this.locale,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2315,6 +2526,12 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
     if (priority.present) {
       map['priority'] = Variable<int>(priority.value);
     }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2330,6 +2547,8 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
           ..write('prompt: $prompt, ')
           ..write('type: $type, ')
           ..write('priority: $priority, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2364,6 +2583,15 @@ class $ActionLogsTable extends ActionLogs
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES daily_actions (id)',
     ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
@@ -2418,15 +2646,29 @@ class $ActionLogsTable extends ActionLogs
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     actionId,
+    date,
     status,
     completedAt,
     note,
     selfCheckProofMetadata,
     createdAt,
+    updatedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2452,6 +2694,14 @@ class $ActionLogsTable extends ActionLogs
       );
     } else if (isInserting) {
       context.missing(_actionIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
     }
     if (data.containsKey('status')) {
       context.handle(
@@ -2489,11 +2739,21 @@ class $ActionLogsTable extends ActionLogs
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {actionId},
+  ];
   @override
   ActionLog map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -2505,6 +2765,10 @@ class $ActionLogsTable extends ActionLogs
       actionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}action_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
       )!,
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -2526,6 +2790,10 @@ class $ActionLogsTable extends ActionLogs
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -2538,25 +2806,30 @@ class $ActionLogsTable extends ActionLogs
 class ActionLog extends DataClass implements Insertable<ActionLog> {
   final String id;
   final String actionId;
+  final String date;
   final String status;
   final DateTime? completedAt;
   final String? note;
   final String? selfCheckProofMetadata;
   final DateTime createdAt;
+  final DateTime updatedAt;
   const ActionLog({
     required this.id,
     required this.actionId,
+    required this.date,
     required this.status,
     this.completedAt,
     this.note,
     this.selfCheckProofMetadata,
     required this.createdAt,
+    required this.updatedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['action_id'] = Variable<String>(actionId);
+    map['date'] = Variable<String>(date);
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || completedAt != null) {
       map['completed_at'] = Variable<DateTime>(completedAt);
@@ -2570,6 +2843,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
       );
     }
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -2577,6 +2851,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return ActionLogsCompanion(
       id: Value(id),
       actionId: Value(actionId),
+      date: Value(date),
       status: Value(status),
       completedAt: completedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2586,6 +2861,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
           ? const Value.absent()
           : Value(selfCheckProofMetadata),
       createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -2597,6 +2873,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return ActionLog(
       id: serializer.fromJson<String>(json['id']),
       actionId: serializer.fromJson<String>(json['actionId']),
+      date: serializer.fromJson<String>(json['date']),
       status: serializer.fromJson<String>(json['status']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
       note: serializer.fromJson<String?>(json['note']),
@@ -2604,6 +2881,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
         json['selfCheckProofMetadata'],
       ),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -2612,6 +2890,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'actionId': serializer.toJson<String>(actionId),
+      'date': serializer.toJson<String>(date),
       'status': serializer.toJson<String>(status),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
       'note': serializer.toJson<String?>(note),
@@ -2619,20 +2898,24 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
         selfCheckProofMetadata,
       ),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
   ActionLog copyWith({
     String? id,
     String? actionId,
+    String? date,
     String? status,
     Value<DateTime?> completedAt = const Value.absent(),
     Value<String?> note = const Value.absent(),
     Value<String?> selfCheckProofMetadata = const Value.absent(),
     DateTime? createdAt,
+    DateTime? updatedAt,
   }) => ActionLog(
     id: id ?? this.id,
     actionId: actionId ?? this.actionId,
+    date: date ?? this.date,
     status: status ?? this.status,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
     note: note.present ? note.value : this.note,
@@ -2640,11 +2923,13 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
         ? selfCheckProofMetadata.value
         : this.selfCheckProofMetadata,
     createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
   );
   ActionLog copyWithCompanion(ActionLogsCompanion data) {
     return ActionLog(
       id: data.id.present ? data.id.value : this.id,
       actionId: data.actionId.present ? data.actionId.value : this.actionId,
+      date: data.date.present ? data.date.value : this.date,
       status: data.status.present ? data.status.value : this.status,
       completedAt: data.completedAt.present
           ? data.completedAt.value
@@ -2654,6 +2939,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
           ? data.selfCheckProofMetadata.value
           : this.selfCheckProofMetadata,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -2662,11 +2948,13 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return (StringBuffer('ActionLog(')
           ..write('id: $id, ')
           ..write('actionId: $actionId, ')
+          ..write('date: $date, ')
           ..write('status: $status, ')
           ..write('completedAt: $completedAt, ')
           ..write('note: $note, ')
           ..write('selfCheckProofMetadata: $selfCheckProofMetadata, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -2675,11 +2963,13 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
   int get hashCode => Object.hash(
     id,
     actionId,
+    date,
     status,
     completedAt,
     note,
     selfCheckProofMetadata,
     createdAt,
+    updatedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -2687,62 +2977,75 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
       (other is ActionLog &&
           other.id == this.id &&
           other.actionId == this.actionId &&
+          other.date == this.date &&
           other.status == this.status &&
           other.completedAt == this.completedAt &&
           other.note == this.note &&
           other.selfCheckProofMetadata == this.selfCheckProofMetadata &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
   final Value<String> id;
   final Value<String> actionId;
+  final Value<String> date;
   final Value<String> status;
   final Value<DateTime?> completedAt;
   final Value<String?> note;
   final Value<String?> selfCheckProofMetadata;
   final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const ActionLogsCompanion({
     this.id = const Value.absent(),
     this.actionId = const Value.absent(),
+    this.date = const Value.absent(),
     this.status = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.note = const Value.absent(),
     this.selfCheckProofMetadata = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ActionLogsCompanion.insert({
     required String id,
     required String actionId,
+    required String date,
     this.status = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.note = const Value.absent(),
     this.selfCheckProofMetadata = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       actionId = Value(actionId);
+       actionId = Value(actionId),
+       date = Value(date);
   static Insertable<ActionLog> custom({
     Expression<String>? id,
     Expression<String>? actionId,
+    Expression<String>? date,
     Expression<String>? status,
     Expression<DateTime>? completedAt,
     Expression<String>? note,
     Expression<String>? selfCheckProofMetadata,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (actionId != null) 'action_id': actionId,
+      if (date != null) 'date': date,
       if (status != null) 'status': status,
       if (completedAt != null) 'completed_at': completedAt,
       if (note != null) 'note': note,
       if (selfCheckProofMetadata != null)
         'self_check_proof_metadata': selfCheckProofMetadata,
       if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2750,22 +3053,26 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
   ActionLogsCompanion copyWith({
     Value<String>? id,
     Value<String>? actionId,
+    Value<String>? date,
     Value<String>? status,
     Value<DateTime?>? completedAt,
     Value<String?>? note,
     Value<String?>? selfCheckProofMetadata,
     Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
     return ActionLogsCompanion(
       id: id ?? this.id,
       actionId: actionId ?? this.actionId,
+      date: date ?? this.date,
       status: status ?? this.status,
       completedAt: completedAt ?? this.completedAt,
       note: note ?? this.note,
       selfCheckProofMetadata:
           selfCheckProofMetadata ?? this.selfCheckProofMetadata,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2778,6 +3085,9 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
     }
     if (actionId.present) {
       map['action_id'] = Variable<String>(actionId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
@@ -2796,6 +3106,9 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2807,11 +3120,13 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
     return (StringBuffer('ActionLogsCompanion(')
           ..write('id: $id, ')
           ..write('actionId: $actionId, ')
+          ..write('date: $date, ')
           ..write('status: $status, ')
           ..write('completedAt: $completedAt, ')
           ..write('note: $note, ')
           ..write('selfCheckProofMetadata: $selfCheckProofMetadata, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4265,9 +4580,11 @@ typedef $$ReadingsTableCreateCompanionBuilder =
       required String id,
       required String date,
       required String type,
-      required String reference,
-      Value<String?> title,
-      required String body,
+      required String citation,
+      Value<String?> displayLabel,
+      Value<String?> textContent,
+      Value<String?> sourceUrl,
+      required String license,
       required String locale,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -4277,9 +4594,11 @@ typedef $$ReadingsTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String> date,
       Value<String> type,
-      Value<String> reference,
-      Value<String?> title,
-      Value<String> body,
+      Value<String> citation,
+      Value<String?> displayLabel,
+      Value<String?> textContent,
+      Value<String?> sourceUrl,
+      Value<String> license,
       Value<String> locale,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -4328,18 +4647,28 @@ class $$ReadingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get reference => $composableBuilder(
-    column: $table.reference,
+  ColumnFilters<String> get citation => $composableBuilder(
+    column: $table.citation,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get title => $composableBuilder(
-    column: $table.title,
+  ColumnFilters<String> get displayLabel => $composableBuilder(
+    column: $table.displayLabel,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get body => $composableBuilder(
-    column: $table.body,
+  ColumnFilters<String> get textContent => $composableBuilder(
+    column: $table.textContent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get license => $composableBuilder(
+    column: $table.license,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4396,18 +4725,28 @@ class $$ReadingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get reference => $composableBuilder(
-    column: $table.reference,
+  ColumnOrderings<String> get citation => $composableBuilder(
+    column: $table.citation,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get title => $composableBuilder(
-    column: $table.title,
+  ColumnOrderings<String> get displayLabel => $composableBuilder(
+    column: $table.displayLabel,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get body => $composableBuilder(
-    column: $table.body,
+  ColumnOrderings<String> get textContent => $composableBuilder(
+    column: $table.textContent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get license => $composableBuilder(
+    column: $table.license,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4460,14 +4799,24 @@ class $$ReadingsTableAnnotationComposer
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
-  GeneratedColumn<String> get reference =>
-      $composableBuilder(column: $table.reference, builder: (column) => column);
+  GeneratedColumn<String> get citation =>
+      $composableBuilder(column: $table.citation, builder: (column) => column);
 
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
+  GeneratedColumn<String> get displayLabel => $composableBuilder(
+    column: $table.displayLabel,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get body =>
-      $composableBuilder(column: $table.body, builder: (column) => column);
+  GeneratedColumn<String> get textContent => $composableBuilder(
+    column: $table.textContent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceUrl =>
+      $composableBuilder(column: $table.sourceUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get license =>
+      $composableBuilder(column: $table.license, builder: (column) => column);
 
   GeneratedColumn<String> get locale =>
       $composableBuilder(column: $table.locale, builder: (column) => column);
@@ -4530,9 +4879,11 @@ class $$ReadingsTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<String> type = const Value.absent(),
-                Value<String> reference = const Value.absent(),
-                Value<String?> title = const Value.absent(),
-                Value<String> body = const Value.absent(),
+                Value<String> citation = const Value.absent(),
+                Value<String?> displayLabel = const Value.absent(),
+                Value<String?> textContent = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                Value<String> license = const Value.absent(),
                 Value<String> locale = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4540,9 +4891,11 @@ class $$ReadingsTableTableManager
                 id: id,
                 date: date,
                 type: type,
-                reference: reference,
-                title: title,
-                body: body,
+                citation: citation,
+                displayLabel: displayLabel,
+                textContent: textContent,
+                sourceUrl: sourceUrl,
+                license: license,
                 locale: locale,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -4552,9 +4905,11 @@ class $$ReadingsTableTableManager
                 required String id,
                 required String date,
                 required String type,
-                required String reference,
-                Value<String?> title = const Value.absent(),
-                required String body,
+                required String citation,
+                Value<String?> displayLabel = const Value.absent(),
+                Value<String?> textContent = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                required String license,
                 required String locale,
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4562,9 +4917,11 @@ class $$ReadingsTableTableManager
                 id: id,
                 date: date,
                 type: type,
-                reference: reference,
-                title: title,
-                body: body,
+                citation: citation,
+                displayLabel: displayLabel,
+                textContent: textContent,
+                sourceUrl: sourceUrl,
+                license: license,
                 locale: locale,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -4924,6 +5281,8 @@ typedef $$DailyActionsTableCreateCompanionBuilder =
       required String prompt,
       required String type,
       required int priority,
+      required String locale,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 typedef $$DailyActionsTableUpdateCompanionBuilder =
@@ -4934,6 +5293,8 @@ typedef $$DailyActionsTableUpdateCompanionBuilder =
       Value<String> prompt,
       Value<String> type,
       Value<int> priority,
+      Value<String> locale,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -5010,6 +5371,16 @@ class $$DailyActionsTableFilterComposer
 
   ColumnFilters<int> get priority => $composableBuilder(
     column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5096,6 +5467,16 @@ class $$DailyActionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$CalendarDaysTableOrderingComposer get date {
     final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5145,6 +5526,12 @@ class $$DailyActionsTableAnnotationComposer
 
   GeneratedColumn<int> get priority =>
       $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   $$CalendarDaysTableAnnotationComposer get date {
     final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
@@ -5229,6 +5616,8 @@ class $$DailyActionsTableTableManager
                 Value<String> prompt = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<int> priority = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DailyActionsCompanion(
                 id: id,
@@ -5237,6 +5626,8 @@ class $$DailyActionsTableTableManager
                 prompt: prompt,
                 type: type,
                 priority: priority,
+                locale: locale,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -5247,6 +5638,8 @@ class $$DailyActionsTableTableManager
                 required String prompt,
                 required String type,
                 required int priority,
+                required String locale,
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DailyActionsCompanion.insert(
                 id: id,
@@ -5255,6 +5648,8 @@ class $$DailyActionsTableTableManager
                 prompt: prompt,
                 type: type,
                 priority: priority,
+                locale: locale,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -5348,22 +5743,26 @@ typedef $$ActionLogsTableCreateCompanionBuilder =
     ActionLogsCompanion Function({
       required String id,
       required String actionId,
+      required String date,
       Value<String> status,
       Value<DateTime?> completedAt,
       Value<String?> note,
       Value<String?> selfCheckProofMetadata,
       Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 typedef $$ActionLogsTableUpdateCompanionBuilder =
     ActionLogsCompanion Function({
       Value<String> id,
       Value<String> actionId,
+      Value<String> date,
       Value<String> status,
       Value<DateTime?> completedAt,
       Value<String?> note,
       Value<String?> selfCheckProofMetadata,
       Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
@@ -5405,6 +5804,11 @@ class $$ActionLogsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnFilters(column),
@@ -5427,6 +5831,11 @@ class $$ActionLogsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5468,6 +5877,11 @@ class $$ActionLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get status => $composableBuilder(
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
@@ -5490,6 +5904,11 @@ class $$ActionLogsTableOrderingComposer
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5529,6 +5948,9 @@ class $$ActionLogsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
@@ -5547,6 +5969,9 @@ class $$ActionLogsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   $$DailyActionsTableAnnotationComposer get actionId {
     final $$DailyActionsTableAnnotationComposer composer = $composerBuilder(
@@ -5602,40 +6027,48 @@ class $$ActionLogsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> actionId = const Value.absent(),
+                Value<String> date = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> selfCheckProofMetadata = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ActionLogsCompanion(
                 id: id,
                 actionId: actionId,
+                date: date,
                 status: status,
                 completedAt: completedAt,
                 note: note,
                 selfCheckProofMetadata: selfCheckProofMetadata,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
                 required String actionId,
+                required String date,
                 Value<String> status = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> selfCheckProofMetadata = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ActionLogsCompanion.insert(
                 id: id,
                 actionId: actionId,
+                date: date,
                 status: status,
                 completedAt: completedAt,
                 note: note,
                 selfCheckProofMetadata: selfCheckProofMetadata,
                 createdAt: createdAt,
+                updatedAt: updatedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
