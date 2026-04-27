@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:songdao/l10n/app_localizations.dart';
 
+import '../data/content/content_pack_provider.dart';
 import 'theme.dart';
 import 'router.dart';
 
@@ -11,6 +12,7 @@ class SongDaoApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    ref.watch(seedContentBootstrapProvider);
 
     return MaterialApp.router(
       title: 'Sống Đạo',

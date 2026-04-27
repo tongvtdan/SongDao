@@ -45,6 +45,28 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
+  Future<void> saveNote(String actionId, String note) async {
+    final action = await _getAction(actionId);
+    final existing = await (select(
+      actionLogs,
+    )..where((t) => t.actionId.equals(actionId))).getSingleOrNull();
+    final now = DateTime.now();
+    if (existing == null) {
+      await into(actionLogs).insert(
+        ActionLogsCompanion.insert(
+          id: _logId(actionId),
+          actionId: actionId,
+          date: action.date,
+          note: Value(note),
+          updatedAt: Value(now),
+        ),
+      );
+    } else {
+      await (update(actionLogs)..where((t) => t.actionId.equals(actionId)))
+          .write(ActionLogsCompanion(note: Value(note), updatedAt: Value(now)));
+    }
+  }
+
   Future<void> markSkipped(String actionId) async {
     final action = await _getAction(actionId);
     final existing = await (select(
