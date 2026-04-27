@@ -340,6 +340,48 @@ void main() {
     });
 
     test(
+      'ActionLogDao.saveNote persists a private note before completion',
+      () async {
+        await db
+            .into(db.calendarDays)
+            .insert(
+              CalendarDaysCompanion.insert(
+                date: '2026-04-27',
+                season: 'ordinary',
+                liturgicalWeek: 4,
+                color: 'green',
+                cycleYear: 'C',
+                locale: 'vi',
+              ),
+            );
+
+        await db
+            .into(db.dailyActions)
+            .insert(
+              DailyActionsCompanion.insert(
+                id: 'action-note',
+                date: '2026-04-27',
+                sourceRule: 'reading',
+                prompt: 'Đọc Tin Mừng',
+                type: 'reading',
+                priority: 1,
+                locale: 'vi',
+              ),
+            );
+
+        await db.actionLogDao.saveNote('action-note', 'Một câu riêng tư');
+
+        final log = await (db.select(
+          db.actionLogs,
+        )..where((t) => t.actionId.equals('action-note'))).getSingle();
+
+        expect(log.status, 'pending');
+        expect(log.note, 'Một câu riêng tư');
+        expect(log.completedAt, isNull);
+      },
+    );
+
+    test(
       'ActionLogDao.getLogsForDate returns logs for the given date',
       () async {
         await db
