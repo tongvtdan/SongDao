@@ -3,6 +3,11 @@
 Status: low-fidelity beta wireframes locked on 2026-04-27  
 Linear: DAN-117
 
+Implementation artifacts:
+
+- Layout contract: `design/wireframes/today_widget_wireframes.json`
+- Local preview: `previews/today_widget_wireframes.html`
+
 ## Insight
 
 The first screen and widget should make the answer obvious: what is today, and what one action should I do? Everything else supports that decision.
@@ -10,6 +15,8 @@ The first screen and widget should make the answer obvious: what is today, and w
 ## Decision
 
 Use a single-column Today surface with the daily action as the visual center. Use WidgetKit snapshots, not live network calls.
+
+Flutter and WidgetKit implementation should treat `design/wireframes/today_widget_wireframes.json` as the source of truth for screen order, required states, widget fields, and copy keys.
 
 ## Today Screen Order
 
@@ -171,6 +178,7 @@ Snapshot fields:
 
 - Widgets read compact JSON from App Group storage.
 - Flutter owns generation of widget snapshots from the local database.
+- Preview the locked low-fidelity layout by opening `previews/today_widget_wireframes.html`.
 - Widget must tolerate missing snapshot by showing a calm fallback:
 
 ```text
