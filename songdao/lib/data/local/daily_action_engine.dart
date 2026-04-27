@@ -151,13 +151,13 @@ class DailyActionEngine {
     if (condition['is_sunday'] == true || condition['weekday'] == 'sunday') {
       return 1;
     }
-    if (condition['weekday'] != null) {
+    if (condition['season'] != null) {
       return 2;
     }
-    if (condition['season'] != null) {
+    if (condition['has_parish_event'] == true) {
       return 3;
     }
-    if (condition['has_parish_event'] == true) {
+    if (condition['weekday'] != null) {
       return 4;
     }
     return 5;

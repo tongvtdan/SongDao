@@ -53,12 +53,13 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               ..orderBy([(t) => OrderingTerm.asc(t.rank)]))
             .get();
     final readings =
-        await (db.select(db.readings)
-              ..where(
-                (t) => t.date.equals(date) & t.locale.equals(action.locale),
-              )
-              ..orderBy([(t) => OrderingTerm.asc(t.type)]))
+        await (db.select(db.readings)..where(
+              (t) => t.date.equals(date) & t.locale.equals(action.locale),
+            ))
             .get();
+    readings.sort(
+      (a, b) => _readingOrder(a.type).compareTo(_readingOrder(b.type)),
+    );
     final log = await db.todayDao.getActionLogForAction(action.id);
 
     _noteController.text = log?.note ?? '';
@@ -77,18 +78,21 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       return;
     }
     setState(() => _isCompleting = true);
-    final note = _noteController.text.trim();
-    await ref
-        .read(databaseProvider)
-        .actionLogDao
-        .markCompleted(data.action.id, note: note.isEmpty ? null : note);
-    if (!mounted) {
-      return;
+    try {
+      final note = _noteController.text.trim();
+      await ref
+          .read(databaseProvider)
+          .actionLogDao
+          .markCompleted(data.action.id, note: note.isEmpty ? null : note);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _todayFuture = _loadToday());
+    } finally {
+      if (mounted) {
+        setState(() => _isCompleting = false);
+      }
     }
-    setState(() {
-      _isCompleting = false;
-      _todayFuture = _loadToday();
-    });
   }
 
   Future<void> _saveNote(_TodayViewData data) async {
@@ -96,17 +100,20 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       return;
     }
     setState(() => _isSavingNote = true);
-    await ref
-        .read(databaseProvider)
-        .actionLogDao
-        .saveNote(data.action.id, _noteController.text.trim());
-    if (!mounted) {
-      return;
+    try {
+      await ref
+          .read(databaseProvider)
+          .actionLogDao
+          .saveNote(data.action.id, _noteController.text.trim());
+      if (!mounted) {
+        return;
+      }
+      setState(() => _todayFuture = _loadToday());
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingNote = false);
+      }
     }
-    setState(() {
-      _isSavingNote = false;
-      _todayFuture = _loadToday();
-    });
   }
 
   @override
@@ -617,5 +624,16 @@ String _readingLabel(String type) {
     'alleluia' => 'Alleluia',
     'gospel' => 'Tin Mừng',
     _ => 'Bài đọc',
+  };
+}
+
+int _readingOrder(String type) {
+  return switch (type) {
+    'first' => 0,
+    'psalm' => 1,
+    'second' => 2,
+    'alleluia' => 3,
+    'gospel' => 4,
+    _ => 5,
   };
 }

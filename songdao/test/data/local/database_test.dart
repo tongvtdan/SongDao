@@ -51,7 +51,7 @@ void main() {
     });
 
     test('selects Friday sacrifice action', () async {
-      await _insertCalendarDay(db, '2026-05-01', season: 'easter');
+      await _insertCalendarDay(db, '2026-06-05', season: 'ordinary');
       await _insertRule(
         db,
         id: 'friday_small_sacrifice_vi',
@@ -62,18 +62,8 @@ void main() {
           'prompt': 'Chọn một điều nhỏ để tiết chế hôm nay.',
         },
       );
-      await _insertRule(
-        db,
-        id: 'easter_weekday_gospel_note_vi',
-        priority: 50,
-        when: {'season': 'easter', 'is_sunday': false},
-        action: {
-          'type': 'reflection',
-          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
-        },
-      );
 
-      final action = await engine.getOrCreateActionForDate('2026-05-01');
+      final action = await engine.getOrCreateActionForDate('2026-06-05');
 
       expect(action.sourceRule, 'friday_small_sacrifice_vi');
       expect(action.prompt, 'Chọn một điều nhỏ để tiết chế hôm nay.');
@@ -130,6 +120,35 @@ void main() {
       );
 
       final action = await engine.getOrCreateActionForDate('2026-04-28');
+
+      expect(action.sourceRule, 'easter_weekday_gospel_note_vi');
+      expect(action.type, 'reflection');
+    });
+
+    test('selects seasonal action before generic Friday action', () async {
+      await _insertCalendarDay(db, '2026-05-01', season: 'easter');
+      await _insertRule(
+        db,
+        id: 'friday_small_sacrifice_vi',
+        priority: 30,
+        when: {'weekday': 'friday', 'is_sunday': false},
+        action: {
+          'type': 'sacrifice',
+          'prompt': 'Chọn một điều nhỏ để tiết chế hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-01');
 
       expect(action.sourceRule, 'easter_weekday_gospel_note_vi');
       expect(action.type, 'reflection');
