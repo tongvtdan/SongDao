@@ -1,0 +1,176 @@
+{
+  "schema_version": "0.1",
+  "pack_id": "calendar-vn-demo-2026",
+  "version": "0.1.0",
+  "locale": "vi",
+  "created_at": "2026-04-27T00:00:00Z",
+  "valid_from": "2026-04-27",
+  "valid_to": "2026-04-27",
+  "source_summary": "Tiny internal demo pack for validating the SongDao beta content-pack importer.",
+  "license_summary": "Reference-only readings; no copyrighted full-text readings or prayer bodies.",
+  "checksum": "sha256:bb182ee37beeee9ae2ee0b5a60839feb02ce80bc36a8cd84d03a7214f7d4eef6",
+  "calendar_days": [
+    {
+      "id": "calendar_day_2026_04_27_vi",
+      "date": "2026-04-27",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần II Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "weekday": "monday",
+      "is_sunday": false,
+      "source": {
+        "name": "SongDao demo calendar",
+        "url": null,
+        "license": "internal-demo",
+        "retrieved_at": "2026-04-27"
+      }
+    }
+  ],
+  "celebrations": [
+    {
+      "id": "celebration_2026_04_27_vi",
+      "date": "2026-04-27",
+      "locale": "vi",
+      "title": "Thứ Hai tuần II Phục Sinh",
+      "rank": "weekday",
+      "is_solemnity": false,
+      "is_holy_day": false,
+      "is_sunday": false,
+      "source": {
+        "name": "SongDao demo calendar",
+        "license": "internal-demo"
+      }
+    }
+  ],
+  "readings": [
+    {
+      "id": "reading_2026_04_27_first_vi",
+      "date": "2026-04-27",
+      "locale": "vi",
+      "type": "first_reading",
+      "citation": "Cv 14,5-18",
+      "display_label": "Bài đọc I",
+      "text": null,
+      "source_url": null,
+      "license": "reference-only",
+      "source": {
+        "name": "SongDao reference-only demo",
+        "license": "reference-only"
+      }
+    },
+    {
+      "id": "reading_2026_04_27_gospel_vi",
+      "date": "2026-04-27",
+      "locale": "vi",
+      "type": "gospel",
+      "citation": "Ga 3,1-8",
+      "display_label": "Tin Mừng",
+      "text": null,
+      "source_url": null,
+      "license": "reference-only",
+      "source": {
+        "name": "SongDao reference-only demo",
+        "license": "reference-only"
+      }
+    }
+  ],
+  "action_rules": [
+    {
+      "id": "easter_weekday_gospel_note_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 50,
+      "when": {
+        "season": "easter",
+        "weekday": null,
+        "is_sunday": false,
+        "is_solemnity": false,
+        "is_holy_day": false
+      },
+      "action": {
+        "type": "reflection",
+        "title": "Viết một câu về Tin Mừng hôm nay",
+        "short_title": "Một câu suy niệm",
+        "duration_minutes": 5,
+        "prompt": "Đọc câu Tin Mừng được gợi ý và viết lại một điều bạn muốn sống hôm nay.",
+        "proof_type": "self_check"
+      },
+      "source": {
+        "name": "SongDao core actions",
+        "license": "internal"
+      }
+    }
+  ],
+  "prayers": [
+    {
+      "id": "kinh_lay_cha_vi",
+      "locale": "vi",
+      "title": "Kinh Lạy Cha",
+      "body": null,
+      "source_url": null,
+      "license": "pending-review",
+      "tags": [
+        "core",
+        "daily"
+      ],
+      "source": {
+        "name": "Pending license review",
+        "license": "pending-review"
+      }
+    }
+  ],
+  "churches": [
+    {
+      "id": "giao_xu_demo_tan_dinh",
+      "locale": "vi",
+      "name": "Giáo xứ Demo Tân Định",
+      "diocese": "Tổng Giáo phận Sài Gòn",
+      "address": "Demo address, Quận 3, TP. Hồ Chí Minh",
+      "latitude": null,
+      "longitude": null,
+      "phone": null,
+      "website": null,
+      "verified_at": "2026-04-27",
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "internal-demo"
+      }
+    }
+  ],
+  "mass_times": [
+    {
+      "id": "mass_demo_tan_dinh_weekday_0530_vi",
+      "church_id": "giao_xu_demo_tan_dinh",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "05:30",
+      "language": "vi",
+      "valid_from": "2026-04-27",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "internal-demo",
+        "verified_at": "2026-04-27"
+      }
+    },
+    {
+      "id": "mass_demo_tan_dinh_sunday_0730_vi",
+      "church_id": "giao_xu_demo_tan_dinh",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "07:30",
+      "language": "vi",
+      "valid_from": "2026-04-27",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "internal-demo",
+        "verified_at": "2026-04-27"
+      }
+    }
+  ]
+}

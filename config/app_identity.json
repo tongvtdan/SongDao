@@ -1,0 +1,35 @@
+{
+  "app": {
+    "display_name": "Sống Đạo",
+    "ascii_name": "SongDao",
+    "category": "Catholic daily practice app",
+    "default_locale": "vi",
+    "supported_locales": [
+      "vi"
+    ],
+    "first_platform": "ios"
+  },
+  "ios": {
+    "bundle_id": "com.dantino.songdao",
+    "app_group_id": "group.com.dantino.songdao",
+    "widget_extension": {
+      "display_name": "Sống Đạo",
+      "bundle_id": "com.dantino.songdao.TodayWidget",
+      "kind": "SongDaoTodayWidget",
+      "deeplink_scheme": "songdao",
+      "default_deeplink": "songdao://today"
+    }
+  },
+  "android": {
+    "application_id": "com.dantino.songdao",
+    "enabled_for_beta": false
+  },
+  "privacy_defaults": {
+    "account_required": false,
+    "analytics_opt_in": true,
+    "location_opt_in": true,
+    "sync_opt_in": true,
+    "practice_logs_local_by_default": true,
+    "reflection_notes_local_by_default": true
+  }
+}

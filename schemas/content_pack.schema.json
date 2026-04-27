@@ -1,0 +1,671 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://songdao.local/schemas/content_pack.schema.json",
+  "title": "SongDao Local Content Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "pack_id",
+    "version",
+    "locale",
+    "created_at",
+    "valid_from",
+    "valid_to",
+    "source_summary",
+    "license_summary",
+    "checksum",
+    "calendar_days",
+    "celebrations",
+    "readings",
+    "action_rules",
+    "prayers",
+    "churches",
+    "mass_times"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "pack_id": {
+      "$ref": "#/$defs/id"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "locale": {
+      "$ref": "#/$defs/locale"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_from": {
+      "$ref": "#/$defs/date"
+    },
+    "valid_to": {
+      "$ref": "#/$defs/date"
+    },
+    "source_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license_summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checksum": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "calendar_days": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/calendar_day"
+      }
+    },
+    "celebrations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/celebration"
+      }
+    },
+    "readings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reading"
+      }
+    },
+    "action_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action_rule"
+      }
+    },
+    "prayers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/prayer"
+      }
+    },
+    "churches": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/church"
+      }
+    },
+    "mass_times": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mass_time"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "locale": {
+      "type": "string",
+      "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "time": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+    },
+    "weekday": {
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "license"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retrieved_at": {
+          "$ref": "#/$defs/date"
+        },
+        "verified_at": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    },
+    "calendar_day": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "date",
+        "locale",
+        "season",
+        "liturgical_color",
+        "weekday",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "season": {
+          "type": "string",
+          "minLength": 1
+        },
+        "liturgical_week": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "liturgical_color": {
+          "enum": [
+            "green",
+            "white",
+            "gold",
+            "red",
+            "purple",
+            "rose",
+            "black"
+          ]
+        },
+        "cycle_year": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "weekday": {
+          "$ref": "#/$defs/weekday"
+        },
+        "is_sunday": {
+          "type": "boolean"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "celebration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "date",
+        "locale",
+        "title",
+        "rank",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rank": {
+          "type": "string",
+          "minLength": 1
+        },
+        "is_solemnity": {
+          "type": "boolean"
+        },
+        "is_holy_day": {
+          "type": "boolean"
+        },
+        "is_sunday": {
+          "type": "boolean"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "reading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "date",
+        "locale",
+        "type",
+        "citation",
+        "text",
+        "license",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "type": {
+          "enum": [
+            "first_reading",
+            "psalm",
+            "second_reading",
+            "gospel"
+          ]
+        },
+        "citation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "license": {
+                "enum": [
+                  "reference-only",
+                  "pending-review"
+                ]
+              }
+            },
+            "required": [
+              "license"
+            ]
+          },
+          "then": {
+            "properties": {
+              "text": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "action_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "locale",
+        "enabled",
+        "priority",
+        "when",
+        "action",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "when": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "season": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "weekday": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/weekday"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "is_sunday": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "is_solemnity": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "is_holy_day": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        },
+        "action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "short_title",
+            "duration_minutes",
+            "prompt",
+            "proof_type"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "short_title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "prompt": {
+              "type": "string",
+              "minLength": 1
+            },
+            "proof_type": {
+              "enum": [
+                "self_check",
+                "note_optional"
+              ]
+            }
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "prayer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "locale",
+        "title",
+        "body",
+        "license",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "license": {
+                "enum": [
+                  "pending-review"
+                ]
+              }
+            },
+            "required": [
+              "license"
+            ]
+          },
+          "then": {
+            "properties": {
+              "body": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "church": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "locale",
+        "name",
+        "diocese",
+        "address",
+        "verified_at",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "diocese": {
+          "type": "string",
+          "minLength": 1
+        },
+        "address": {
+          "type": "string",
+          "minLength": 1
+        },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -180,
+          "maximum": 180
+        },
+        "phone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "website": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "verified_at": {
+          "$ref": "#/$defs/date"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    },
+    "mass_time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "church_id",
+        "weekday",
+        "context",
+        "time",
+        "language",
+        "valid_from",
+        "valid_to",
+        "is_important_default",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "church_id": {
+          "$ref": "#/$defs/id"
+        },
+        "weekday": {
+          "$ref": "#/$defs/weekday"
+        },
+        "context": {
+          "enum": [
+            "weekday",
+            "saturday_vigil",
+            "sunday",
+            "solemnity",
+            "holy_day",
+            "special"
+          ]
+        },
+        "time": {
+          "$ref": "#/$defs/time"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 2
+        },
+        "valid_from": {
+          "$ref": "#/$defs/date"
+        },
+        "valid_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "is_important_default": {
+          "type": "boolean"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
+    }
+  }
+}
