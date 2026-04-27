@@ -16,6 +16,7 @@ class SongDaoApp extends ConsumerWidget {
       title: 'Sống Đạo',
       theme: AppTheme.lightTheme,
       routerConfig: router,
+      locale: const Locale('vi'), // Set Vietnamese as the default
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
