@@ -415,6 +415,1519 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
   }
 }
 
+class $CelebrationsTable extends Celebrations
+    with TableInfo<$CelebrationsTable, Celebration> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CelebrationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES calendar_days (date)',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rankMeta = const VerificationMeta('rank');
+  @override
+  late final GeneratedColumn<String> rank = GeneratedColumn<String>(
+    'rank',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isOptionalMeta = const VerificationMeta(
+    'isOptional',
+  );
+  @override
+  late final GeneratedColumn<bool> isOptional = GeneratedColumn<bool>(
+    'is_optional',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_optional" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    name,
+    rank,
+    isOptional,
+    locale,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'celebrations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Celebration> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('rank')) {
+      context.handle(
+        _rankMeta,
+        rank.isAcceptableOrUnknown(data['rank']!, _rankMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rankMeta);
+    }
+    if (data.containsKey('is_optional')) {
+      context.handle(
+        _isOptionalMeta,
+        isOptional.isAcceptableOrUnknown(data['is_optional']!, _isOptionalMeta),
+      );
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Celebration map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Celebration(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      rank: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rank'],
+      )!,
+      isOptional: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_optional'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CelebrationsTable createAlias(String alias) {
+    return $CelebrationsTable(attachedDatabase, alias);
+  }
+}
+
+class Celebration extends DataClass implements Insertable<Celebration> {
+  final String id;
+  final String date;
+  final String name;
+  final String rank;
+  final bool isOptional;
+  final String locale;
+  final DateTime createdAt;
+  const Celebration({
+    required this.id,
+    required this.date,
+    required this.name,
+    required this.rank,
+    required this.isOptional,
+    required this.locale,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date'] = Variable<String>(date);
+    map['name'] = Variable<String>(name);
+    map['rank'] = Variable<String>(rank);
+    map['is_optional'] = Variable<bool>(isOptional);
+    map['locale'] = Variable<String>(locale);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  CelebrationsCompanion toCompanion(bool nullToAbsent) {
+    return CelebrationsCompanion(
+      id: Value(id),
+      date: Value(date),
+      name: Value(name),
+      rank: Value(rank),
+      isOptional: Value(isOptional),
+      locale: Value(locale),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Celebration.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Celebration(
+      id: serializer.fromJson<String>(json['id']),
+      date: serializer.fromJson<String>(json['date']),
+      name: serializer.fromJson<String>(json['name']),
+      rank: serializer.fromJson<String>(json['rank']),
+      isOptional: serializer.fromJson<bool>(json['isOptional']),
+      locale: serializer.fromJson<String>(json['locale']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'date': serializer.toJson<String>(date),
+      'name': serializer.toJson<String>(name),
+      'rank': serializer.toJson<String>(rank),
+      'isOptional': serializer.toJson<bool>(isOptional),
+      'locale': serializer.toJson<String>(locale),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Celebration copyWith({
+    String? id,
+    String? date,
+    String? name,
+    String? rank,
+    bool? isOptional,
+    String? locale,
+    DateTime? createdAt,
+  }) => Celebration(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    name: name ?? this.name,
+    rank: rank ?? this.rank,
+    isOptional: isOptional ?? this.isOptional,
+    locale: locale ?? this.locale,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Celebration copyWithCompanion(CelebrationsCompanion data) {
+    return Celebration(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      name: data.name.present ? data.name.value : this.name,
+      rank: data.rank.present ? data.rank.value : this.rank,
+      isOptional: data.isOptional.present
+          ? data.isOptional.value
+          : this.isOptional,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Celebration(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('name: $name, ')
+          ..write('rank: $rank, ')
+          ..write('isOptional: $isOptional, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, date, name, rank, isOptional, locale, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Celebration &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.name == this.name &&
+          other.rank == this.rank &&
+          other.isOptional == this.isOptional &&
+          other.locale == this.locale &&
+          other.createdAt == this.createdAt);
+}
+
+class CelebrationsCompanion extends UpdateCompanion<Celebration> {
+  final Value<String> id;
+  final Value<String> date;
+  final Value<String> name;
+  final Value<String> rank;
+  final Value<bool> isOptional;
+  final Value<String> locale;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const CelebrationsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.name = const Value.absent(),
+    this.rank = const Value.absent(),
+    this.isOptional = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CelebrationsCompanion.insert({
+    required String id,
+    required String date,
+    required String name,
+    required String rank,
+    this.isOptional = const Value.absent(),
+    required String locale,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       date = Value(date),
+       name = Value(name),
+       rank = Value(rank),
+       locale = Value(locale);
+  static Insertable<Celebration> custom({
+    Expression<String>? id,
+    Expression<String>? date,
+    Expression<String>? name,
+    Expression<String>? rank,
+    Expression<bool>? isOptional,
+    Expression<String>? locale,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (name != null) 'name': name,
+      if (rank != null) 'rank': rank,
+      if (isOptional != null) 'is_optional': isOptional,
+      if (locale != null) 'locale': locale,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CelebrationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? date,
+    Value<String>? name,
+    Value<String>? rank,
+    Value<bool>? isOptional,
+    Value<String>? locale,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return CelebrationsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      name: name ?? this.name,
+      rank: rank ?? this.rank,
+      isOptional: isOptional ?? this.isOptional,
+      locale: locale ?? this.locale,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (rank.present) {
+      map['rank'] = Variable<String>(rank.value);
+    }
+    if (isOptional.present) {
+      map['is_optional'] = Variable<bool>(isOptional.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CelebrationsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('name: $name, ')
+          ..write('rank: $rank, ')
+          ..write('isOptional: $isOptional, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReadingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES calendar_days (date)',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _referenceMeta = const VerificationMeta(
+    'reference',
+  );
+  @override
+  late final GeneratedColumn<String> reference = GeneratedColumn<String>(
+    'reference',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    type,
+    reference,
+    title,
+    body,
+    locale,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'readings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Reading> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('reference')) {
+      context.handle(
+        _referenceMeta,
+        reference.isAcceptableOrUnknown(data['reference']!, _referenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_referenceMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Reading map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Reading(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      reference: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reference'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      ),
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ReadingsTable createAlias(String alias) {
+    return $ReadingsTable(attachedDatabase, alias);
+  }
+}
+
+class Reading extends DataClass implements Insertable<Reading> {
+  final String id;
+  final String date;
+  final String type;
+  final String reference;
+  final String? title;
+  final String body;
+  final String locale;
+  final DateTime createdAt;
+  const Reading({
+    required this.id,
+    required this.date,
+    required this.type,
+    required this.reference,
+    this.title,
+    required this.body,
+    required this.locale,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date'] = Variable<String>(date);
+    map['type'] = Variable<String>(type);
+    map['reference'] = Variable<String>(reference);
+    if (!nullToAbsent || title != null) {
+      map['title'] = Variable<String>(title);
+    }
+    map['body'] = Variable<String>(body);
+    map['locale'] = Variable<String>(locale);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ReadingsCompanion toCompanion(bool nullToAbsent) {
+    return ReadingsCompanion(
+      id: Value(id),
+      date: Value(date),
+      type: Value(type),
+      reference: Value(reference),
+      title: title == null && nullToAbsent
+          ? const Value.absent()
+          : Value(title),
+      body: Value(body),
+      locale: Value(locale),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Reading.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Reading(
+      id: serializer.fromJson<String>(json['id']),
+      date: serializer.fromJson<String>(json['date']),
+      type: serializer.fromJson<String>(json['type']),
+      reference: serializer.fromJson<String>(json['reference']),
+      title: serializer.fromJson<String?>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      locale: serializer.fromJson<String>(json['locale']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'date': serializer.toJson<String>(date),
+      'type': serializer.toJson<String>(type),
+      'reference': serializer.toJson<String>(reference),
+      'title': serializer.toJson<String?>(title),
+      'body': serializer.toJson<String>(body),
+      'locale': serializer.toJson<String>(locale),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Reading copyWith({
+    String? id,
+    String? date,
+    String? type,
+    String? reference,
+    Value<String?> title = const Value.absent(),
+    String? body,
+    String? locale,
+    DateTime? createdAt,
+  }) => Reading(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    type: type ?? this.type,
+    reference: reference ?? this.reference,
+    title: title.present ? title.value : this.title,
+    body: body ?? this.body,
+    locale: locale ?? this.locale,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Reading copyWithCompanion(ReadingsCompanion data) {
+    return Reading(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      type: data.type.present ? data.type.value : this.type,
+      reference: data.reference.present ? data.reference.value : this.reference,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Reading(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('type: $type, ')
+          ..write('reference: $reference, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, date, type, reference, title, body, locale, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Reading &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.type == this.type &&
+          other.reference == this.reference &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.locale == this.locale &&
+          other.createdAt == this.createdAt);
+}
+
+class ReadingsCompanion extends UpdateCompanion<Reading> {
+  final Value<String> id;
+  final Value<String> date;
+  final Value<String> type;
+  final Value<String> reference;
+  final Value<String?> title;
+  final Value<String> body;
+  final Value<String> locale;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ReadingsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.type = const Value.absent(),
+    this.reference = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReadingsCompanion.insert({
+    required String id,
+    required String date,
+    required String type,
+    required String reference,
+    this.title = const Value.absent(),
+    required String body,
+    required String locale,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       date = Value(date),
+       type = Value(type),
+       reference = Value(reference),
+       body = Value(body),
+       locale = Value(locale);
+  static Insertable<Reading> custom({
+    Expression<String>? id,
+    Expression<String>? date,
+    Expression<String>? type,
+    Expression<String>? reference,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? locale,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (type != null) 'type': type,
+      if (reference != null) 'reference': reference,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (locale != null) 'locale': locale,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReadingsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? date,
+    Value<String>? type,
+    Value<String>? reference,
+    Value<String?>? title,
+    Value<String>? body,
+    Value<String>? locale,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ReadingsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      type: type ?? this.type,
+      reference: reference ?? this.reference,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      locale: locale ?? this.locale,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (reference.present) {
+      map['reference'] = Variable<String>(reference.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReadingsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('type: $type, ')
+          ..write('reference: $reference, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('locale: $locale, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ActionRulesTable extends ActionRules
+    with TableInfo<$ActionRulesTable, ActionRule> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ActionRulesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _triggerConditionMeta = const VerificationMeta(
+    'triggerCondition',
+  );
+  @override
+  late final GeneratedColumn<String> triggerCondition = GeneratedColumn<String>(
+    'trigger_condition',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _templatePromptMeta = const VerificationMeta(
+    'templatePrompt',
+  );
+  @override
+  late final GeneratedColumn<String> templatePrompt = GeneratedColumn<String>(
+    'template_prompt',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priorityMeta = const VerificationMeta(
+    'priority',
+  );
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+    'priority',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _packIdMeta = const VerificationMeta('packId');
+  @override
+  late final GeneratedColumn<String> packId = GeneratedColumn<String>(
+    'pack_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    triggerCondition,
+    templatePrompt,
+    priority,
+    locale,
+    packId,
+    isActive,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'action_rules';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ActionRule> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('trigger_condition')) {
+      context.handle(
+        _triggerConditionMeta,
+        triggerCondition.isAcceptableOrUnknown(
+          data['trigger_condition']!,
+          _triggerConditionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_triggerConditionMeta);
+    }
+    if (data.containsKey('template_prompt')) {
+      context.handle(
+        _templatePromptMeta,
+        templatePrompt.isAcceptableOrUnknown(
+          data['template_prompt']!,
+          _templatePromptMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_templatePromptMeta);
+    }
+    if (data.containsKey('priority')) {
+      context.handle(
+        _priorityMeta,
+        priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    }
+    if (data.containsKey('pack_id')) {
+      context.handle(
+        _packIdMeta,
+        packId.isAcceptableOrUnknown(data['pack_id']!, _packIdMeta),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ActionRule map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ActionRule(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      triggerCondition: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}trigger_condition'],
+      )!,
+      templatePrompt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_prompt'],
+      )!,
+      priority: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}priority'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      ),
+      packId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pack_id'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ActionRulesTable createAlias(String alias) {
+    return $ActionRulesTable(attachedDatabase, alias);
+  }
+}
+
+class ActionRule extends DataClass implements Insertable<ActionRule> {
+  final String id;
+  final String type;
+  final String triggerCondition;
+  final String templatePrompt;
+  final int priority;
+  final String? locale;
+  final String? packId;
+  final bool isActive;
+  final DateTime createdAt;
+  const ActionRule({
+    required this.id,
+    required this.type,
+    required this.triggerCondition,
+    required this.templatePrompt,
+    required this.priority,
+    this.locale,
+    this.packId,
+    required this.isActive,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['type'] = Variable<String>(type);
+    map['trigger_condition'] = Variable<String>(triggerCondition);
+    map['template_prompt'] = Variable<String>(templatePrompt);
+    map['priority'] = Variable<int>(priority);
+    if (!nullToAbsent || locale != null) {
+      map['locale'] = Variable<String>(locale);
+    }
+    if (!nullToAbsent || packId != null) {
+      map['pack_id'] = Variable<String>(packId);
+    }
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ActionRulesCompanion toCompanion(bool nullToAbsent) {
+    return ActionRulesCompanion(
+      id: Value(id),
+      type: Value(type),
+      triggerCondition: Value(triggerCondition),
+      templatePrompt: Value(templatePrompt),
+      priority: Value(priority),
+      locale: locale == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locale),
+      packId: packId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(packId),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ActionRule.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ActionRule(
+      id: serializer.fromJson<String>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      triggerCondition: serializer.fromJson<String>(json['triggerCondition']),
+      templatePrompt: serializer.fromJson<String>(json['templatePrompt']),
+      priority: serializer.fromJson<int>(json['priority']),
+      locale: serializer.fromJson<String?>(json['locale']),
+      packId: serializer.fromJson<String?>(json['packId']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'type': serializer.toJson<String>(type),
+      'triggerCondition': serializer.toJson<String>(triggerCondition),
+      'templatePrompt': serializer.toJson<String>(templatePrompt),
+      'priority': serializer.toJson<int>(priority),
+      'locale': serializer.toJson<String?>(locale),
+      'packId': serializer.toJson<String?>(packId),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ActionRule copyWith({
+    String? id,
+    String? type,
+    String? triggerCondition,
+    String? templatePrompt,
+    int? priority,
+    Value<String?> locale = const Value.absent(),
+    Value<String?> packId = const Value.absent(),
+    bool? isActive,
+    DateTime? createdAt,
+  }) => ActionRule(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    triggerCondition: triggerCondition ?? this.triggerCondition,
+    templatePrompt: templatePrompt ?? this.templatePrompt,
+    priority: priority ?? this.priority,
+    locale: locale.present ? locale.value : this.locale,
+    packId: packId.present ? packId.value : this.packId,
+    isActive: isActive ?? this.isActive,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ActionRule copyWithCompanion(ActionRulesCompanion data) {
+    return ActionRule(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      triggerCondition: data.triggerCondition.present
+          ? data.triggerCondition.value
+          : this.triggerCondition,
+      templatePrompt: data.templatePrompt.present
+          ? data.templatePrompt.value
+          : this.templatePrompt,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      packId: data.packId.present ? data.packId.value : this.packId,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ActionRule(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('triggerCondition: $triggerCondition, ')
+          ..write('templatePrompt: $templatePrompt, ')
+          ..write('priority: $priority, ')
+          ..write('locale: $locale, ')
+          ..write('packId: $packId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    type,
+    triggerCondition,
+    templatePrompt,
+    priority,
+    locale,
+    packId,
+    isActive,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ActionRule &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.triggerCondition == this.triggerCondition &&
+          other.templatePrompt == this.templatePrompt &&
+          other.priority == this.priority &&
+          other.locale == this.locale &&
+          other.packId == this.packId &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt);
+}
+
+class ActionRulesCompanion extends UpdateCompanion<ActionRule> {
+  final Value<String> id;
+  final Value<String> type;
+  final Value<String> triggerCondition;
+  final Value<String> templatePrompt;
+  final Value<int> priority;
+  final Value<String?> locale;
+  final Value<String?> packId;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ActionRulesCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.triggerCondition = const Value.absent(),
+    this.templatePrompt = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.packId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ActionRulesCompanion.insert({
+    required String id,
+    required String type,
+    required String triggerCondition,
+    required String templatePrompt,
+    required int priority,
+    this.locale = const Value.absent(),
+    this.packId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       type = Value(type),
+       triggerCondition = Value(triggerCondition),
+       templatePrompt = Value(templatePrompt),
+       priority = Value(priority);
+  static Insertable<ActionRule> custom({
+    Expression<String>? id,
+    Expression<String>? type,
+    Expression<String>? triggerCondition,
+    Expression<String>? templatePrompt,
+    Expression<int>? priority,
+    Expression<String>? locale,
+    Expression<String>? packId,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (triggerCondition != null) 'trigger_condition': triggerCondition,
+      if (templatePrompt != null) 'template_prompt': templatePrompt,
+      if (priority != null) 'priority': priority,
+      if (locale != null) 'locale': locale,
+      if (packId != null) 'pack_id': packId,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ActionRulesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? type,
+    Value<String>? triggerCondition,
+    Value<String>? templatePrompt,
+    Value<int>? priority,
+    Value<String?>? locale,
+    Value<String?>? packId,
+    Value<bool>? isActive,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ActionRulesCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      triggerCondition: triggerCondition ?? this.triggerCondition,
+      templatePrompt: templatePrompt ?? this.templatePrompt,
+      priority: priority ?? this.priority,
+      locale: locale ?? this.locale,
+      packId: packId ?? this.packId,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (triggerCondition.present) {
+      map['trigger_condition'] = Variable<String>(triggerCondition.value);
+    }
+    if (templatePrompt.present) {
+      map['template_prompt'] = Variable<String>(templatePrompt.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (packId.present) {
+      map['pack_id'] = Variable<String>(packId.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ActionRulesCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('triggerCondition: $triggerCondition, ')
+          ..write('templatePrompt: $templatePrompt, ')
+          ..write('priority: $priority, ')
+          ..write('locale: $locale, ')
+          ..write('packId: $packId, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $DailyActionsTable extends DailyActions
     with TableInfo<$DailyActionsTable, DailyAction> {
   @override
@@ -852,6 +2365,16 @@ class $ActionLogsTable extends ActionLogs
       'REFERENCES daily_actions (id)',
     ),
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
   static const VerificationMeta _completedAtMeta = const VerificationMeta(
     'completedAt',
   );
@@ -883,13 +2406,27 @@ class $ActionLogsTable extends ActionLogs
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     actionId,
+    status,
     completedAt,
     note,
     selfCheckProofMetadata,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -916,6 +2453,12 @@ class $ActionLogsTable extends ActionLogs
     } else if (isInserting) {
       context.missing(_actionIdMeta);
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
     if (data.containsKey('completed_at')) {
       context.handle(
         _completedAtMeta,
@@ -940,6 +2483,12 @@ class $ActionLogsTable extends ActionLogs
         ),
       );
     }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
     return context;
   }
 
@@ -957,6 +2506,10 @@ class $ActionLogsTable extends ActionLogs
         DriftSqlType.string,
         data['${effectivePrefix}action_id'],
       )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
       completedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}completed_at'],
@@ -969,6 +2522,10 @@ class $ActionLogsTable extends ActionLogs
         DriftSqlType.string,
         data['${effectivePrefix}self_check_proof_metadata'],
       ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
     );
   }
 
@@ -981,21 +2538,26 @@ class $ActionLogsTable extends ActionLogs
 class ActionLog extends DataClass implements Insertable<ActionLog> {
   final String id;
   final String actionId;
+  final String status;
   final DateTime? completedAt;
   final String? note;
   final String? selfCheckProofMetadata;
+  final DateTime createdAt;
   const ActionLog({
     required this.id,
     required this.actionId,
+    required this.status,
     this.completedAt,
     this.note,
     this.selfCheckProofMetadata,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['action_id'] = Variable<String>(actionId);
+    map['status'] = Variable<String>(status);
     if (!nullToAbsent || completedAt != null) {
       map['completed_at'] = Variable<DateTime>(completedAt);
     }
@@ -1007,6 +2569,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
         selfCheckProofMetadata,
       );
     }
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
@@ -1014,6 +2577,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return ActionLogsCompanion(
       id: Value(id),
       actionId: Value(actionId),
+      status: Value(status),
       completedAt: completedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(completedAt),
@@ -1021,6 +2585,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
       selfCheckProofMetadata: selfCheckProofMetadata == null && nullToAbsent
           ? const Value.absent()
           : Value(selfCheckProofMetadata),
+      createdAt: Value(createdAt),
     );
   }
 
@@ -1032,11 +2597,13 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return ActionLog(
       id: serializer.fromJson<String>(json['id']),
       actionId: serializer.fromJson<String>(json['actionId']),
+      status: serializer.fromJson<String>(json['status']),
       completedAt: serializer.fromJson<DateTime?>(json['completedAt']),
       note: serializer.fromJson<String?>(json['note']),
       selfCheckProofMetadata: serializer.fromJson<String?>(
         json['selfCheckProofMetadata'],
       ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -1045,33 +2612,40 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'actionId': serializer.toJson<String>(actionId),
+      'status': serializer.toJson<String>(status),
       'completedAt': serializer.toJson<DateTime?>(completedAt),
       'note': serializer.toJson<String?>(note),
       'selfCheckProofMetadata': serializer.toJson<String?>(
         selfCheckProofMetadata,
       ),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   ActionLog copyWith({
     String? id,
     String? actionId,
+    String? status,
     Value<DateTime?> completedAt = const Value.absent(),
     Value<String?> note = const Value.absent(),
     Value<String?> selfCheckProofMetadata = const Value.absent(),
+    DateTime? createdAt,
   }) => ActionLog(
     id: id ?? this.id,
     actionId: actionId ?? this.actionId,
+    status: status ?? this.status,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
     note: note.present ? note.value : this.note,
     selfCheckProofMetadata: selfCheckProofMetadata.present
         ? selfCheckProofMetadata.value
         : this.selfCheckProofMetadata,
+    createdAt: createdAt ?? this.createdAt,
   );
   ActionLog copyWithCompanion(ActionLogsCompanion data) {
     return ActionLog(
       id: data.id.present ? data.id.value : this.id,
       actionId: data.actionId.present ? data.actionId.value : this.actionId,
+      status: data.status.present ? data.status.value : this.status,
       completedAt: data.completedAt.present
           ? data.completedAt.value
           : this.completedAt,
@@ -1079,6 +2653,7 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
       selfCheckProofMetadata: data.selfCheckProofMetadata.present
           ? data.selfCheckProofMetadata.value
           : this.selfCheckProofMetadata,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
@@ -1087,66 +2662,87 @@ class ActionLog extends DataClass implements Insertable<ActionLog> {
     return (StringBuffer('ActionLog(')
           ..write('id: $id, ')
           ..write('actionId: $actionId, ')
+          ..write('status: $status, ')
           ..write('completedAt: $completedAt, ')
           ..write('note: $note, ')
-          ..write('selfCheckProofMetadata: $selfCheckProofMetadata')
+          ..write('selfCheckProofMetadata: $selfCheckProofMetadata, ')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, actionId, completedAt, note, selfCheckProofMetadata);
+  int get hashCode => Object.hash(
+    id,
+    actionId,
+    status,
+    completedAt,
+    note,
+    selfCheckProofMetadata,
+    createdAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ActionLog &&
           other.id == this.id &&
           other.actionId == this.actionId &&
+          other.status == this.status &&
           other.completedAt == this.completedAt &&
           other.note == this.note &&
-          other.selfCheckProofMetadata == this.selfCheckProofMetadata);
+          other.selfCheckProofMetadata == this.selfCheckProofMetadata &&
+          other.createdAt == this.createdAt);
 }
 
 class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
   final Value<String> id;
   final Value<String> actionId;
+  final Value<String> status;
   final Value<DateTime?> completedAt;
   final Value<String?> note;
   final Value<String?> selfCheckProofMetadata;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
   const ActionLogsCompanion({
     this.id = const Value.absent(),
     this.actionId = const Value.absent(),
+    this.status = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.note = const Value.absent(),
     this.selfCheckProofMetadata = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ActionLogsCompanion.insert({
     required String id,
     required String actionId,
+    this.status = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.note = const Value.absent(),
     this.selfCheckProofMetadata = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        actionId = Value(actionId);
   static Insertable<ActionLog> custom({
     Expression<String>? id,
     Expression<String>? actionId,
+    Expression<String>? status,
     Expression<DateTime>? completedAt,
     Expression<String>? note,
     Expression<String>? selfCheckProofMetadata,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (actionId != null) 'action_id': actionId,
+      if (status != null) 'status': status,
       if (completedAt != null) 'completed_at': completedAt,
       if (note != null) 'note': note,
       if (selfCheckProofMetadata != null)
         'self_check_proof_metadata': selfCheckProofMetadata,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1154,18 +2750,22 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
   ActionLogsCompanion copyWith({
     Value<String>? id,
     Value<String>? actionId,
+    Value<String>? status,
     Value<DateTime?>? completedAt,
     Value<String?>? note,
     Value<String?>? selfCheckProofMetadata,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
     return ActionLogsCompanion(
       id: id ?? this.id,
       actionId: actionId ?? this.actionId,
+      status: status ?? this.status,
       completedAt: completedAt ?? this.completedAt,
       note: note ?? this.note,
       selfCheckProofMetadata:
           selfCheckProofMetadata ?? this.selfCheckProofMetadata,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1179,6 +2779,9 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
     if (actionId.present) {
       map['action_id'] = Variable<String>(actionId.value);
     }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
     if (completedAt.present) {
       map['completed_at'] = Variable<DateTime>(completedAt.value);
     }
@@ -1189,6 +2792,9 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
       map['self_check_proof_metadata'] = Variable<String>(
         selfCheckProofMetadata.value,
       );
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1201,9 +2807,543 @@ class ActionLogsCompanion extends UpdateCompanion<ActionLog> {
     return (StringBuffer('ActionLogsCompanion(')
           ..write('id: $id, ')
           ..write('actionId: $actionId, ')
+          ..write('status: $status, ')
           ..write('completedAt: $completedAt, ')
           ..write('note: $note, ')
           ..write('selfCheckProofMetadata: $selfCheckProofMetadata, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserSettingsTable extends UserSettings
+    with TableInfo<$UserSettingsTable, UserSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(
+        _keyMeta,
+        key.isAcceptableOrUnknown(data['key']!, _keyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  UserSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserSetting(
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UserSettingsTable createAlias(String alias) {
+    return $UserSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class UserSetting extends DataClass implements Insertable<UserSetting> {
+  final String key;
+  final String value;
+  final DateTime updatedAt;
+  const UserSetting({
+    required this.key,
+    required this.value,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  UserSettingsCompanion toCompanion(bool nullToAbsent) {
+    return UserSettingsCompanion(
+      key: Value(key),
+      value: Value(value),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory UserSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserSetting(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  UserSetting copyWith({String? key, String? value, DateTime? updatedAt}) =>
+      UserSetting(
+        key: key ?? this.key,
+        value: value ?? this.value,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  UserSetting copyWithCompanion(UserSettingsCompanion data) {
+    return UserSetting(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSetting(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserSetting &&
+          other.key == this.key &&
+          other.value == this.value &&
+          other.updatedAt == this.updatedAt);
+}
+
+class UserSettingsCompanion extends UpdateCompanion<UserSetting> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const UserSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserSettingsCompanion.insert({
+    required String key,
+    required String value,
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<UserSetting> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return UserSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WidgetSnapshotsTable extends WidgetSnapshots
+    with TableInfo<$WidgetSnapshotsTable, WidgetSnapshot> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WidgetSnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _generatedAtMeta = const VerificationMeta(
+    'generatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> generatedAt = GeneratedColumn<DateTime>(
+    'generated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [date, payload, generatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'widget_snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WidgetSnapshot> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('generated_at')) {
+      context.handle(
+        _generatedAtMeta,
+        generatedAt.isAcceptableOrUnknown(
+          data['generated_at']!,
+          _generatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_generatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {date};
+  @override
+  WidgetSnapshot map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WidgetSnapshot(
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      generatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}generated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $WidgetSnapshotsTable createAlias(String alias) {
+    return $WidgetSnapshotsTable(attachedDatabase, alias);
+  }
+}
+
+class WidgetSnapshot extends DataClass implements Insertable<WidgetSnapshot> {
+  final String date;
+  final String payload;
+  final DateTime generatedAt;
+  const WidgetSnapshot({
+    required this.date,
+    required this.payload,
+    required this.generatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['date'] = Variable<String>(date);
+    map['payload'] = Variable<String>(payload);
+    map['generated_at'] = Variable<DateTime>(generatedAt);
+    return map;
+  }
+
+  WidgetSnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return WidgetSnapshotsCompanion(
+      date: Value(date),
+      payload: Value(payload),
+      generatedAt: Value(generatedAt),
+    );
+  }
+
+  factory WidgetSnapshot.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WidgetSnapshot(
+      date: serializer.fromJson<String>(json['date']),
+      payload: serializer.fromJson<String>(json['payload']),
+      generatedAt: serializer.fromJson<DateTime>(json['generatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'date': serializer.toJson<String>(date),
+      'payload': serializer.toJson<String>(payload),
+      'generatedAt': serializer.toJson<DateTime>(generatedAt),
+    };
+  }
+
+  WidgetSnapshot copyWith({
+    String? date,
+    String? payload,
+    DateTime? generatedAt,
+  }) => WidgetSnapshot(
+    date: date ?? this.date,
+    payload: payload ?? this.payload,
+    generatedAt: generatedAt ?? this.generatedAt,
+  );
+  WidgetSnapshot copyWithCompanion(WidgetSnapshotsCompanion data) {
+    return WidgetSnapshot(
+      date: data.date.present ? data.date.value : this.date,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      generatedAt: data.generatedAt.present
+          ? data.generatedAt.value
+          : this.generatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WidgetSnapshot(')
+          ..write('date: $date, ')
+          ..write('payload: $payload, ')
+          ..write('generatedAt: $generatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(date, payload, generatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WidgetSnapshot &&
+          other.date == this.date &&
+          other.payload == this.payload &&
+          other.generatedAt == this.generatedAt);
+}
+
+class WidgetSnapshotsCompanion extends UpdateCompanion<WidgetSnapshot> {
+  final Value<String> date;
+  final Value<String> payload;
+  final Value<DateTime> generatedAt;
+  final Value<int> rowid;
+  const WidgetSnapshotsCompanion({
+    this.date = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.generatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WidgetSnapshotsCompanion.insert({
+    required String date,
+    required String payload,
+    required DateTime generatedAt,
+    this.rowid = const Value.absent(),
+  }) : date = Value(date),
+       payload = Value(payload),
+       generatedAt = Value(generatedAt);
+  static Insertable<WidgetSnapshot> custom({
+    Expression<String>? date,
+    Expression<String>? payload,
+    Expression<DateTime>? generatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (date != null) 'date': date,
+      if (payload != null) 'payload': payload,
+      if (generatedAt != null) 'generated_at': generatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WidgetSnapshotsCompanion copyWith({
+    Value<String>? date,
+    Value<String>? payload,
+    Value<DateTime>? generatedAt,
+    Value<int>? rowid,
+  }) {
+    return WidgetSnapshotsCompanion(
+      date: date ?? this.date,
+      payload: payload ?? this.payload,
+      generatedAt: generatedAt ?? this.generatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (generatedAt.present) {
+      map['generated_at'] = Variable<DateTime>(generatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WidgetSnapshotsCompanion(')
+          ..write('date: $date, ')
+          ..write('payload: $payload, ')
+          ..write('generatedAt: $generatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1214,16 +3354,30 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CalendarDaysTable calendarDays = $CalendarDaysTable(this);
+  late final $CelebrationsTable celebrations = $CelebrationsTable(this);
+  late final $ReadingsTable readings = $ReadingsTable(this);
+  late final $ActionRulesTable actionRules = $ActionRulesTable(this);
   late final $DailyActionsTable dailyActions = $DailyActionsTable(this);
   late final $ActionLogsTable actionLogs = $ActionLogsTable(this);
+  late final $UserSettingsTable userSettings = $UserSettingsTable(this);
+  late final $WidgetSnapshotsTable widgetSnapshots = $WidgetSnapshotsTable(
+    this,
+  );
+  late final TodayDao todayDao = TodayDao(this as AppDatabase);
+  late final ActionLogDao actionLogDao = ActionLogDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     calendarDays,
+    celebrations,
+    readings,
+    actionRules,
     dailyActions,
     actionLogs,
+    userSettings,
+    widgetSnapshots,
   ];
 }
 
@@ -1251,6 +3405,43 @@ typedef $$CalendarDaysTableUpdateCompanionBuilder =
 final class $$CalendarDaysTableReferences
     extends BaseReferences<_$AppDatabase, $CalendarDaysTable, CalendarDay> {
   $$CalendarDaysTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$CelebrationsTable, List<Celebration>>
+  _celebrationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.celebrations,
+    aliasName: $_aliasNameGenerator(db.calendarDays.date, db.celebrations.date),
+  );
+
+  $$CelebrationsTableProcessedTableManager get celebrationsRefs {
+    final manager = $$CelebrationsTableTableManager(
+      $_db,
+      $_db.celebrations,
+    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
+
+    final cache = $_typedResult.readTableOrNull(_celebrationsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$ReadingsTable, List<Reading>> _readingsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.readings,
+    aliasName: $_aliasNameGenerator(db.calendarDays.date, db.readings.date),
+  );
+
+  $$ReadingsTableProcessedTableManager get readingsRefs {
+    final manager = $$ReadingsTableTableManager(
+      $_db,
+      $_db.readings,
+    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
+
+    final cache = $_typedResult.readTableOrNull(_readingsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 
   static MultiTypedResultKey<$DailyActionsTable, List<DailyAction>>
   _dailyActionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
@@ -1309,6 +3500,56 @@ class $$CalendarDaysTableFilterComposer
     column: $table.locale,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> celebrationsRefs(
+    Expression<bool> Function($$CelebrationsTableFilterComposer f) f,
+  ) {
+    final $$CelebrationsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.celebrations,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CelebrationsTableFilterComposer(
+            $db: $db,
+            $table: $db.celebrations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> readingsRefs(
+    Expression<bool> Function($$ReadingsTableFilterComposer f) f,
+  ) {
+    final $$ReadingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.readings,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReadingsTableFilterComposer(
+            $db: $db,
+            $table: $db.readings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 
   Expression<bool> dailyActionsRefs(
     Expression<bool> Function($$DailyActionsTableFilterComposer f) f,
@@ -1405,6 +3646,56 @@ class $$CalendarDaysTableAnnotationComposer
   GeneratedColumn<String> get locale =>
       $composableBuilder(column: $table.locale, builder: (column) => column);
 
+  Expression<T> celebrationsRefs<T extends Object>(
+    Expression<T> Function($$CelebrationsTableAnnotationComposer a) f,
+  ) {
+    final $$CelebrationsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.celebrations,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CelebrationsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.celebrations,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> readingsRefs<T extends Object>(
+    Expression<T> Function($$ReadingsTableAnnotationComposer a) f,
+  ) {
+    final $$ReadingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.readings,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReadingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.readings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> dailyActionsRefs<T extends Object>(
     Expression<T> Function($$DailyActionsTableAnnotationComposer a) f,
   ) {
@@ -1444,7 +3735,11 @@ class $$CalendarDaysTableTableManager
           $$CalendarDaysTableUpdateCompanionBuilder,
           (CalendarDay, $$CalendarDaysTableReferences),
           CalendarDay,
-          PrefetchHooks Function({bool dailyActionsRefs})
+          PrefetchHooks Function({
+            bool celebrationsRefs,
+            bool readingsRefs,
+            bool dailyActionsRefs,
+          })
         > {
   $$CalendarDaysTableTableManager(_$AppDatabase db, $CalendarDaysTable table)
     : super(
@@ -1501,36 +3796,89 @@ class $$CalendarDaysTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({dailyActionsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (dailyActionsRefs) db.dailyActions],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (dailyActionsRefs)
-                    await $_getPrefetchedData<
-                      CalendarDay,
-                      $CalendarDaysTable,
-                      DailyAction
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CalendarDaysTableReferences
-                          ._dailyActionsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$CalendarDaysTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).dailyActionsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.date == item.date),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({
+                celebrationsRefs = false,
+                readingsRefs = false,
+                dailyActionsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (celebrationsRefs) db.celebrations,
+                    if (readingsRefs) db.readings,
+                    if (dailyActionsRefs) db.dailyActions,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (celebrationsRefs)
+                        await $_getPrefetchedData<
+                          CalendarDay,
+                          $CalendarDaysTable,
+                          Celebration
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CalendarDaysTableReferences
+                              ._celebrationsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CalendarDaysTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).celebrationsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.date == item.date,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (readingsRefs)
+                        await $_getPrefetchedData<
+                          CalendarDay,
+                          $CalendarDaysTable,
+                          Reading
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CalendarDaysTableReferences
+                              ._readingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CalendarDaysTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).readingsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.date == item.date,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (dailyActionsRefs)
+                        await $_getPrefetchedData<
+                          CalendarDay,
+                          $CalendarDaysTable,
+                          DailyAction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CalendarDaysTableReferences
+                              ._dailyActionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CalendarDaysTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).dailyActionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.date == item.date,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -1547,7 +3895,1026 @@ typedef $$CalendarDaysTableProcessedTableManager =
       $$CalendarDaysTableUpdateCompanionBuilder,
       (CalendarDay, $$CalendarDaysTableReferences),
       CalendarDay,
-      PrefetchHooks Function({bool dailyActionsRefs})
+      PrefetchHooks Function({
+        bool celebrationsRefs,
+        bool readingsRefs,
+        bool dailyActionsRefs,
+      })
+    >;
+typedef $$CelebrationsTableCreateCompanionBuilder =
+    CelebrationsCompanion Function({
+      required String id,
+      required String date,
+      required String name,
+      required String rank,
+      Value<bool> isOptional,
+      required String locale,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$CelebrationsTableUpdateCompanionBuilder =
+    CelebrationsCompanion Function({
+      Value<String> id,
+      Value<String> date,
+      Value<String> name,
+      Value<String> rank,
+      Value<bool> isOptional,
+      Value<String> locale,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$CelebrationsTableReferences
+    extends BaseReferences<_$AppDatabase, $CelebrationsTable, Celebration> {
+  $$CelebrationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
+      db.calendarDays.createAlias(
+        $_aliasNameGenerator(db.celebrations.date, db.calendarDays.date),
+      );
+
+  $$CalendarDaysTableProcessedTableManager get date {
+    final $_column = $_itemColumn<String>('date')!;
+
+    final manager = $$CalendarDaysTableTableManager(
+      $_db,
+      $_db.calendarDays,
+    ).filter((f) => f.date.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_dateTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CelebrationsTableFilterComposer
+    extends Composer<_$AppDatabase, $CelebrationsTable> {
+  $$CelebrationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rank => $composableBuilder(
+    column: $table.rank,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isOptional => $composableBuilder(
+    column: $table.isOptional,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CalendarDaysTableFilterComposer get date {
+    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableFilterComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CelebrationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CelebrationsTable> {
+  $$CelebrationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rank => $composableBuilder(
+    column: $table.rank,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isOptional => $composableBuilder(
+    column: $table.isOptional,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CalendarDaysTableOrderingComposer get date {
+    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableOrderingComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CelebrationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CelebrationsTable> {
+  $$CelebrationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get rank =>
+      $composableBuilder(column: $table.rank, builder: (column) => column);
+
+  GeneratedColumn<bool> get isOptional => $composableBuilder(
+    column: $table.isOptional,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CalendarDaysTableAnnotationComposer get date {
+    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableAnnotationComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CelebrationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CelebrationsTable,
+          Celebration,
+          $$CelebrationsTableFilterComposer,
+          $$CelebrationsTableOrderingComposer,
+          $$CelebrationsTableAnnotationComposer,
+          $$CelebrationsTableCreateCompanionBuilder,
+          $$CelebrationsTableUpdateCompanionBuilder,
+          (Celebration, $$CelebrationsTableReferences),
+          Celebration,
+          PrefetchHooks Function({bool date})
+        > {
+  $$CelebrationsTableTableManager(_$AppDatabase db, $CelebrationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CelebrationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CelebrationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CelebrationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> rank = const Value.absent(),
+                Value<bool> isOptional = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CelebrationsCompanion(
+                id: id,
+                date: date,
+                name: name,
+                rank: rank,
+                isOptional: isOptional,
+                locale: locale,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String date,
+                required String name,
+                required String rank,
+                Value<bool> isOptional = const Value.absent(),
+                required String locale,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CelebrationsCompanion.insert(
+                id: id,
+                date: date,
+                name: name,
+                rank: rank,
+                isOptional: isOptional,
+                locale: locale,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CelebrationsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({date = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (date) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.date,
+                                referencedTable: $$CelebrationsTableReferences
+                                    ._dateTable(db),
+                                referencedColumn: $$CelebrationsTableReferences
+                                    ._dateTable(db)
+                                    .date,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CelebrationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CelebrationsTable,
+      Celebration,
+      $$CelebrationsTableFilterComposer,
+      $$CelebrationsTableOrderingComposer,
+      $$CelebrationsTableAnnotationComposer,
+      $$CelebrationsTableCreateCompanionBuilder,
+      $$CelebrationsTableUpdateCompanionBuilder,
+      (Celebration, $$CelebrationsTableReferences),
+      Celebration,
+      PrefetchHooks Function({bool date})
+    >;
+typedef $$ReadingsTableCreateCompanionBuilder =
+    ReadingsCompanion Function({
+      required String id,
+      required String date,
+      required String type,
+      required String reference,
+      Value<String?> title,
+      required String body,
+      required String locale,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$ReadingsTableUpdateCompanionBuilder =
+    ReadingsCompanion Function({
+      Value<String> id,
+      Value<String> date,
+      Value<String> type,
+      Value<String> reference,
+      Value<String?> title,
+      Value<String> body,
+      Value<String> locale,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$ReadingsTableReferences
+    extends BaseReferences<_$AppDatabase, $ReadingsTable, Reading> {
+  $$ReadingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
+      db.calendarDays.createAlias(
+        $_aliasNameGenerator(db.readings.date, db.calendarDays.date),
+      );
+
+  $$CalendarDaysTableProcessedTableManager get date {
+    final $_column = $_itemColumn<String>('date')!;
+
+    final manager = $$CalendarDaysTableTableManager(
+      $_db,
+      $_db.calendarDays,
+    ).filter((f) => f.date.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_dateTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ReadingsTableFilterComposer
+    extends Composer<_$AppDatabase, $ReadingsTable> {
+  $$ReadingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reference => $composableBuilder(
+    column: $table.reference,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CalendarDaysTableFilterComposer get date {
+    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableFilterComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReadingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReadingsTable> {
+  $$ReadingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reference => $composableBuilder(
+    column: $table.reference,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CalendarDaysTableOrderingComposer get date {
+    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableOrderingComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReadingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReadingsTable> {
+  $$ReadingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get reference =>
+      $composableBuilder(column: $table.reference, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CalendarDaysTableAnnotationComposer get date {
+    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableAnnotationComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReadingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReadingsTable,
+          Reading,
+          $$ReadingsTableFilterComposer,
+          $$ReadingsTableOrderingComposer,
+          $$ReadingsTableAnnotationComposer,
+          $$ReadingsTableCreateCompanionBuilder,
+          $$ReadingsTableUpdateCompanionBuilder,
+          (Reading, $$ReadingsTableReferences),
+          Reading,
+          PrefetchHooks Function({bool date})
+        > {
+  $$ReadingsTableTableManager(_$AppDatabase db, $ReadingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReadingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReadingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReadingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> reference = const Value.absent(),
+                Value<String?> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReadingsCompanion(
+                id: id,
+                date: date,
+                type: type,
+                reference: reference,
+                title: title,
+                body: body,
+                locale: locale,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String date,
+                required String type,
+                required String reference,
+                Value<String?> title = const Value.absent(),
+                required String body,
+                required String locale,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReadingsCompanion.insert(
+                id: id,
+                date: date,
+                type: type,
+                reference: reference,
+                title: title,
+                body: body,
+                locale: locale,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ReadingsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({date = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (date) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.date,
+                                referencedTable: $$ReadingsTableReferences
+                                    ._dateTable(db),
+                                referencedColumn: $$ReadingsTableReferences
+                                    ._dateTable(db)
+                                    .date,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ReadingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReadingsTable,
+      Reading,
+      $$ReadingsTableFilterComposer,
+      $$ReadingsTableOrderingComposer,
+      $$ReadingsTableAnnotationComposer,
+      $$ReadingsTableCreateCompanionBuilder,
+      $$ReadingsTableUpdateCompanionBuilder,
+      (Reading, $$ReadingsTableReferences),
+      Reading,
+      PrefetchHooks Function({bool date})
+    >;
+typedef $$ActionRulesTableCreateCompanionBuilder =
+    ActionRulesCompanion Function({
+      required String id,
+      required String type,
+      required String triggerCondition,
+      required String templatePrompt,
+      required int priority,
+      Value<String?> locale,
+      Value<String?> packId,
+      Value<bool> isActive,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$ActionRulesTableUpdateCompanionBuilder =
+    ActionRulesCompanion Function({
+      Value<String> id,
+      Value<String> type,
+      Value<String> triggerCondition,
+      Value<String> templatePrompt,
+      Value<int> priority,
+      Value<String?> locale,
+      Value<String?> packId,
+      Value<bool> isActive,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$ActionRulesTableFilterComposer
+    extends Composer<_$AppDatabase, $ActionRulesTable> {
+  $$ActionRulesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get triggerCondition => $composableBuilder(
+    column: $table.triggerCondition,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get templatePrompt => $composableBuilder(
+    column: $table.templatePrompt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get packId => $composableBuilder(
+    column: $table.packId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ActionRulesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ActionRulesTable> {
+  $$ActionRulesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get triggerCondition => $composableBuilder(
+    column: $table.triggerCondition,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templatePrompt => $composableBuilder(
+    column: $table.templatePrompt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+    column: $table.priority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get packId => $composableBuilder(
+    column: $table.packId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ActionRulesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ActionRulesTable> {
+  $$ActionRulesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get triggerCondition => $composableBuilder(
+    column: $table.triggerCondition,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get templatePrompt => $composableBuilder(
+    column: $table.templatePrompt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get packId =>
+      $composableBuilder(column: $table.packId, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ActionRulesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ActionRulesTable,
+          ActionRule,
+          $$ActionRulesTableFilterComposer,
+          $$ActionRulesTableOrderingComposer,
+          $$ActionRulesTableAnnotationComposer,
+          $$ActionRulesTableCreateCompanionBuilder,
+          $$ActionRulesTableUpdateCompanionBuilder,
+          (
+            ActionRule,
+            BaseReferences<_$AppDatabase, $ActionRulesTable, ActionRule>,
+          ),
+          ActionRule,
+          PrefetchHooks Function()
+        > {
+  $$ActionRulesTableTableManager(_$AppDatabase db, $ActionRulesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ActionRulesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ActionRulesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ActionRulesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> triggerCondition = const Value.absent(),
+                Value<String> templatePrompt = const Value.absent(),
+                Value<int> priority = const Value.absent(),
+                Value<String?> locale = const Value.absent(),
+                Value<String?> packId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ActionRulesCompanion(
+                id: id,
+                type: type,
+                triggerCondition: triggerCondition,
+                templatePrompt: templatePrompt,
+                priority: priority,
+                locale: locale,
+                packId: packId,
+                isActive: isActive,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String type,
+                required String triggerCondition,
+                required String templatePrompt,
+                required int priority,
+                Value<String?> locale = const Value.absent(),
+                Value<String?> packId = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ActionRulesCompanion.insert(
+                id: id,
+                type: type,
+                triggerCondition: triggerCondition,
+                templatePrompt: templatePrompt,
+                priority: priority,
+                locale: locale,
+                packId: packId,
+                isActive: isActive,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ActionRulesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ActionRulesTable,
+      ActionRule,
+      $$ActionRulesTableFilterComposer,
+      $$ActionRulesTableOrderingComposer,
+      $$ActionRulesTableAnnotationComposer,
+      $$ActionRulesTableCreateCompanionBuilder,
+      $$ActionRulesTableUpdateCompanionBuilder,
+      (
+        ActionRule,
+        BaseReferences<_$AppDatabase, $ActionRulesTable, ActionRule>,
+      ),
+      ActionRule,
+      PrefetchHooks Function()
     >;
 typedef $$DailyActionsTableCreateCompanionBuilder =
     DailyActionsCompanion Function({
@@ -1981,18 +5348,22 @@ typedef $$ActionLogsTableCreateCompanionBuilder =
     ActionLogsCompanion Function({
       required String id,
       required String actionId,
+      Value<String> status,
       Value<DateTime?> completedAt,
       Value<String?> note,
       Value<String?> selfCheckProofMetadata,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 typedef $$ActionLogsTableUpdateCompanionBuilder =
     ActionLogsCompanion Function({
       Value<String> id,
       Value<String> actionId,
+      Value<String> status,
       Value<DateTime?> completedAt,
       Value<String?> note,
       Value<String?> selfCheckProofMetadata,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
@@ -2034,6 +5405,11 @@ class $$ActionLogsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
     builder: (column) => ColumnFilters(column),
@@ -2046,6 +5422,11 @@ class $$ActionLogsTableFilterComposer
 
   ColumnFilters<String> get selfCheckProofMetadata => $composableBuilder(
     column: $table.selfCheckProofMetadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2087,6 +5468,11 @@ class $$ActionLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2099,6 +5485,11 @@ class $$ActionLogsTableOrderingComposer
 
   ColumnOrderings<String> get selfCheckProofMetadata => $composableBuilder(
     column: $table.selfCheckProofMetadata,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2138,6 +5529,9 @@ class $$ActionLogsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
   GeneratedColumn<DateTime> get completedAt => $composableBuilder(
     column: $table.completedAt,
     builder: (column) => column,
@@ -2150,6 +5544,9 @@ class $$ActionLogsTableAnnotationComposer
     column: $table.selfCheckProofMetadata,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   $$DailyActionsTableAnnotationComposer get actionId {
     final $$DailyActionsTableAnnotationComposer composer = $composerBuilder(
@@ -2205,32 +5602,40 @@ class $$ActionLogsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> actionId = const Value.absent(),
+                Value<String> status = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> selfCheckProofMetadata = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ActionLogsCompanion(
                 id: id,
                 actionId: actionId,
+                status: status,
                 completedAt: completedAt,
                 note: note,
                 selfCheckProofMetadata: selfCheckProofMetadata,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
                 required String actionId,
+                Value<String> status = const Value.absent(),
                 Value<DateTime?> completedAt = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> selfCheckProofMetadata = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ActionLogsCompanion.insert(
                 id: id,
                 actionId: actionId,
+                status: status,
                 completedAt: completedAt,
                 note: note,
                 selfCheckProofMetadata: selfCheckProofMetadata,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -2300,14 +5705,356 @@ typedef $$ActionLogsTableProcessedTableManager =
       ActionLog,
       PrefetchHooks Function({bool actionId})
     >;
+typedef $$UserSettingsTableCreateCompanionBuilder =
+    UserSettingsCompanion Function({
+      required String key,
+      required String value,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$UserSettingsTableUpdateCompanionBuilder =
+    UserSettingsCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$UserSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key => $composableBuilder(
+    column: $table.key,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserSettingsTable> {
+  $$UserSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$UserSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserSettingsTable,
+          UserSetting,
+          $$UserSettingsTableFilterComposer,
+          $$UserSettingsTableOrderingComposer,
+          $$UserSettingsTableAnnotationComposer,
+          $$UserSettingsTableCreateCompanionBuilder,
+          $$UserSettingsTableUpdateCompanionBuilder,
+          (
+            UserSetting,
+            BaseReferences<_$AppDatabase, $UserSettingsTable, UserSetting>,
+          ),
+          UserSetting,
+          PrefetchHooks Function()
+        > {
+  $$UserSettingsTableTableManager(_$AppDatabase db, $UserSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserSettingsCompanion(
+                key: key,
+                value: value,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserSettingsCompanion.insert(
+                key: key,
+                value: value,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserSettingsTable,
+      UserSetting,
+      $$UserSettingsTableFilterComposer,
+      $$UserSettingsTableOrderingComposer,
+      $$UserSettingsTableAnnotationComposer,
+      $$UserSettingsTableCreateCompanionBuilder,
+      $$UserSettingsTableUpdateCompanionBuilder,
+      (
+        UserSetting,
+        BaseReferences<_$AppDatabase, $UserSettingsTable, UserSetting>,
+      ),
+      UserSetting,
+      PrefetchHooks Function()
+    >;
+typedef $$WidgetSnapshotsTableCreateCompanionBuilder =
+    WidgetSnapshotsCompanion Function({
+      required String date,
+      required String payload,
+      required DateTime generatedAt,
+      Value<int> rowid,
+    });
+typedef $$WidgetSnapshotsTableUpdateCompanionBuilder =
+    WidgetSnapshotsCompanion Function({
+      Value<String> date,
+      Value<String> payload,
+      Value<DateTime> generatedAt,
+      Value<int> rowid,
+    });
+
+class $$WidgetSnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $WidgetSnapshotsTable> {
+  $$WidgetSnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WidgetSnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WidgetSnapshotsTable> {
+  $$WidgetSnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WidgetSnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WidgetSnapshotsTable> {
+  $$WidgetSnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get generatedAt => $composableBuilder(
+    column: $table.generatedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$WidgetSnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WidgetSnapshotsTable,
+          WidgetSnapshot,
+          $$WidgetSnapshotsTableFilterComposer,
+          $$WidgetSnapshotsTableOrderingComposer,
+          $$WidgetSnapshotsTableAnnotationComposer,
+          $$WidgetSnapshotsTableCreateCompanionBuilder,
+          $$WidgetSnapshotsTableUpdateCompanionBuilder,
+          (
+            WidgetSnapshot,
+            BaseReferences<
+              _$AppDatabase,
+              $WidgetSnapshotsTable,
+              WidgetSnapshot
+            >,
+          ),
+          WidgetSnapshot,
+          PrefetchHooks Function()
+        > {
+  $$WidgetSnapshotsTableTableManager(
+    _$AppDatabase db,
+    $WidgetSnapshotsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WidgetSnapshotsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WidgetSnapshotsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WidgetSnapshotsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> date = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<DateTime> generatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WidgetSnapshotsCompanion(
+                date: date,
+                payload: payload,
+                generatedAt: generatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String date,
+                required String payload,
+                required DateTime generatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => WidgetSnapshotsCompanion.insert(
+                date: date,
+                payload: payload,
+                generatedAt: generatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WidgetSnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WidgetSnapshotsTable,
+      WidgetSnapshot,
+      $$WidgetSnapshotsTableFilterComposer,
+      $$WidgetSnapshotsTableOrderingComposer,
+      $$WidgetSnapshotsTableAnnotationComposer,
+      $$WidgetSnapshotsTableCreateCompanionBuilder,
+      $$WidgetSnapshotsTableUpdateCompanionBuilder,
+      (
+        WidgetSnapshot,
+        BaseReferences<_$AppDatabase, $WidgetSnapshotsTable, WidgetSnapshot>,
+      ),
+      WidgetSnapshot,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$CalendarDaysTableTableManager get calendarDays =>
       $$CalendarDaysTableTableManager(_db, _db.calendarDays);
+  $$CelebrationsTableTableManager get celebrations =>
+      $$CelebrationsTableTableManager(_db, _db.celebrations);
+  $$ReadingsTableTableManager get readings =>
+      $$ReadingsTableTableManager(_db, _db.readings);
+  $$ActionRulesTableTableManager get actionRules =>
+      $$ActionRulesTableTableManager(_db, _db.actionRules);
   $$DailyActionsTableTableManager get dailyActions =>
       $$DailyActionsTableTableManager(_db, _db.dailyActions);
   $$ActionLogsTableTableManager get actionLogs =>
       $$ActionLogsTableTableManager(_db, _db.actionLogs);
+  $$UserSettingsTableTableManager get userSettings =>
+      $$UserSettingsTableTableManager(_db, _db.userSettings);
+  $$WidgetSnapshotsTableTableManager get widgetSnapshots =>
+      $$WidgetSnapshotsTableTableManager(_db, _db.widgetSnapshots);
 }

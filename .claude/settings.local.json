@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__code-review-graph__get_architecture_overview_tool",
+      "mcp__claude_ai_Linear__save_issue"
+    ]
+  }
+}
