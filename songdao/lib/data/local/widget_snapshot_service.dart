@@ -3,11 +3,16 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import 'app_database.dart';
+import 'widget_snapshot_bridge.dart';
 
 class WidgetSnapshotService {
-  WidgetSnapshotService(this.db);
+  WidgetSnapshotService(
+    this.db, {
+    WidgetSnapshotBridge bridge = const WidgetSnapshotBridge(),
+  }) : _bridge = bridge;
 
   final AppDatabase db;
+  final WidgetSnapshotBridge _bridge;
 
   Future<WidgetSnapshot?> regenerateForDate(
     String date, {
@@ -82,7 +87,11 @@ class WidgetSnapshotService {
         generatedAt: now,
       ),
     );
-    return db.todayDao.getWidgetSnapshot(date);
+    final snapshot = await db.todayDao.getWidgetSnapshot(date);
+    if (snapshot != null) {
+      await _bridge.writeLatestSnapshot(date: date, payload: snapshot.payload);
+    }
+    return snapshot;
   }
 
   Future<void> regenerateRange({

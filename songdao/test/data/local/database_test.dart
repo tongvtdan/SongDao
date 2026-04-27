@@ -3,15 +3,20 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
+import 'package:songdao/data/local/widget_snapshot_bridge.dart';
 import 'package:songdao/data/local/widget_snapshot_service.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('DailyActionEngine', () {
     late AppDatabase db;
     late DailyActionEngine engine;
@@ -660,6 +665,66 @@ void main() {
         expect(action['status'], 'completed');
       },
     );
+  });
+
+  group('WidgetSnapshotBridge', () {
+    const channel = MethodChannel('test.songdao/widget_snapshot');
+    late List<MethodCall> calls;
+
+    setUp(() {
+      calls = [];
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            return true;
+          });
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    test('writes latest snapshot over the iOS channel', () async {
+      const bridge = WidgetSnapshotBridge(channel: channel);
+
+      final result = await bridge.writeLatestSnapshot(
+        date: '2026-04-27',
+        payload: '{"date":"2026-04-27"}',
+      );
+
+      expect(result.wrote, isTrue);
+      expect(result.failed, isFalse);
+      expect(calls, hasLength(1));
+      expect(calls.single.method, 'writeLatestSnapshot');
+      expect(calls.single.arguments, {
+        'appGroupId': WidgetSnapshotBridge.appGroupId,
+        'date': '2026-04-27',
+        'payload': '{"date":"2026-04-27"}',
+      });
+    });
+
+    test('returns failure instead of throwing on channel errors', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            throw PlatformException(
+              code: 'app_group_unavailable',
+              message: 'No App Group',
+            );
+          });
+      const bridge = WidgetSnapshotBridge(channel: channel);
+
+      final result = await bridge.writeLatestSnapshot(
+        date: '2026-04-27',
+        payload: '{}',
+      );
+
+      expect(result.wrote, isFalse);
+      expect(result.failed, isTrue);
+      expect(result.code, 'app_group_unavailable');
+    });
   });
 
   group('UserSettings', () {
