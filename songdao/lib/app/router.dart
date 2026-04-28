@@ -8,19 +8,29 @@ import '../features/calendar/calendar_screen.dart';
 import '../features/prayer/prayer_library_screen.dart';
 import '../features/church_finder/church_search_screen.dart';
 import '../features/progress/progress_screen.dart';
+import '../features/settings/settings_screen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorTodayKey = GlobalKey<NavigatorState>(debugLabel: 'today');
-final shellNavigatorCalendarKey = GlobalKey<NavigatorState>(debugLabel: 'calendar');
+final shellNavigatorCalendarKey = GlobalKey<NavigatorState>(
+  debugLabel: 'calendar',
+);
 final shellNavigatorPrayKey = GlobalKey<NavigatorState>(debugLabel: 'pray');
 final shellNavigatorChurchKey = GlobalKey<NavigatorState>(debugLabel: 'church');
-final shellNavigatorProgressKey = GlobalKey<NavigatorState>(debugLabel: 'progress');
+final shellNavigatorProgressKey = GlobalKey<NavigatorState>(
+  debugLabel: 'progress',
+);
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/today',
     routes: [
+      GoRoute(
+        path: '/settings',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SettingsScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return ScaffoldWithNavBar(navigationShell: navigationShell);

@@ -9,6 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
+import 'package:songdao/data/local/mass_service.dart';
+import 'package:songdao/data/local/user_settings_repository.dart';
 import 'package:songdao/data/local/widget_snapshot_bridge.dart';
 import 'package:songdao/data/local/widget_snapshot_service.dart';
 
@@ -785,6 +787,67 @@ void main() {
       expect(all.where((s) => s.key == 'theme'), hasLength(1));
       expect(all.firstWhere((s) => s.key == 'theme').value, 'dark');
     });
+
+    test('repository defaults lunar display to Vietnamese only', () async {
+      final repo = UserSettingsRepository(db);
+
+      expect(await repo.locale(), 'vi');
+      expect(await repo.showLunarDate(), isTrue);
+
+      await repo.setShowLunarDate(false);
+      expect(await repo.showLunarDate(), isFalse);
+
+      await repo.set(UserSettingsKeys.locale, 'en');
+      await repo.setShowLunarDate(true);
+      expect(await repo.showLunarDate(), isFalse);
+    });
+  });
+
+  group('MassService', () {
+    late AppDatabase db;
+
+    setUp(() => db = _openTestDb());
+    tearDown(() => db.close());
+
+    test('returns selected parish Sunday Mass as important Mass', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-mass',
+        churchId: 'church-1',
+        weekday: 'monday',
+        context: 'weekday',
+        time: '05:30',
+        important: false,
+      );
+      await _insertMassTime(
+        db,
+        id: 'sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNotNull);
+      expect(mass!.church.name, 'Giáo xứ thử nghiệm');
+      expect(mass.massTime.id, 'sunday-mass');
+      expect(mass.label, 'Thánh lễ Chúa nhật');
+    });
+
+    test('returns null when no parish is selected', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
   });
 
   group('ContentPackImporter', () {
@@ -811,12 +874,19 @@ void main() {
         expect(await db.select(db.celebrations).get(), hasLength(14));
         expect(await db.select(db.readings).get(), hasLength(31));
         expect(await db.select(db.actionRules).get(), hasLength(5));
+        expect(await db.select(db.prayers).get(), hasLength(3));
+        expect(await db.select(db.churches).get(), hasLength(1));
+        expect(await db.select(db.massTimes).get(), hasLength(2));
 
         final readings = await db.select(db.readings).get();
         expect(
           readings.every((reading) => reading.textContent == null),
           isTrue,
         );
+        final calendarDay = await (db.select(
+          db.calendarDays,
+        )..where((t) => t.date.equals('2026-04-28'))).getSingle();
+        expect(calendarDay.lunarDate, '12 tháng 3, Bính Ngọ');
 
         final manifest =
             await (db.select(db.userSettings)
@@ -861,6 +931,47 @@ Future<void> _insertCelebration(
           name: 'Lễ thử nghiệm',
           rank: rank,
           locale: 'vi',
+        ),
+      );
+}
+
+Future<void> _insertChurch(AppDatabase db, String id) {
+  return db
+      .into(db.churches)
+      .insert(
+        ChurchesCompanion.insert(
+          id: id,
+          locale: 'vi',
+          name: 'Giáo xứ thử nghiệm',
+          diocese: 'Giáo phận thử nghiệm',
+          address: '123 Đường thử nghiệm',
+          source: '{}',
+        ),
+      );
+}
+
+Future<void> _insertMassTime(
+  AppDatabase db, {
+  required String id,
+  required String churchId,
+  required String weekday,
+  required String context,
+  required String time,
+  required bool important,
+}) {
+  return db
+      .into(db.massTimes)
+      .insert(
+        MassTimesCompanion.insert(
+          id: id,
+          churchId: churchId,
+          weekday: weekday,
+          context: context,
+          time: time,
+          language: 'vi',
+          validFrom: DateTime(2026, 4, 27),
+          isImportantDefault: Value(important),
+          source: '{}',
         ),
       );
 }

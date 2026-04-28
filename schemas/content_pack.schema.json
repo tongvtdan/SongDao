@@ -211,6 +211,12 @@
             "null"
           ]
         },
+        "lunar_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "weekday": {
           "$ref": "#/$defs/weekday"
         },

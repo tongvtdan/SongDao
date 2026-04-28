@@ -9,7 +9,10 @@ import 'tables/action_logs.dart';
 import 'tables/action_rules.dart';
 import 'tables/calendar_days.dart';
 import 'tables/celebrations.dart';
+import 'tables/churches.dart';
 import 'tables/daily_actions.dart';
+import 'tables/mass_times.dart';
+import 'tables/prayers.dart';
 import 'tables/readings.dart';
 import 'tables/user_settings.dart';
 import 'tables/widget_snapshots.dart';
@@ -28,6 +31,9 @@ part 'app_database.g.dart';
     ActionLogs,
     UserSettings,
     WidgetSnapshots,
+    Churches,
+    MassTimes,
+    Prayers,
   ],
   daos: [TodayDao, ActionLogDao],
 )
@@ -37,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +81,12 @@ class AppDatabase extends _$AppDatabase {
             },
           ),
         );
+      }
+      if (from < 4) {
+        await m.addColumn(calendarDays, calendarDays.lunarDate);
+        await m.createTable(churches);
+        await m.createTable(massTimes);
+        await m.createTable(prayers);
       }
     },
   );

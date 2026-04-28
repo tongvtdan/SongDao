@@ -60,6 +60,9 @@ class ContentPackImporter {
       await _importCelebrations(_list(decoded, 'celebrations'));
       await _importReadings(_list(decoded, 'readings'));
       await _importActionRules(_list(decoded, 'action_rules'), packId);
+      await _importPrayers(_list(decoded, 'prayers'));
+      await _importChurches(_list(decoded, 'churches'));
+      await _importMassTimes(_list(decoded, 'mass_times'));
       await db
           .into(db.userSettings)
           .insertOnConflictUpdate(
@@ -85,7 +88,7 @@ class ContentPackImporter {
           );
     });
 
-    await _regenerateNextWidgetSnapshots();
+    await _regenerateNextWidgetSnapshots(decoded['valid_from']! as String);
 
     return ContentPackImportResult(
       packId: packId,
@@ -95,10 +98,10 @@ class ContentPackImporter {
     );
   }
 
-  Future<void> _regenerateNextWidgetSnapshots() async {
+  Future<void> _regenerateNextWidgetSnapshots(String validFrom) async {
     final engine = DailyActionEngine(db);
     final snapshots = WidgetSnapshotService(db);
-    final startDate = DateTime.now();
+    final startDate = DateTime.parse(validFrom);
     for (var offset = 0; offset < 14; offset += 1) {
       final date = _dateKey(startDate.add(Duration(days: offset)));
       final action = await engine.getOrCreateActionForDate(date);
@@ -204,6 +207,9 @@ class ContentPackImporter {
               color: row['liturgical_color']! as String,
               cycleYear: (row['cycle_year'] as String?) ?? '',
               locale: row['locale']! as String,
+              lunarDate: Value(
+                row['locale'] == 'vi' ? row['lunar_date'] as String? : null,
+              ),
             ),
           );
     }
@@ -269,6 +275,68 @@ class ContentPackImporter {
     }
   }
 
+  Future<void> _importPrayers(List<Map<String, Object?>> rows) async {
+    for (final row in rows) {
+      await db
+          .into(db.prayers)
+          .insertOnConflictUpdate(
+            PrayersCompanion.insert(
+              id: row['id']! as String,
+              locale: row['locale']! as String,
+              title: row['title']! as String,
+              body: Value(row['body'] as String?),
+              sourceUrl: Value(row['source_url'] as String?),
+              license: row['license']! as String,
+              tags: Value(jsonEncode(row['tags'] ?? const [])),
+              source: _canonicalJson(row['source']),
+            ),
+          );
+    }
+  }
+
+  Future<void> _importChurches(List<Map<String, Object?>> rows) async {
+    for (final row in rows) {
+      await db
+          .into(db.churches)
+          .insertOnConflictUpdate(
+            ChurchesCompanion.insert(
+              id: row['id']! as String,
+              locale: row['locale']! as String,
+              name: row['name']! as String,
+              diocese: row['diocese']! as String,
+              address: row['address']! as String,
+              latitude: Value((row['latitude'] as num?)?.toDouble()),
+              longitude: Value((row['longitude'] as num?)?.toDouble()),
+              phone: Value(row['phone'] as String?),
+              website: Value(row['website'] as String?),
+              verifiedAt: Value(_optionalDate(row['verified_at'])),
+              source: _canonicalJson(row['source']),
+            ),
+          );
+    }
+  }
+
+  Future<void> _importMassTimes(List<Map<String, Object?>> rows) async {
+    for (final row in rows) {
+      await db
+          .into(db.massTimes)
+          .insertOnConflictUpdate(
+            MassTimesCompanion.insert(
+              id: row['id']! as String,
+              churchId: row['church_id']! as String,
+              weekday: row['weekday']! as String,
+              context: row['context']! as String,
+              time: row['time']! as String,
+              language: row['language']! as String,
+              validFrom: DateTime.parse(row['valid_from']! as String),
+              validTo: Value(_optionalDate(row['valid_to'])),
+              isImportantDefault: Value(row['is_important_default']! as bool),
+              source: _canonicalJson(row['source']),
+            ),
+          );
+    }
+  }
+
   List<Map<String, Object?>> _list(Map<String, Object?> pack, String key) {
     final value = pack[key];
     if (value is! List) {
@@ -308,6 +376,13 @@ class ContentPackImporter {
       }
     }
     return 0;
+  }
+
+  DateTime? _optionalDate(Object? value) {
+    if (value is! String || value.isEmpty) {
+      return null;
+    }
+    return DateTime.parse(value);
   }
 
   String _canonicalJson(Object? value) {

@@ -7,12 +7,15 @@ import '../tables/widget_snapshots.dart';
 
 part 'today_dao.g.dart';
 
-@DriftAccessor(tables: [CalendarDays, DailyActions, ActionLogs, WidgetSnapshots])
+@DriftAccessor(
+  tables: [CalendarDays, DailyActions, ActionLogs, WidgetSnapshots],
+)
 class TodayDao extends DatabaseAccessor<AppDatabase> with _$TodayDaoMixin {
   TodayDao(super.db);
 
-  Future<CalendarDay?> getCalendarDay(String date) =>
-      (select(calendarDays)..where((t) => t.date.equals(date))).getSingleOrNull();
+  Future<CalendarDay?> getCalendarDay(String date) => (select(
+    calendarDays,
+  )..where((t) => t.date.equals(date))).getSingleOrNull();
 
   Future<List<DailyAction>> getDailyActionsForDate(String date) =>
       (select(dailyActions)
@@ -20,11 +23,13 @@ class TodayDao extends DatabaseAccessor<AppDatabase> with _$TodayDaoMixin {
             ..orderBy([(t) => OrderingTerm.asc(t.priority)]))
           .get();
 
-  Future<ActionLog?> getActionLogForAction(String actionId) =>
-      (select(actionLogs)..where((t) => t.actionId.equals(actionId))).getSingleOrNull();
+  Future<ActionLog?> getActionLogForAction(String actionId) => (select(
+    actionLogs,
+  )..where((t) => t.actionId.equals(actionId))).getSingleOrNull();
 
-  Future<WidgetSnapshot?> getWidgetSnapshot(String date) =>
-      (select(widgetSnapshots)..where((t) => t.date.equals(date))).getSingleOrNull();
+  Future<WidgetSnapshot?> getWidgetSnapshot(String date) => (select(
+    widgetSnapshots,
+  )..where((t) => t.date.equals(date))).getSingleOrNull();
 
   Future<void> upsertWidgetSnapshot(WidgetSnapshotsCompanion snapshot) =>
       into(widgetSnapshots).insertOnConflictUpdate(snapshot);

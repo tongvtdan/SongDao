@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_database.dart';
 import 'daily_action_engine.dart';
+import 'mass_service.dart';
+import 'user_settings_repository.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {
   final db = AppDatabase();
@@ -10,4 +12,12 @@ final databaseProvider = Provider<AppDatabase>((ref) {
 
 final dailyActionEngineProvider = Provider<DailyActionEngine>((ref) {
   return DailyActionEngine(ref.watch(databaseProvider));
+});
+
+final userSettingsRepositoryProvider = Provider<UserSettingsRepository>((ref) {
+  return UserSettingsRepository(ref.watch(databaseProvider));
+});
+
+final massServiceProvider = Provider<MassService>((ref) {
+  return MassService(ref.watch(databaseProvider));
 });

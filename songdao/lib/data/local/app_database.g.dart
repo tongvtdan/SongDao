@@ -67,6 +67,17 @@ class $CalendarDaysTable extends CalendarDays
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _lunarDateMeta = const VerificationMeta(
+    'lunarDate',
+  );
+  @override
+  late final GeneratedColumn<String> lunarDate = GeneratedColumn<String>(
+    'lunar_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     date,
@@ -75,6 +86,7 @@ class $CalendarDaysTable extends CalendarDays
     color,
     cycleYear,
     locale,
+    lunarDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -139,6 +151,12 @@ class $CalendarDaysTable extends CalendarDays
     } else if (isInserting) {
       context.missing(_localeMeta);
     }
+    if (data.containsKey('lunar_date')) {
+      context.handle(
+        _lunarDateMeta,
+        lunarDate.isAcceptableOrUnknown(data['lunar_date']!, _lunarDateMeta),
+      );
+    }
     return context;
   }
 
@@ -172,6 +190,10 @@ class $CalendarDaysTable extends CalendarDays
         DriftSqlType.string,
         data['${effectivePrefix}locale'],
       )!,
+      lunarDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lunar_date'],
+      ),
     );
   }
 
@@ -188,6 +210,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
   final String color;
   final String cycleYear;
   final String locale;
+  final String? lunarDate;
   const CalendarDay({
     required this.date,
     required this.season,
@@ -195,6 +218,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
     required this.color,
     required this.cycleYear,
     required this.locale,
+    this.lunarDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -205,6 +229,9 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
     map['color'] = Variable<String>(color);
     map['cycle_year'] = Variable<String>(cycleYear);
     map['locale'] = Variable<String>(locale);
+    if (!nullToAbsent || lunarDate != null) {
+      map['lunar_date'] = Variable<String>(lunarDate);
+    }
     return map;
   }
 
@@ -216,6 +243,9 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
       color: Value(color),
       cycleYear: Value(cycleYear),
       locale: Value(locale),
+      lunarDate: lunarDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lunarDate),
     );
   }
 
@@ -231,6 +261,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
       color: serializer.fromJson<String>(json['color']),
       cycleYear: serializer.fromJson<String>(json['cycleYear']),
       locale: serializer.fromJson<String>(json['locale']),
+      lunarDate: serializer.fromJson<String?>(json['lunarDate']),
     );
   }
   @override
@@ -243,6 +274,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
       'color': serializer.toJson<String>(color),
       'cycleYear': serializer.toJson<String>(cycleYear),
       'locale': serializer.toJson<String>(locale),
+      'lunarDate': serializer.toJson<String?>(lunarDate),
     };
   }
 
@@ -253,6 +285,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
     String? color,
     String? cycleYear,
     String? locale,
+    Value<String?> lunarDate = const Value.absent(),
   }) => CalendarDay(
     date: date ?? this.date,
     season: season ?? this.season,
@@ -260,6 +293,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
     color: color ?? this.color,
     cycleYear: cycleYear ?? this.cycleYear,
     locale: locale ?? this.locale,
+    lunarDate: lunarDate.present ? lunarDate.value : this.lunarDate,
   );
   CalendarDay copyWithCompanion(CalendarDaysCompanion data) {
     return CalendarDay(
@@ -271,6 +305,7 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
       color: data.color.present ? data.color.value : this.color,
       cycleYear: data.cycleYear.present ? data.cycleYear.value : this.cycleYear,
       locale: data.locale.present ? data.locale.value : this.locale,
+      lunarDate: data.lunarDate.present ? data.lunarDate.value : this.lunarDate,
     );
   }
 
@@ -282,14 +317,22 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
           ..write('liturgicalWeek: $liturgicalWeek, ')
           ..write('color: $color, ')
           ..write('cycleYear: $cycleYear, ')
-          ..write('locale: $locale')
+          ..write('locale: $locale, ')
+          ..write('lunarDate: $lunarDate')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(date, season, liturgicalWeek, color, cycleYear, locale);
+  int get hashCode => Object.hash(
+    date,
+    season,
+    liturgicalWeek,
+    color,
+    cycleYear,
+    locale,
+    lunarDate,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -299,7 +342,8 @@ class CalendarDay extends DataClass implements Insertable<CalendarDay> {
           other.liturgicalWeek == this.liturgicalWeek &&
           other.color == this.color &&
           other.cycleYear == this.cycleYear &&
-          other.locale == this.locale);
+          other.locale == this.locale &&
+          other.lunarDate == this.lunarDate);
 }
 
 class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
@@ -309,6 +353,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
   final Value<String> color;
   final Value<String> cycleYear;
   final Value<String> locale;
+  final Value<String?> lunarDate;
   final Value<int> rowid;
   const CalendarDaysCompanion({
     this.date = const Value.absent(),
@@ -317,6 +362,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
     this.color = const Value.absent(),
     this.cycleYear = const Value.absent(),
     this.locale = const Value.absent(),
+    this.lunarDate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CalendarDaysCompanion.insert({
@@ -326,6 +372,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
     required String color,
     required String cycleYear,
     required String locale,
+    this.lunarDate = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : date = Value(date),
        season = Value(season),
@@ -340,6 +387,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
     Expression<String>? color,
     Expression<String>? cycleYear,
     Expression<String>? locale,
+    Expression<String>? lunarDate,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -349,6 +397,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
       if (color != null) 'color': color,
       if (cycleYear != null) 'cycle_year': cycleYear,
       if (locale != null) 'locale': locale,
+      if (lunarDate != null) 'lunar_date': lunarDate,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -360,6 +409,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
     Value<String>? color,
     Value<String>? cycleYear,
     Value<String>? locale,
+    Value<String?>? lunarDate,
     Value<int>? rowid,
   }) {
     return CalendarDaysCompanion(
@@ -369,6 +419,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
       color: color ?? this.color,
       cycleYear: cycleYear ?? this.cycleYear,
       locale: locale ?? this.locale,
+      lunarDate: lunarDate ?? this.lunarDate,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -394,6 +445,9 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
     if (locale.present) {
       map['locale'] = Variable<String>(locale.value);
     }
+    if (lunarDate.present) {
+      map['lunar_date'] = Variable<String>(lunarDate.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -409,6 +463,7 @@ class CalendarDaysCompanion extends UpdateCompanion<CalendarDay> {
           ..write('color: $color, ')
           ..write('cycleYear: $cycleYear, ')
           ..write('locale: $locale, ')
+          ..write('lunarDate: $lunarDate, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3665,6 +3720,1911 @@ class WidgetSnapshotsCompanion extends UpdateCompanion<WidgetSnapshot> {
   }
 }
 
+class $ChurchesTable extends Churches with TableInfo<$ChurchesTable, Church> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ChurchesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dioceseMeta = const VerificationMeta(
+    'diocese',
+  );
+  @override
+  late final GeneratedColumn<String> diocese = GeneratedColumn<String>(
+    'diocese',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
+  @override
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+    'phone',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _websiteMeta = const VerificationMeta(
+    'website',
+  );
+  @override
+  late final GeneratedColumn<String> website = GeneratedColumn<String>(
+    'website',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _verifiedAtMeta = const VerificationMeta(
+    'verifiedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> verifiedAt = GeneratedColumn<DateTime>(
+    'verified_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    locale,
+    name,
+    diocese,
+    address,
+    latitude,
+    longitude,
+    phone,
+    website,
+    source,
+    verifiedAt,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'churches';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Church> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('diocese')) {
+      context.handle(
+        _dioceseMeta,
+        diocese.isAcceptableOrUnknown(data['diocese']!, _dioceseMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dioceseMeta);
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addressMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+        _phoneMeta,
+        phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta),
+      );
+    }
+    if (data.containsKey('website')) {
+      context.handle(
+        _websiteMeta,
+        website.isAcceptableOrUnknown(data['website']!, _websiteMeta),
+      );
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('verified_at')) {
+      context.handle(
+        _verifiedAtMeta,
+        verifiedAt.isAcceptableOrUnknown(data['verified_at']!, _verifiedAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Church map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Church(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      diocese: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}diocese'],
+      )!,
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+      phone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone'],
+      ),
+      website: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}website'],
+      ),
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      verifiedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}verified_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ChurchesTable createAlias(String alias) {
+    return $ChurchesTable(attachedDatabase, alias);
+  }
+}
+
+class Church extends DataClass implements Insertable<Church> {
+  final String id;
+  final String locale;
+  final String name;
+  final String diocese;
+  final String address;
+  final double? latitude;
+  final double? longitude;
+  final String? phone;
+  final String? website;
+  final String source;
+  final DateTime? verifiedAt;
+  final DateTime createdAt;
+  const Church({
+    required this.id,
+    required this.locale,
+    required this.name,
+    required this.diocese,
+    required this.address,
+    this.latitude,
+    this.longitude,
+    this.phone,
+    this.website,
+    required this.source,
+    this.verifiedAt,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['locale'] = Variable<String>(locale);
+    map['name'] = Variable<String>(name);
+    map['diocese'] = Variable<String>(diocese);
+    map['address'] = Variable<String>(address);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    if (!nullToAbsent || phone != null) {
+      map['phone'] = Variable<String>(phone);
+    }
+    if (!nullToAbsent || website != null) {
+      map['website'] = Variable<String>(website);
+    }
+    map['source'] = Variable<String>(source);
+    if (!nullToAbsent || verifiedAt != null) {
+      map['verified_at'] = Variable<DateTime>(verifiedAt);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ChurchesCompanion toCompanion(bool nullToAbsent) {
+    return ChurchesCompanion(
+      id: Value(id),
+      locale: Value(locale),
+      name: Value(name),
+      diocese: Value(diocese),
+      address: Value(address),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+      phone: phone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phone),
+      website: website == null && nullToAbsent
+          ? const Value.absent()
+          : Value(website),
+      source: Value(source),
+      verifiedAt: verifiedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(verifiedAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Church.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Church(
+      id: serializer.fromJson<String>(json['id']),
+      locale: serializer.fromJson<String>(json['locale']),
+      name: serializer.fromJson<String>(json['name']),
+      diocese: serializer.fromJson<String>(json['diocese']),
+      address: serializer.fromJson<String>(json['address']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+      phone: serializer.fromJson<String?>(json['phone']),
+      website: serializer.fromJson<String?>(json['website']),
+      source: serializer.fromJson<String>(json['source']),
+      verifiedAt: serializer.fromJson<DateTime?>(json['verifiedAt']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'locale': serializer.toJson<String>(locale),
+      'name': serializer.toJson<String>(name),
+      'diocese': serializer.toJson<String>(diocese),
+      'address': serializer.toJson<String>(address),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+      'phone': serializer.toJson<String?>(phone),
+      'website': serializer.toJson<String?>(website),
+      'source': serializer.toJson<String>(source),
+      'verifiedAt': serializer.toJson<DateTime?>(verifiedAt),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Church copyWith({
+    String? id,
+    String? locale,
+    String? name,
+    String? diocese,
+    String? address,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+    Value<String?> phone = const Value.absent(),
+    Value<String?> website = const Value.absent(),
+    String? source,
+    Value<DateTime?> verifiedAt = const Value.absent(),
+    DateTime? createdAt,
+  }) => Church(
+    id: id ?? this.id,
+    locale: locale ?? this.locale,
+    name: name ?? this.name,
+    diocese: diocese ?? this.diocese,
+    address: address ?? this.address,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+    phone: phone.present ? phone.value : this.phone,
+    website: website.present ? website.value : this.website,
+    source: source ?? this.source,
+    verifiedAt: verifiedAt.present ? verifiedAt.value : this.verifiedAt,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Church copyWithCompanion(ChurchesCompanion data) {
+    return Church(
+      id: data.id.present ? data.id.value : this.id,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      name: data.name.present ? data.name.value : this.name,
+      diocese: data.diocese.present ? data.diocese.value : this.diocese,
+      address: data.address.present ? data.address.value : this.address,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      phone: data.phone.present ? data.phone.value : this.phone,
+      website: data.website.present ? data.website.value : this.website,
+      source: data.source.present ? data.source.value : this.source,
+      verifiedAt: data.verifiedAt.present
+          ? data.verifiedAt.value
+          : this.verifiedAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Church(')
+          ..write('id: $id, ')
+          ..write('locale: $locale, ')
+          ..write('name: $name, ')
+          ..write('diocese: $diocese, ')
+          ..write('address: $address, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('phone: $phone, ')
+          ..write('website: $website, ')
+          ..write('source: $source, ')
+          ..write('verifiedAt: $verifiedAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    locale,
+    name,
+    diocese,
+    address,
+    latitude,
+    longitude,
+    phone,
+    website,
+    source,
+    verifiedAt,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Church &&
+          other.id == this.id &&
+          other.locale == this.locale &&
+          other.name == this.name &&
+          other.diocese == this.diocese &&
+          other.address == this.address &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.phone == this.phone &&
+          other.website == this.website &&
+          other.source == this.source &&
+          other.verifiedAt == this.verifiedAt &&
+          other.createdAt == this.createdAt);
+}
+
+class ChurchesCompanion extends UpdateCompanion<Church> {
+  final Value<String> id;
+  final Value<String> locale;
+  final Value<String> name;
+  final Value<String> diocese;
+  final Value<String> address;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  final Value<String?> phone;
+  final Value<String?> website;
+  final Value<String> source;
+  final Value<DateTime?> verifiedAt;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const ChurchesCompanion({
+    this.id = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.name = const Value.absent(),
+    this.diocese = const Value.absent(),
+    this.address = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.website = const Value.absent(),
+    this.source = const Value.absent(),
+    this.verifiedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChurchesCompanion.insert({
+    required String id,
+    required String locale,
+    required String name,
+    required String diocese,
+    required String address,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.website = const Value.absent(),
+    required String source,
+    this.verifiedAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       locale = Value(locale),
+       name = Value(name),
+       diocese = Value(diocese),
+       address = Value(address),
+       source = Value(source);
+  static Insertable<Church> custom({
+    Expression<String>? id,
+    Expression<String>? locale,
+    Expression<String>? name,
+    Expression<String>? diocese,
+    Expression<String>? address,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<String>? phone,
+    Expression<String>? website,
+    Expression<String>? source,
+    Expression<DateTime>? verifiedAt,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (locale != null) 'locale': locale,
+      if (name != null) 'name': name,
+      if (diocese != null) 'diocese': diocese,
+      if (address != null) 'address': address,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (phone != null) 'phone': phone,
+      if (website != null) 'website': website,
+      if (source != null) 'source': source,
+      if (verifiedAt != null) 'verified_at': verifiedAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChurchesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? locale,
+    Value<String>? name,
+    Value<String>? diocese,
+    Value<String>? address,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+    Value<String?>? phone,
+    Value<String?>? website,
+    Value<String>? source,
+    Value<DateTime?>? verifiedAt,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return ChurchesCompanion(
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      name: name ?? this.name,
+      diocese: diocese ?? this.diocese,
+      address: address ?? this.address,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      phone: phone ?? this.phone,
+      website: website ?? this.website,
+      source: source ?? this.source,
+      verifiedAt: verifiedAt ?? this.verifiedAt,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (diocese.present) {
+      map['diocese'] = Variable<String>(diocese.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (website.present) {
+      map['website'] = Variable<String>(website.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (verifiedAt.present) {
+      map['verified_at'] = Variable<DateTime>(verifiedAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChurchesCompanion(')
+          ..write('id: $id, ')
+          ..write('locale: $locale, ')
+          ..write('name: $name, ')
+          ..write('diocese: $diocese, ')
+          ..write('address: $address, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('phone: $phone, ')
+          ..write('website: $website, ')
+          ..write('source: $source, ')
+          ..write('verifiedAt: $verifiedAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MassTimesTable extends MassTimes
+    with TableInfo<$MassTimesTable, MassTime> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MassTimesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _churchIdMeta = const VerificationMeta(
+    'churchId',
+  );
+  @override
+  late final GeneratedColumn<String> churchId = GeneratedColumn<String>(
+    'church_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES churches (id)',
+    ),
+  );
+  static const VerificationMeta _weekdayMeta = const VerificationMeta(
+    'weekday',
+  );
+  @override
+  late final GeneratedColumn<String> weekday = GeneratedColumn<String>(
+    'weekday',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contextMeta = const VerificationMeta(
+    'context',
+  );
+  @override
+  late final GeneratedColumn<String> context = GeneratedColumn<String>(
+    'context',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timeMeta = const VerificationMeta('time');
+  @override
+  late final GeneratedColumn<String> time = GeneratedColumn<String>(
+    'time',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _languageMeta = const VerificationMeta(
+    'language',
+  );
+  @override
+  late final GeneratedColumn<String> language = GeneratedColumn<String>(
+    'language',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _validFromMeta = const VerificationMeta(
+    'validFrom',
+  );
+  @override
+  late final GeneratedColumn<DateTime> validFrom = GeneratedColumn<DateTime>(
+    'valid_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _validToMeta = const VerificationMeta(
+    'validTo',
+  );
+  @override
+  late final GeneratedColumn<DateTime> validTo = GeneratedColumn<DateTime>(
+    'valid_to',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isImportantDefaultMeta =
+      const VerificationMeta('isImportantDefault');
+  @override
+  late final GeneratedColumn<bool> isImportantDefault = GeneratedColumn<bool>(
+    'is_important_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_important_default" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    churchId,
+    weekday,
+    context,
+    time,
+    language,
+    validFrom,
+    validTo,
+    isImportantDefault,
+    source,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mass_times';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MassTime> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('church_id')) {
+      context.handle(
+        _churchIdMeta,
+        churchId.isAcceptableOrUnknown(data['church_id']!, _churchIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_churchIdMeta);
+    }
+    if (data.containsKey('weekday')) {
+      context.handle(
+        _weekdayMeta,
+        weekday.isAcceptableOrUnknown(data['weekday']!, _weekdayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekdayMeta);
+    }
+    if (data.containsKey('context')) {
+      context.handle(
+        _contextMeta,
+        this.context.isAcceptableOrUnknown(data['context']!, _contextMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contextMeta);
+    }
+    if (data.containsKey('time')) {
+      context.handle(
+        _timeMeta,
+        time.isAcceptableOrUnknown(data['time']!, _timeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timeMeta);
+    }
+    if (data.containsKey('language')) {
+      context.handle(
+        _languageMeta,
+        language.isAcceptableOrUnknown(data['language']!, _languageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_languageMeta);
+    }
+    if (data.containsKey('valid_from')) {
+      context.handle(
+        _validFromMeta,
+        validFrom.isAcceptableOrUnknown(data['valid_from']!, _validFromMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_validFromMeta);
+    }
+    if (data.containsKey('valid_to')) {
+      context.handle(
+        _validToMeta,
+        validTo.isAcceptableOrUnknown(data['valid_to']!, _validToMeta),
+      );
+    }
+    if (data.containsKey('is_important_default')) {
+      context.handle(
+        _isImportantDefaultMeta,
+        isImportantDefault.isAcceptableOrUnknown(
+          data['is_important_default']!,
+          _isImportantDefaultMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MassTime map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MassTime(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      churchId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}church_id'],
+      )!,
+      weekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weekday'],
+      )!,
+      context: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}context'],
+      )!,
+      time: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time'],
+      )!,
+      language: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language'],
+      )!,
+      validFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}valid_from'],
+      )!,
+      validTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}valid_to'],
+      ),
+      isImportantDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_important_default'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MassTimesTable createAlias(String alias) {
+    return $MassTimesTable(attachedDatabase, alias);
+  }
+}
+
+class MassTime extends DataClass implements Insertable<MassTime> {
+  final String id;
+  final String churchId;
+  final String weekday;
+  final String context;
+  final String time;
+  final String language;
+  final DateTime validFrom;
+  final DateTime? validTo;
+  final bool isImportantDefault;
+  final String source;
+  final DateTime createdAt;
+  const MassTime({
+    required this.id,
+    required this.churchId,
+    required this.weekday,
+    required this.context,
+    required this.time,
+    required this.language,
+    required this.validFrom,
+    this.validTo,
+    required this.isImportantDefault,
+    required this.source,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['church_id'] = Variable<String>(churchId);
+    map['weekday'] = Variable<String>(weekday);
+    map['context'] = Variable<String>(context);
+    map['time'] = Variable<String>(time);
+    map['language'] = Variable<String>(language);
+    map['valid_from'] = Variable<DateTime>(validFrom);
+    if (!nullToAbsent || validTo != null) {
+      map['valid_to'] = Variable<DateTime>(validTo);
+    }
+    map['is_important_default'] = Variable<bool>(isImportantDefault);
+    map['source'] = Variable<String>(source);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MassTimesCompanion toCompanion(bool nullToAbsent) {
+    return MassTimesCompanion(
+      id: Value(id),
+      churchId: Value(churchId),
+      weekday: Value(weekday),
+      context: Value(context),
+      time: Value(time),
+      language: Value(language),
+      validFrom: Value(validFrom),
+      validTo: validTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(validTo),
+      isImportantDefault: Value(isImportantDefault),
+      source: Value(source),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MassTime.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MassTime(
+      id: serializer.fromJson<String>(json['id']),
+      churchId: serializer.fromJson<String>(json['churchId']),
+      weekday: serializer.fromJson<String>(json['weekday']),
+      context: serializer.fromJson<String>(json['context']),
+      time: serializer.fromJson<String>(json['time']),
+      language: serializer.fromJson<String>(json['language']),
+      validFrom: serializer.fromJson<DateTime>(json['validFrom']),
+      validTo: serializer.fromJson<DateTime?>(json['validTo']),
+      isImportantDefault: serializer.fromJson<bool>(json['isImportantDefault']),
+      source: serializer.fromJson<String>(json['source']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'churchId': serializer.toJson<String>(churchId),
+      'weekday': serializer.toJson<String>(weekday),
+      'context': serializer.toJson<String>(context),
+      'time': serializer.toJson<String>(time),
+      'language': serializer.toJson<String>(language),
+      'validFrom': serializer.toJson<DateTime>(validFrom),
+      'validTo': serializer.toJson<DateTime?>(validTo),
+      'isImportantDefault': serializer.toJson<bool>(isImportantDefault),
+      'source': serializer.toJson<String>(source),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MassTime copyWith({
+    String? id,
+    String? churchId,
+    String? weekday,
+    String? context,
+    String? time,
+    String? language,
+    DateTime? validFrom,
+    Value<DateTime?> validTo = const Value.absent(),
+    bool? isImportantDefault,
+    String? source,
+    DateTime? createdAt,
+  }) => MassTime(
+    id: id ?? this.id,
+    churchId: churchId ?? this.churchId,
+    weekday: weekday ?? this.weekday,
+    context: context ?? this.context,
+    time: time ?? this.time,
+    language: language ?? this.language,
+    validFrom: validFrom ?? this.validFrom,
+    validTo: validTo.present ? validTo.value : this.validTo,
+    isImportantDefault: isImportantDefault ?? this.isImportantDefault,
+    source: source ?? this.source,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  MassTime copyWithCompanion(MassTimesCompanion data) {
+    return MassTime(
+      id: data.id.present ? data.id.value : this.id,
+      churchId: data.churchId.present ? data.churchId.value : this.churchId,
+      weekday: data.weekday.present ? data.weekday.value : this.weekday,
+      context: data.context.present ? data.context.value : this.context,
+      time: data.time.present ? data.time.value : this.time,
+      language: data.language.present ? data.language.value : this.language,
+      validFrom: data.validFrom.present ? data.validFrom.value : this.validFrom,
+      validTo: data.validTo.present ? data.validTo.value : this.validTo,
+      isImportantDefault: data.isImportantDefault.present
+          ? data.isImportantDefault.value
+          : this.isImportantDefault,
+      source: data.source.present ? data.source.value : this.source,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MassTime(')
+          ..write('id: $id, ')
+          ..write('churchId: $churchId, ')
+          ..write('weekday: $weekday, ')
+          ..write('context: $context, ')
+          ..write('time: $time, ')
+          ..write('language: $language, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('validTo: $validTo, ')
+          ..write('isImportantDefault: $isImportantDefault, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    churchId,
+    weekday,
+    context,
+    time,
+    language,
+    validFrom,
+    validTo,
+    isImportantDefault,
+    source,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MassTime &&
+          other.id == this.id &&
+          other.churchId == this.churchId &&
+          other.weekday == this.weekday &&
+          other.context == this.context &&
+          other.time == this.time &&
+          other.language == this.language &&
+          other.validFrom == this.validFrom &&
+          other.validTo == this.validTo &&
+          other.isImportantDefault == this.isImportantDefault &&
+          other.source == this.source &&
+          other.createdAt == this.createdAt);
+}
+
+class MassTimesCompanion extends UpdateCompanion<MassTime> {
+  final Value<String> id;
+  final Value<String> churchId;
+  final Value<String> weekday;
+  final Value<String> context;
+  final Value<String> time;
+  final Value<String> language;
+  final Value<DateTime> validFrom;
+  final Value<DateTime?> validTo;
+  final Value<bool> isImportantDefault;
+  final Value<String> source;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const MassTimesCompanion({
+    this.id = const Value.absent(),
+    this.churchId = const Value.absent(),
+    this.weekday = const Value.absent(),
+    this.context = const Value.absent(),
+    this.time = const Value.absent(),
+    this.language = const Value.absent(),
+    this.validFrom = const Value.absent(),
+    this.validTo = const Value.absent(),
+    this.isImportantDefault = const Value.absent(),
+    this.source = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MassTimesCompanion.insert({
+    required String id,
+    required String churchId,
+    required String weekday,
+    required String context,
+    required String time,
+    required String language,
+    required DateTime validFrom,
+    this.validTo = const Value.absent(),
+    this.isImportantDefault = const Value.absent(),
+    required String source,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       churchId = Value(churchId),
+       weekday = Value(weekday),
+       context = Value(context),
+       time = Value(time),
+       language = Value(language),
+       validFrom = Value(validFrom),
+       source = Value(source);
+  static Insertable<MassTime> custom({
+    Expression<String>? id,
+    Expression<String>? churchId,
+    Expression<String>? weekday,
+    Expression<String>? context,
+    Expression<String>? time,
+    Expression<String>? language,
+    Expression<DateTime>? validFrom,
+    Expression<DateTime>? validTo,
+    Expression<bool>? isImportantDefault,
+    Expression<String>? source,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (churchId != null) 'church_id': churchId,
+      if (weekday != null) 'weekday': weekday,
+      if (context != null) 'context': context,
+      if (time != null) 'time': time,
+      if (language != null) 'language': language,
+      if (validFrom != null) 'valid_from': validFrom,
+      if (validTo != null) 'valid_to': validTo,
+      if (isImportantDefault != null)
+        'is_important_default': isImportantDefault,
+      if (source != null) 'source': source,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MassTimesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? churchId,
+    Value<String>? weekday,
+    Value<String>? context,
+    Value<String>? time,
+    Value<String>? language,
+    Value<DateTime>? validFrom,
+    Value<DateTime?>? validTo,
+    Value<bool>? isImportantDefault,
+    Value<String>? source,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return MassTimesCompanion(
+      id: id ?? this.id,
+      churchId: churchId ?? this.churchId,
+      weekday: weekday ?? this.weekday,
+      context: context ?? this.context,
+      time: time ?? this.time,
+      language: language ?? this.language,
+      validFrom: validFrom ?? this.validFrom,
+      validTo: validTo ?? this.validTo,
+      isImportantDefault: isImportantDefault ?? this.isImportantDefault,
+      source: source ?? this.source,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (churchId.present) {
+      map['church_id'] = Variable<String>(churchId.value);
+    }
+    if (weekday.present) {
+      map['weekday'] = Variable<String>(weekday.value);
+    }
+    if (context.present) {
+      map['context'] = Variable<String>(context.value);
+    }
+    if (time.present) {
+      map['time'] = Variable<String>(time.value);
+    }
+    if (language.present) {
+      map['language'] = Variable<String>(language.value);
+    }
+    if (validFrom.present) {
+      map['valid_from'] = Variable<DateTime>(validFrom.value);
+    }
+    if (validTo.present) {
+      map['valid_to'] = Variable<DateTime>(validTo.value);
+    }
+    if (isImportantDefault.present) {
+      map['is_important_default'] = Variable<bool>(isImportantDefault.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MassTimesCompanion(')
+          ..write('id: $id, ')
+          ..write('churchId: $churchId, ')
+          ..write('weekday: $weekday, ')
+          ..write('context: $context, ')
+          ..write('time: $time, ')
+          ..write('language: $language, ')
+          ..write('validFrom: $validFrom, ')
+          ..write('validTo: $validTo, ')
+          ..write('isImportantDefault: $isImportantDefault, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PrayersTable extends Prayers with TableInfo<$PrayersTable, Prayer> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PrayersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceUrlMeta = const VerificationMeta(
+    'sourceUrl',
+  );
+  @override
+  late final GeneratedColumn<String> sourceUrl = GeneratedColumn<String>(
+    'source_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _licenseMeta = const VerificationMeta(
+    'license',
+  );
+  @override
+  late final GeneratedColumn<String> license = GeneratedColumn<String>(
+    'license',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+    'tags',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    locale,
+    title,
+    body,
+    sourceUrl,
+    license,
+    tags,
+    source,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'prayers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Prayer> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('source_url')) {
+      context.handle(
+        _sourceUrlMeta,
+        sourceUrl.isAcceptableOrUnknown(data['source_url']!, _sourceUrlMeta),
+      );
+    }
+    if (data.containsKey('license')) {
+      context.handle(
+        _licenseMeta,
+        license.isAcceptableOrUnknown(data['license']!, _licenseMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_licenseMeta);
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+        _tagsMeta,
+        tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta),
+      );
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Prayer map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Prayer(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      ),
+      sourceUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_url'],
+      ),
+      license: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}license'],
+      )!,
+      tags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tags'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PrayersTable createAlias(String alias) {
+    return $PrayersTable(attachedDatabase, alias);
+  }
+}
+
+class Prayer extends DataClass implements Insertable<Prayer> {
+  final String id;
+  final String locale;
+  final String title;
+  final String? body;
+  final String? sourceUrl;
+  final String license;
+  final String tags;
+  final String source;
+  final DateTime createdAt;
+  const Prayer({
+    required this.id,
+    required this.locale,
+    required this.title,
+    this.body,
+    this.sourceUrl,
+    required this.license,
+    required this.tags,
+    required this.source,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['locale'] = Variable<String>(locale);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || body != null) {
+      map['body'] = Variable<String>(body);
+    }
+    if (!nullToAbsent || sourceUrl != null) {
+      map['source_url'] = Variable<String>(sourceUrl);
+    }
+    map['license'] = Variable<String>(license);
+    map['tags'] = Variable<String>(tags);
+    map['source'] = Variable<String>(source);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PrayersCompanion toCompanion(bool nullToAbsent) {
+    return PrayersCompanion(
+      id: Value(id),
+      locale: Value(locale),
+      title: Value(title),
+      body: body == null && nullToAbsent ? const Value.absent() : Value(body),
+      sourceUrl: sourceUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceUrl),
+      license: Value(license),
+      tags: Value(tags),
+      source: Value(source),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Prayer.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Prayer(
+      id: serializer.fromJson<String>(json['id']),
+      locale: serializer.fromJson<String>(json['locale']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String?>(json['body']),
+      sourceUrl: serializer.fromJson<String?>(json['sourceUrl']),
+      license: serializer.fromJson<String>(json['license']),
+      tags: serializer.fromJson<String>(json['tags']),
+      source: serializer.fromJson<String>(json['source']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'locale': serializer.toJson<String>(locale),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String?>(body),
+      'sourceUrl': serializer.toJson<String?>(sourceUrl),
+      'license': serializer.toJson<String>(license),
+      'tags': serializer.toJson<String>(tags),
+      'source': serializer.toJson<String>(source),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Prayer copyWith({
+    String? id,
+    String? locale,
+    String? title,
+    Value<String?> body = const Value.absent(),
+    Value<String?> sourceUrl = const Value.absent(),
+    String? license,
+    String? tags,
+    String? source,
+    DateTime? createdAt,
+  }) => Prayer(
+    id: id ?? this.id,
+    locale: locale ?? this.locale,
+    title: title ?? this.title,
+    body: body.present ? body.value : this.body,
+    sourceUrl: sourceUrl.present ? sourceUrl.value : this.sourceUrl,
+    license: license ?? this.license,
+    tags: tags ?? this.tags,
+    source: source ?? this.source,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Prayer copyWithCompanion(PrayersCompanion data) {
+    return Prayer(
+      id: data.id.present ? data.id.value : this.id,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      sourceUrl: data.sourceUrl.present ? data.sourceUrl.value : this.sourceUrl,
+      license: data.license.present ? data.license.value : this.license,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      source: data.source.present ? data.source.value : this.source,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Prayer(')
+          ..write('id: $id, ')
+          ..write('locale: $locale, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
+          ..write('tags: $tags, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    locale,
+    title,
+    body,
+    sourceUrl,
+    license,
+    tags,
+    source,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Prayer &&
+          other.id == this.id &&
+          other.locale == this.locale &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.sourceUrl == this.sourceUrl &&
+          other.license == this.license &&
+          other.tags == this.tags &&
+          other.source == this.source &&
+          other.createdAt == this.createdAt);
+}
+
+class PrayersCompanion extends UpdateCompanion<Prayer> {
+  final Value<String> id;
+  final Value<String> locale;
+  final Value<String> title;
+  final Value<String?> body;
+  final Value<String?> sourceUrl;
+  final Value<String> license;
+  final Value<String> tags;
+  final Value<String> source;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const PrayersCompanion({
+    this.id = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    this.license = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.source = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PrayersCompanion.insert({
+    required String id,
+    required String locale,
+    required String title,
+    this.body = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    required String license,
+    this.tags = const Value.absent(),
+    required String source,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       locale = Value(locale),
+       title = Value(title),
+       license = Value(license),
+       source = Value(source);
+  static Insertable<Prayer> custom({
+    Expression<String>? id,
+    Expression<String>? locale,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? sourceUrl,
+    Expression<String>? license,
+    Expression<String>? tags,
+    Expression<String>? source,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (locale != null) 'locale': locale,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (sourceUrl != null) 'source_url': sourceUrl,
+      if (license != null) 'license': license,
+      if (tags != null) 'tags': tags,
+      if (source != null) 'source': source,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PrayersCompanion copyWith({
+    Value<String>? id,
+    Value<String>? locale,
+    Value<String>? title,
+    Value<String?>? body,
+    Value<String?>? sourceUrl,
+    Value<String>? license,
+    Value<String>? tags,
+    Value<String>? source,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return PrayersCompanion(
+      id: id ?? this.id,
+      locale: locale ?? this.locale,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      license: license ?? this.license,
+      tags: tags ?? this.tags,
+      source: source ?? this.source,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (sourceUrl.present) {
+      map['source_url'] = Variable<String>(sourceUrl.value);
+    }
+    if (license.present) {
+      map['license'] = Variable<String>(license.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PrayersCompanion(')
+          ..write('id: $id, ')
+          ..write('locale: $locale, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
+          ..write('tags: $tags, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3678,6 +5638,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WidgetSnapshotsTable widgetSnapshots = $WidgetSnapshotsTable(
     this,
   );
+  late final $ChurchesTable churches = $ChurchesTable(this);
+  late final $MassTimesTable massTimes = $MassTimesTable(this);
+  late final $PrayersTable prayers = $PrayersTable(this);
   late final TodayDao todayDao = TodayDao(this as AppDatabase);
   late final ActionLogDao actionLogDao = ActionLogDao(this as AppDatabase);
   @override
@@ -3693,6 +5656,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     actionLogs,
     userSettings,
     widgetSnapshots,
+    churches,
+    massTimes,
+    prayers,
   ];
 }
 
@@ -3704,6 +5670,7 @@ typedef $$CalendarDaysTableCreateCompanionBuilder =
       required String color,
       required String cycleYear,
       required String locale,
+      Value<String?> lunarDate,
       Value<int> rowid,
     });
 typedef $$CalendarDaysTableUpdateCompanionBuilder =
@@ -3714,6 +5681,7 @@ typedef $$CalendarDaysTableUpdateCompanionBuilder =
       Value<String> color,
       Value<String> cycleYear,
       Value<String> locale,
+      Value<String?> lunarDate,
       Value<int> rowid,
     });
 
@@ -3813,6 +5781,11 @@ class $$CalendarDaysTableFilterComposer
 
   ColumnFilters<String> get locale => $composableBuilder(
     column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lunarDate => $composableBuilder(
+    column: $table.lunarDate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3930,6 +5903,11 @@ class $$CalendarDaysTableOrderingComposer
     column: $table.locale,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get lunarDate => $composableBuilder(
+    column: $table.lunarDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CalendarDaysTableAnnotationComposer
@@ -3960,6 +5938,9 @@ class $$CalendarDaysTableAnnotationComposer
 
   GeneratedColumn<String> get locale =>
       $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get lunarDate =>
+      $composableBuilder(column: $table.lunarDate, builder: (column) => column);
 
   Expression<T> celebrationsRefs<T extends Object>(
     Expression<T> Function($$CelebrationsTableAnnotationComposer a) f,
@@ -4075,6 +6056,7 @@ class $$CalendarDaysTableTableManager
                 Value<String> color = const Value.absent(),
                 Value<String> cycleYear = const Value.absent(),
                 Value<String> locale = const Value.absent(),
+                Value<String?> lunarDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CalendarDaysCompanion(
                 date: date,
@@ -4083,6 +6065,7 @@ class $$CalendarDaysTableTableManager
                 color: color,
                 cycleYear: cycleYear,
                 locale: locale,
+                lunarDate: lunarDate,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -4093,6 +6076,7 @@ class $$CalendarDaysTableTableManager
                 required String color,
                 required String cycleYear,
                 required String locale,
+                Value<String?> lunarDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CalendarDaysCompanion.insert(
                 date: date,
@@ -4101,6 +6085,7 @@ class $$CalendarDaysTableTableManager
                 color: color,
                 cycleYear: cycleYear,
                 locale: locale,
+                lunarDate: lunarDate,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -6470,6 +8455,1140 @@ typedef $$WidgetSnapshotsTableProcessedTableManager =
       WidgetSnapshot,
       PrefetchHooks Function()
     >;
+typedef $$ChurchesTableCreateCompanionBuilder =
+    ChurchesCompanion Function({
+      required String id,
+      required String locale,
+      required String name,
+      required String diocese,
+      required String address,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String?> phone,
+      Value<String?> website,
+      required String source,
+      Value<DateTime?> verifiedAt,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$ChurchesTableUpdateCompanionBuilder =
+    ChurchesCompanion Function({
+      Value<String> id,
+      Value<String> locale,
+      Value<String> name,
+      Value<String> diocese,
+      Value<String> address,
+      Value<double?> latitude,
+      Value<double?> longitude,
+      Value<String?> phone,
+      Value<String?> website,
+      Value<String> source,
+      Value<DateTime?> verifiedAt,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$ChurchesTableReferences
+    extends BaseReferences<_$AppDatabase, $ChurchesTable, Church> {
+  $$ChurchesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$MassTimesTable, List<MassTime>>
+  _massTimesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.massTimes,
+    aliasName: $_aliasNameGenerator(db.churches.id, db.massTimes.churchId),
+  );
+
+  $$MassTimesTableProcessedTableManager get massTimesRefs {
+    final manager = $$MassTimesTableTableManager(
+      $_db,
+      $_db.massTimes,
+    ).filter((f) => f.churchId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_massTimesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ChurchesTableFilterComposer
+    extends Composer<_$AppDatabase, $ChurchesTable> {
+  $$ChurchesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get diocese => $composableBuilder(
+    column: $table.diocese,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get website => $composableBuilder(
+    column: $table.website,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> massTimesRefs(
+    Expression<bool> Function($$MassTimesTableFilterComposer f) f,
+  ) {
+    final $$MassTimesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.massTimes,
+      getReferencedColumn: (t) => t.churchId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MassTimesTableFilterComposer(
+            $db: $db,
+            $table: $db.massTimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChurchesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ChurchesTable> {
+  $$ChurchesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get diocese => $composableBuilder(
+    column: $table.diocese,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phone => $composableBuilder(
+    column: $table.phone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get website => $composableBuilder(
+    column: $table.website,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ChurchesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ChurchesTable> {
+  $$ChurchesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get diocese =>
+      $composableBuilder(column: $table.diocese, builder: (column) => column);
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get phone =>
+      $composableBuilder(column: $table.phone, builder: (column) => column);
+
+  GeneratedColumn<String> get website =>
+      $composableBuilder(column: $table.website, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get verifiedAt => $composableBuilder(
+    column: $table.verifiedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  Expression<T> massTimesRefs<T extends Object>(
+    Expression<T> Function($$MassTimesTableAnnotationComposer a) f,
+  ) {
+    final $$MassTimesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.massTimes,
+      getReferencedColumn: (t) => t.churchId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MassTimesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.massTimes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ChurchesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ChurchesTable,
+          Church,
+          $$ChurchesTableFilterComposer,
+          $$ChurchesTableOrderingComposer,
+          $$ChurchesTableAnnotationComposer,
+          $$ChurchesTableCreateCompanionBuilder,
+          $$ChurchesTableUpdateCompanionBuilder,
+          (Church, $$ChurchesTableReferences),
+          Church,
+          PrefetchHooks Function({bool massTimesRefs})
+        > {
+  $$ChurchesTableTableManager(_$AppDatabase db, $ChurchesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ChurchesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ChurchesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ChurchesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> diocese = const Value.absent(),
+                Value<String> address = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String?> website = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime?> verifiedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChurchesCompanion(
+                id: id,
+                locale: locale,
+                name: name,
+                diocese: diocese,
+                address: address,
+                latitude: latitude,
+                longitude: longitude,
+                phone: phone,
+                website: website,
+                source: source,
+                verifiedAt: verifiedAt,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String locale,
+                required String name,
+                required String diocese,
+                required String address,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+                Value<String?> phone = const Value.absent(),
+                Value<String?> website = const Value.absent(),
+                required String source,
+                Value<DateTime?> verifiedAt = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChurchesCompanion.insert(
+                id: id,
+                locale: locale,
+                name: name,
+                diocese: diocese,
+                address: address,
+                latitude: latitude,
+                longitude: longitude,
+                phone: phone,
+                website: website,
+                source: source,
+                verifiedAt: verifiedAt,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ChurchesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({massTimesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (massTimesRefs) db.massTimes],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (massTimesRefs)
+                    await $_getPrefetchedData<Church, $ChurchesTable, MassTime>(
+                      currentTable: table,
+                      referencedTable: $$ChurchesTableReferences
+                          ._massTimesRefsTable(db),
+                      managerFromTypedResult: (p0) => $$ChurchesTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).massTimesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.churchId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ChurchesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ChurchesTable,
+      Church,
+      $$ChurchesTableFilterComposer,
+      $$ChurchesTableOrderingComposer,
+      $$ChurchesTableAnnotationComposer,
+      $$ChurchesTableCreateCompanionBuilder,
+      $$ChurchesTableUpdateCompanionBuilder,
+      (Church, $$ChurchesTableReferences),
+      Church,
+      PrefetchHooks Function({bool massTimesRefs})
+    >;
+typedef $$MassTimesTableCreateCompanionBuilder =
+    MassTimesCompanion Function({
+      required String id,
+      required String churchId,
+      required String weekday,
+      required String context,
+      required String time,
+      required String language,
+      required DateTime validFrom,
+      Value<DateTime?> validTo,
+      Value<bool> isImportantDefault,
+      required String source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$MassTimesTableUpdateCompanionBuilder =
+    MassTimesCompanion Function({
+      Value<String> id,
+      Value<String> churchId,
+      Value<String> weekday,
+      Value<String> context,
+      Value<String> time,
+      Value<String> language,
+      Value<DateTime> validFrom,
+      Value<DateTime?> validTo,
+      Value<bool> isImportantDefault,
+      Value<String> source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$MassTimesTableReferences
+    extends BaseReferences<_$AppDatabase, $MassTimesTable, MassTime> {
+  $$MassTimesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ChurchesTable _churchIdTable(_$AppDatabase db) => db.churches
+      .createAlias($_aliasNameGenerator(db.massTimes.churchId, db.churches.id));
+
+  $$ChurchesTableProcessedTableManager get churchId {
+    final $_column = $_itemColumn<String>('church_id')!;
+
+    final manager = $$ChurchesTableTableManager(
+      $_db,
+      $_db.churches,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_churchIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MassTimesTableFilterComposer
+    extends Composer<_$AppDatabase, $MassTimesTable> {
+  $$MassTimesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get context => $composableBuilder(
+    column: $table.context,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get time => $composableBuilder(
+    column: $table.time,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get language => $composableBuilder(
+    column: $table.language,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get validTo => $composableBuilder(
+    column: $table.validTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isImportantDefault => $composableBuilder(
+    column: $table.isImportantDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ChurchesTableFilterComposer get churchId {
+    final $$ChurchesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.churchId,
+      referencedTable: $db.churches,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChurchesTableFilterComposer(
+            $db: $db,
+            $table: $db.churches,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MassTimesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MassTimesTable> {
+  $$MassTimesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weekday => $composableBuilder(
+    column: $table.weekday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get context => $composableBuilder(
+    column: $table.context,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get time => $composableBuilder(
+    column: $table.time,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get language => $composableBuilder(
+    column: $table.language,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get validFrom => $composableBuilder(
+    column: $table.validFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get validTo => $composableBuilder(
+    column: $table.validTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isImportantDefault => $composableBuilder(
+    column: $table.isImportantDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ChurchesTableOrderingComposer get churchId {
+    final $$ChurchesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.churchId,
+      referencedTable: $db.churches,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChurchesTableOrderingComposer(
+            $db: $db,
+            $table: $db.churches,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MassTimesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MassTimesTable> {
+  $$MassTimesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get weekday =>
+      $composableBuilder(column: $table.weekday, builder: (column) => column);
+
+  GeneratedColumn<String> get context =>
+      $composableBuilder(column: $table.context, builder: (column) => column);
+
+  GeneratedColumn<String> get time =>
+      $composableBuilder(column: $table.time, builder: (column) => column);
+
+  GeneratedColumn<String> get language =>
+      $composableBuilder(column: $table.language, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get validFrom =>
+      $composableBuilder(column: $table.validFrom, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get validTo =>
+      $composableBuilder(column: $table.validTo, builder: (column) => column);
+
+  GeneratedColumn<bool> get isImportantDefault => $composableBuilder(
+    column: $table.isImportantDefault,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$ChurchesTableAnnotationComposer get churchId {
+    final $$ChurchesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.churchId,
+      referencedTable: $db.churches,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ChurchesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.churches,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MassTimesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MassTimesTable,
+          MassTime,
+          $$MassTimesTableFilterComposer,
+          $$MassTimesTableOrderingComposer,
+          $$MassTimesTableAnnotationComposer,
+          $$MassTimesTableCreateCompanionBuilder,
+          $$MassTimesTableUpdateCompanionBuilder,
+          (MassTime, $$MassTimesTableReferences),
+          MassTime,
+          PrefetchHooks Function({bool churchId})
+        > {
+  $$MassTimesTableTableManager(_$AppDatabase db, $MassTimesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MassTimesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MassTimesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MassTimesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> churchId = const Value.absent(),
+                Value<String> weekday = const Value.absent(),
+                Value<String> context = const Value.absent(),
+                Value<String> time = const Value.absent(),
+                Value<String> language = const Value.absent(),
+                Value<DateTime> validFrom = const Value.absent(),
+                Value<DateTime?> validTo = const Value.absent(),
+                Value<bool> isImportantDefault = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MassTimesCompanion(
+                id: id,
+                churchId: churchId,
+                weekday: weekday,
+                context: context,
+                time: time,
+                language: language,
+                validFrom: validFrom,
+                validTo: validTo,
+                isImportantDefault: isImportantDefault,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String churchId,
+                required String weekday,
+                required String context,
+                required String time,
+                required String language,
+                required DateTime validFrom,
+                Value<DateTime?> validTo = const Value.absent(),
+                Value<bool> isImportantDefault = const Value.absent(),
+                required String source,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MassTimesCompanion.insert(
+                id: id,
+                churchId: churchId,
+                weekday: weekday,
+                context: context,
+                time: time,
+                language: language,
+                validFrom: validFrom,
+                validTo: validTo,
+                isImportantDefault: isImportantDefault,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MassTimesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({churchId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (churchId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.churchId,
+                                referencedTable: $$MassTimesTableReferences
+                                    ._churchIdTable(db),
+                                referencedColumn: $$MassTimesTableReferences
+                                    ._churchIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MassTimesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MassTimesTable,
+      MassTime,
+      $$MassTimesTableFilterComposer,
+      $$MassTimesTableOrderingComposer,
+      $$MassTimesTableAnnotationComposer,
+      $$MassTimesTableCreateCompanionBuilder,
+      $$MassTimesTableUpdateCompanionBuilder,
+      (MassTime, $$MassTimesTableReferences),
+      MassTime,
+      PrefetchHooks Function({bool churchId})
+    >;
+typedef $$PrayersTableCreateCompanionBuilder =
+    PrayersCompanion Function({
+      required String id,
+      required String locale,
+      required String title,
+      Value<String?> body,
+      Value<String?> sourceUrl,
+      required String license,
+      Value<String> tags,
+      required String source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$PrayersTableUpdateCompanionBuilder =
+    PrayersCompanion Function({
+      Value<String> id,
+      Value<String> locale,
+      Value<String> title,
+      Value<String?> body,
+      Value<String?> sourceUrl,
+      Value<String> license,
+      Value<String> tags,
+      Value<String> source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$PrayersTableFilterComposer
+    extends Composer<_$AppDatabase, $PrayersTable> {
+  $$PrayersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PrayersTableOrderingComposer
+    extends Composer<_$AppDatabase, $PrayersTable> {
+  $$PrayersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PrayersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PrayersTable> {
+  $$PrayersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceUrl =>
+      $composableBuilder(column: $table.sourceUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get license =>
+      $composableBuilder(column: $table.license, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PrayersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PrayersTable,
+          Prayer,
+          $$PrayersTableFilterComposer,
+          $$PrayersTableOrderingComposer,
+          $$PrayersTableAnnotationComposer,
+          $$PrayersTableCreateCompanionBuilder,
+          $$PrayersTableUpdateCompanionBuilder,
+          (Prayer, BaseReferences<_$AppDatabase, $PrayersTable, Prayer>),
+          Prayer,
+          PrefetchHooks Function()
+        > {
+  $$PrayersTableTableManager(_$AppDatabase db, $PrayersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PrayersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PrayersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PrayersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> body = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                Value<String> license = const Value.absent(),
+                Value<String> tags = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PrayersCompanion(
+                id: id,
+                locale: locale,
+                title: title,
+                body: body,
+                sourceUrl: sourceUrl,
+                license: license,
+                tags: tags,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String locale,
+                required String title,
+                Value<String?> body = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                required String license,
+                Value<String> tags = const Value.absent(),
+                required String source,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PrayersCompanion.insert(
+                id: id,
+                locale: locale,
+                title: title,
+                body: body,
+                sourceUrl: sourceUrl,
+                license: license,
+                tags: tags,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PrayersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PrayersTable,
+      Prayer,
+      $$PrayersTableFilterComposer,
+      $$PrayersTableOrderingComposer,
+      $$PrayersTableAnnotationComposer,
+      $$PrayersTableCreateCompanionBuilder,
+      $$PrayersTableUpdateCompanionBuilder,
+      (Prayer, BaseReferences<_$AppDatabase, $PrayersTable, Prayer>),
+      Prayer,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6490,4 +9609,10 @@ class $AppDatabaseManager {
       $$UserSettingsTableTableManager(_db, _db.userSettings);
   $$WidgetSnapshotsTableTableManager get widgetSnapshots =>
       $$WidgetSnapshotsTableTableManager(_db, _db.widgetSnapshots);
+  $$ChurchesTableTableManager get churches =>
+      $$ChurchesTableTableManager(_db, _db.churches);
+  $$MassTimesTableTableManager get massTimes =>
+      $$MassTimesTableTableManager(_db, _db.massTimes);
+  $$PrayersTableTableManager get prayers =>
+      $$PrayersTableTableManager(_db, _db.prayers);
 }

@@ -7,6 +7,7 @@ class CalendarDays extends Table {
   TextColumn get color => text()();
   TextColumn get cycleYear => text()();
   TextColumn get locale => text()();
+  TextColumn get lunarDate => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {date};

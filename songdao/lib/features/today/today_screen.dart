@@ -1,12 +1,14 @@
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
+import '../../data/local/mass_service.dart';
 
 class TodayScreen extends ConsumerStatefulWidget {
   const TodayScreen({super.key});
@@ -37,9 +39,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     await ref.read(seedContentBootstrapProvider.future);
 
     final db = ref.read(databaseProvider);
+    final settings = ref.read(userSettingsRepositoryProvider);
     final engine = ref.read(dailyActionEngineProvider);
     final date = _todayDateKey();
-    final action = await engine.getOrCreateActionForDate(date);
+    final locale = await settings.locale();
+    final showLunarDate = await settings.showLunarDate();
+    final action = await engine.getOrCreateActionForDate(date, locale: locale);
     final calendarDay =
         await (db.select(db.calendarDays)..where(
               (t) => t.date.equals(date) & t.locale.equals(action.locale),
@@ -61,15 +66,21 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       (a, b) => _readingOrder(a.type).compareTo(_readingOrder(b.type)),
     );
     final log = await db.todayDao.getActionLogForAction(action.id);
+    final importantMass = await ref
+        .read(massServiceProvider)
+        .nextImportantMassForDate(date);
 
     _noteController.text = log?.note ?? '';
     return _TodayViewData(
       date: date,
+      locale: locale,
+      showLunarDate: showLunarDate,
       calendarDay: calendarDay,
       celebrations: celebrations,
       readings: readings,
       action: action,
       log: log,
+      importantMass: importantMass,
     );
   }
 
@@ -84,10 +95,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           .read(databaseProvider)
           .actionLogDao
           .markCompleted(data.action.id, note: note.isEmpty ? null : note);
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() => _todayFuture = _loadToday());
       }
-      setState(() => _todayFuture = _loadToday());
     } finally {
       if (mounted) {
         setState(() => _isCompleting = false);
@@ -105,10 +115,9 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           .read(databaseProvider)
           .actionLogDao
           .saveNote(data.action.id, _noteController.text.trim());
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() => _todayFuture = _loadToday());
       }
-      setState(() => _todayFuture = _loadToday());
     } finally {
       if (mounted) {
         setState(() => _isSavingNote = false);
@@ -119,7 +128,16 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Hôm nay')),
+      appBar: AppBar(
+        title: const Text('Sống Đạo'),
+        actions: [
+          IconButton(
+            tooltip: 'Cài đặt',
+            onPressed: () => context.push('/settings'),
+            icon: const Icon(Icons.tune),
+          ),
+        ],
+      ),
       body: FutureBuilder<_TodayViewData>(
         future: _todayFuture,
         builder: (context, snapshot) {
@@ -138,24 +156,28 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
               children: [
                 _LiturgicalContextCard(data: data),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 _DailyActionCard(
                   data: data,
                   isCompleting: _isCompleting,
                   onComplete: () => _completeAction(data),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 _CompletionStateCard(log: data.log),
-                const SizedBox(height: 12),
-                _ReadingReferencesCard(readings: data.readings),
-                const SizedBox(height: 12),
-                const _ImportantMassCard(),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
+                _TodayBento(
+                  readings: data.readings,
+                  importantMass: data.importantMass,
+                  onChooseChurch: () => context.go('/church'),
+                ),
+                const SizedBox(height: 14),
                 _ReflectionNoteCard(
                   controller: _noteController,
                   isSaving: _isSavingNote,
                   onSave: () => _saveNote(data),
                 ),
+                const SizedBox(height: 14),
+                const _DailyQuoteCard(),
               ],
             ),
           );
@@ -181,60 +203,87 @@ class _LiturgicalContextCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final parsed = DateTime.parse(data.date);
     final celebration = data.celebrations.isEmpty
-        ? 'Ngày thường'
+        ? _formatVietnameseDate(data.date)
         : data.celebrations.first.name;
     final color = liturgicalColor(data.calendarDay.color);
+    final showLunar =
+        data.locale == 'vi' &&
+        data.showLunarDate &&
+        data.calendarDay.lunarDate != null;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppColors.surface, AppColors.surfaceSecondary],
+          ),
+        ),
+        child: Column(
           children: [
             Container(
-              width: 6,
-              height: 72,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.surface.withValues(alpha: 0.88),
+                borderRadius: BorderRadius.circular(999),
                 border: Border.all(color: AppColors.borderSubtle),
               ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _formatVietnameseDate(data.date),
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    celebration,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _SignalChip(label: _seasonLabel(data.calendarDay.season)),
-                      _SignalChip(label: _colorLabel(data.calendarDay.color)),
-                      if (data.calendarDay.liturgicalWeek > 0)
-                        _SignalChip(
-                          label: 'Tuần ${data.calendarDay.liturgicalWeek}',
-                        ),
-                    ],
-                  ),
-                ],
+              child: Text(
+                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.tertiary,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              parsed.day.toString().padLeft(2, '0'),
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                fontSize: 88,
+                height: 0.95,
+                color: color == AppColors.canvas ? AppColors.gold : color,
+              ),
+            ),
+            if (showLunar) ...[
+              const SizedBox(height: 8),
+              Text(
+                data.calendarDay.lunarDate!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.tertiary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+            const SizedBox(height: 16),
+            Text(
+              celebration,
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _SignalChip(
+                  label: _seasonLabel(data.calendarDay.season),
+                  color: color,
+                ),
+                _SignalChip(label: _colorLabel(data.calendarDay.color)),
+                if (data.calendarDay.liturgicalWeek > 0)
+                  _SignalChip(label: 'Tuần ${data.calendarDay.liturgicalWeek}'),
+              ],
             ),
           ],
         ),
@@ -257,41 +306,67 @@ class _DailyActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompleted = data.log?.status == 'completed';
+    final color = liturgicalColor(data.calendarDay.color);
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Việc sống đạo hôm nay',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.brand,
-                fontWeight: FontWeight.w700,
+            Container(
+              width: 5,
+              decoration: BoxDecoration(
+                color: color == AppColors.canvas ? AppColors.gold : color,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(16),
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              data.action.prompt,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
-                height: 1.2,
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: isCompleted || isCompleting ? null : onComplete,
-                icon: Icon(isCompleted ? Icons.check_circle : Icons.check),
-                label: Text(
-                  isCompleted
-                      ? 'Đã ghi nhận nhịp sống hôm nay'
-                      : isCompleting
-                      ? 'Đang ghi nhận...'
-                      : 'Hoàn thành hôm nay',
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.volunteer_activism_outlined,
+                          color: AppColors.secondary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _actionTitle(data.action.type),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(color: AppColors.secondary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      data.action.prompt,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textPrimary,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton.icon(
+                      onPressed: isCompleted || isCompleting
+                          ? null
+                          : onComplete,
+                      icon: Icon(
+                        isCompleted ? Icons.check_circle : Icons.check_circle,
+                      ),
+                      label: Text(
+                        isCompleted
+                            ? 'Đã ghi nhận hôm nay'
+                            : isCompleting
+                            ? 'Đang ghi nhận...'
+                            : 'Tôi đã làm',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -314,7 +389,7 @@ class _CompletionStateCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: completed ? AppColors.brandSoft : AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
@@ -345,6 +420,51 @@ class _CompletionStateCard extends StatelessWidget {
   }
 }
 
+class _TodayBento extends StatelessWidget {
+  const _TodayBento({
+    required this.readings,
+    required this.importantMass,
+    required this.onChooseChurch,
+  });
+
+  final List<Reading> readings;
+  final ImportantMass? importantMass;
+  final VoidCallback onChooseChurch;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 640;
+        final children = [
+          _ReadingReferencesCard(readings: readings),
+          _ImportantMassCard(
+            importantMass: importantMass,
+            onChooseChurch: onChooseChurch,
+          ),
+        ];
+        if (!wide) {
+          return Column(
+            children: [
+              children.first,
+              const SizedBox(height: 14),
+              children.last,
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: children.first),
+            const SizedBox(width: 14),
+            Expanded(child: children.last),
+          ],
+        );
+      },
+    );
+  }
+}
+
 class _ReadingReferencesCard extends StatelessWidget {
   const _ReadingReferencesCard({required this.readings});
 
@@ -352,59 +472,117 @@ class _ReadingReferencesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Reading? gospel;
+    for (final reading in readings) {
+      if (reading.type == 'gospel') {
+        gospel = reading;
+        break;
+      }
+    }
     return _SectionCard(
-      title: 'Bài đọc',
+      icon: Icons.auto_stories_outlined,
+      title: 'Lời Chúa',
       child: readings.isEmpty
           ? const Text(
               'Chưa có tham chiếu bài đọc cho ngày này. Bạn vẫn có thể sống một hành động nhỏ hôm nay.',
             )
           : Column(
-              children: readings
-                  .map(
-                    (reading) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 92,
-                            child: Text(
-                              reading.displayLabel ??
-                                  _readingLabel(reading.type),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(
-                                    color: AppColors.textSecondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              reading.citation,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(color: AppColors.textPrimary),
-                            ),
-                          ),
-                        ],
-                      ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (gospel != null) ...[
+                  Text(
+                    gospel.citation,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textPrimary,
                     ),
-                  )
-                  .toList(),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                ...readings.map(
+                  (reading) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 88,
+                          child: Text(
+                            reading.displayLabel ?? _readingLabel(reading.type),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            reading.citation,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
     );
   }
 }
 
 class _ImportantMassCard extends StatelessWidget {
-  const _ImportantMassCard();
+  const _ImportantMassCard({
+    required this.importantMass,
+    required this.onChooseChurch,
+  });
+
+  final ImportantMass? importantMass;
+  final VoidCallback onChooseChurch;
 
   @override
   Widget build(BuildContext context) {
-    return const _SectionCard(
-      title: 'Thánh lễ quan trọng',
-      child: Text(
-        'Chưa chọn giáo xứ. Khi bạn chọn giáo xứ, giờ lễ Chúa nhật hoặc lễ trọng sẽ hiện ở đây.',
-      ),
+    final mass = importantMass;
+    return _SectionCard(
+      icon: Icons.schedule_outlined,
+      title: mass == null ? 'Thánh lễ quan trọng' : mass.label,
+      child: mass == null
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Chưa chọn giáo xứ. Khi bạn chọn giáo xứ, giờ lễ Chúa nhật hoặc lễ trọng sẽ hiện ở đây.',
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: onChooseChurch,
+                  icon: const Icon(Icons.church_outlined),
+                  label: const Text('Chọn giáo xứ'),
+                ),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  mass.massTime.time,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.brand,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  mass.church.name,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(mass.church.address),
+              ],
+            ),
     );
   }
 }
@@ -423,6 +601,7 @@ class _ReflectionNoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
+      icon: Icons.lock_outline,
       title: 'Ghi chú riêng',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,16 +613,6 @@ class _ReflectionNoteCard extends StatelessWidget {
             textInputAction: TextInputAction.newline,
             decoration: const InputDecoration(
               hintText: 'Viết một câu bạn muốn giữ lại cho hôm nay.',
-              filled: true,
-              fillColor: AppColors.surfaceSecondary,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                borderSide: BorderSide(color: AppColors.borderSubtle),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-                borderSide: BorderSide(color: AppColors.borderSubtle),
-              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -459,8 +628,8 @@ class _ReflectionNoteCard extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: isSaving ? null : onSave,
-                icon: const Icon(Icons.lock_outline),
-                label: Text(isSaving ? 'Đang lưu...' : 'Lưu ghi chú'),
+                icon: const Icon(Icons.save_outlined),
+                label: Text(isSaving ? 'Đang lưu...' : 'Lưu'),
               ),
             ],
           ),
@@ -470,9 +639,38 @@ class _ReflectionNoteCard extends StatelessWidget {
   }
 }
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.title, required this.child});
+class _DailyQuoteCard extends StatelessWidget {
+  const _DailyQuoteCard();
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceSecondary,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Text(
+        '“Ăn chay không chỉ là kiêng thức ăn, mà còn là để tâm hồn hướng về Thiên Chúa.”',
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: AppColors.textSecondary,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
+
+  final IconData icon;
   final String title;
   final Widget child;
 
@@ -484,12 +682,20 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+            Row(
+              children: [
+                Icon(icon, size: 20, color: AppColors.brand),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             DefaultTextStyle.merge(
@@ -507,24 +713,25 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _SignalChip extends StatelessWidget {
-  const _SignalChip({required this.label});
+  const _SignalChip({required this.label, this.color});
 
   final String label;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(8),
+        color: (color ?? AppColors.surfaceSecondary).withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
           color: AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -568,19 +775,25 @@ class _TodayError extends StatelessWidget {
 class _TodayViewData {
   const _TodayViewData({
     required this.date,
+    required this.locale,
+    required this.showLunarDate,
     required this.calendarDay,
     required this.celebrations,
     required this.readings,
     required this.action,
     required this.log,
+    required this.importantMass,
   });
 
   final String date;
+  final String locale;
+  final bool showLunarDate;
   final CalendarDay calendarDay;
   final List<Celebration> celebrations;
   final List<Reading> readings;
   final DailyAction action;
   final ActionLog? log;
+  final ImportantMass? importantMass;
 }
 
 String _formatVietnameseDate(String date) {
@@ -618,10 +831,10 @@ String _colorLabel(String color) {
 
 String _readingLabel(String type) {
   return switch (type) {
-    'first' => 'Bài đọc I',
-    'second' => 'Bài đọc II',
+    'first' || 'first_reading' => 'Bài đọc I',
+    'second' || 'second_reading' => 'Bài đọc II',
     'psalm' => 'Đáp ca',
-    'alleluia' => 'Alleluia',
+    'alleluia' || 'gospel_acclamation' => 'Alleluia',
     'gospel' => 'Tin Mừng',
     _ => 'Bài đọc',
   };
@@ -629,11 +842,21 @@ String _readingLabel(String type) {
 
 int _readingOrder(String type) {
   return switch (type) {
-    'first' => 0,
+    'first' || 'first_reading' => 0,
     'psalm' => 1,
-    'second' => 2,
-    'alleluia' => 3,
+    'second' || 'second_reading' => 2,
+    'alleluia' || 'gospel_acclamation' => 3,
     'gospel' => 4,
     _ => 5,
+  };
+}
+
+String _actionTitle(String type) {
+  return switch (type) {
+    'sacrifice' => 'Hy sinh hôm nay',
+    'mass_preparation' => 'Chuẩn bị Thánh lễ',
+    'reflection' => 'Suy niệm hôm nay',
+    'solemnity' => 'Mừng lễ hôm nay',
+    _ => 'Một việc nhỏ hôm nay',
   };
 }
