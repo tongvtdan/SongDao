@@ -24,11 +24,19 @@ struct SongDaoWidgetSnapshot: Decodable {
     let citation: String?
   }
 
+  struct Mass: Decodable {
+    let church: String?
+    let time: String?
+    let language: String?
+    let label: String?
+  }
+
   let date: String?
   let locale: String?
   let liturgicalContext: LiturgicalContext?
   let action: Action?
   let readings: [Reading]?
+  let mass: Mass?
 
   enum CodingKeys: String, CodingKey {
     case date
@@ -36,6 +44,7 @@ struct SongDaoWidgetSnapshot: Decodable {
     case liturgicalContext = "liturgical_context"
     case action
     case readings
+    case mass
   }
 }
 
@@ -56,6 +65,24 @@ struct SongDaoTodayEntry: TimelineEntry {
 
   var gospelCitation: String? {
     snapshot?.readings?.first(where: { $0.type == "gospel" })?.citation
+  }
+
+  var massSummary: String? {
+    guard let mass = snapshot?.mass, let time = mass.time else {
+      return nil
+    }
+    let label = mass.label ?? "Thánh lễ"
+    if let church = mass.church, !church.isEmpty {
+      return "\(label): \(time) - \(church)"
+    }
+    return "\(label): \(time)"
+  }
+
+  var massLanguage: String? {
+    guard let language = snapshot?.mass?.language, !language.isEmpty else {
+      return nil
+    }
+    return language
   }
 
   var isCompleted: Bool {
@@ -95,36 +122,127 @@ struct SongDaoTodayProvider: TimelineProvider {
 }
 
 struct SongDaoTodayWidgetView: View {
+  @Environment(\.widgetFamily) private var family
+
   let entry: SongDaoTodayEntry
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      HStack(spacing: 6) {
-        Circle()
-          .fill(entry.isCompleted ? Color(red: 0.12, green: 0.48, blue: 0.39) : Color(red: 0.72, green: 0.54, blue: 0.18))
-          .frame(width: 8, height: 8)
-        Text(entry.celebration)
-          .font(.system(.caption, design: .default).weight(.semibold))
-          .foregroundColor(Color(red: 0.12, green: 0.15, blue: 0.13))
-          .lineLimit(2)
+    Group {
+      if family == .systemMedium {
+        mediumLayout
+      } else {
+        smallLayout
       }
+    }
+    .padding(14)
+    .background(Color(red: 0.98, green: 0.97, blue: 0.95))
+    .widgetURL(todayDeepLink)
+  }
+
+  private var smallLayout: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      contextHeader
 
       Text(entry.actionPrompt)
         .font(.headline)
-        .foregroundColor(Color(red: 0.12, green: 0.15, blue: 0.13))
+        .foregroundColor(ink)
         .lineLimit(4)
         .minimumScaleFactor(0.78)
 
       if let gospelCitation = entry.gospelCitation {
         Text("Tin Mừng: \(gospelCitation)")
           .font(.caption2)
-          .foregroundColor(Color(red: 0.37, green: 0.40, blue: 0.38))
+          .foregroundColor(secondaryInk)
           .lineLimit(1)
       }
     }
-    .padding(14)
-    .background(Color(red: 0.98, green: 0.97, blue: 0.95))
-    .widgetURL(todayDeepLink)
+  }
+
+  private var mediumLayout: some View {
+    HStack(alignment: .top, spacing: 14) {
+      VStack(alignment: .leading, spacing: 8) {
+        contextHeader
+
+        Text(entry.actionPrompt)
+          .font(.headline)
+          .foregroundColor(ink)
+          .lineLimit(3)
+          .minimumScaleFactor(0.82)
+      }
+
+      Divider()
+        .background(Color(red: 0.89, green: 0.87, blue: 0.82))
+
+      VStack(alignment: .leading, spacing: 8) {
+        if entry.isCompleted {
+          Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
+            .font(.caption.weight(.semibold))
+            .foregroundColor(green)
+            .lineLimit(1)
+        }
+
+        if let massSummary = entry.massSummary {
+          Label {
+            Text(massSummary)
+              .lineLimit(2)
+              .minimumScaleFactor(0.82)
+          } icon: {
+            Image(systemName: "bell")
+          }
+          .font(.caption.weight(.semibold))
+          .foregroundColor(ink)
+
+          if let language = entry.massLanguage {
+            Text(language)
+              .font(.caption2)
+              .foregroundColor(secondaryInk)
+              .lineLimit(1)
+          }
+        } else if let gospelCitation = entry.gospelCitation {
+          Text("Tin Mừng")
+            .font(.caption.weight(.semibold))
+            .foregroundColor(green)
+          Text(gospelCitation)
+            .font(.caption)
+            .foregroundColor(secondaryInk)
+            .lineLimit(2)
+        } else {
+          Text("Mở Sống Đạo để xem chi tiết hôm nay.")
+            .font(.caption)
+            .foregroundColor(secondaryInk)
+            .lineLimit(3)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+    }
+  }
+
+  private var contextHeader: some View {
+    HStack(spacing: 6) {
+      Circle()
+        .fill(entry.isCompleted ? green : gold)
+        .frame(width: 8, height: 8)
+      Text(entry.celebration)
+        .font(.system(.caption, design: .default).weight(.semibold))
+        .foregroundColor(ink)
+        .lineLimit(2)
+    }
+  }
+
+  private var ink: Color {
+    Color(red: 0.12, green: 0.15, blue: 0.13)
+  }
+
+  private var secondaryInk: Color {
+    Color(red: 0.37, green: 0.40, blue: 0.38)
+  }
+
+  private var green: Color {
+    Color(red: 0.12, green: 0.48, blue: 0.39)
+  }
+
+  private var gold: Color {
+    Color(red: 0.72, green: 0.54, blue: 0.18)
   }
 }
 
