@@ -13,6 +13,7 @@ import 'package:songdao/data/local/mass_service.dart';
 import 'package:songdao/data/local/user_settings_repository.dart';
 import 'package:songdao/data/local/widget_snapshot_bridge.dart';
 import 'package:songdao/data/local/widget_snapshot_service.dart';
+import 'package:songdao/notifications/local_notification_service.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
@@ -800,6 +801,47 @@ void main() {
       await repo.set(UserSettingsKeys.locale, 'en');
       await repo.setShowLunarDate(true);
       expect(await repo.showLunarDate(), isFalse);
+    });
+
+    test('repository stores daily reminder settings locally', () async {
+      final repo = UserSettingsRepository(db);
+
+      var reminder = await repo.dailyReminder();
+      expect(reminder.enabled, isFalse);
+      expect(reminder.hour, 7);
+      expect(reminder.minute, 0);
+
+      await repo.setDailyReminderTime(hour: 20, minute: 30);
+      await repo.setDailyReminderEnabled(true);
+
+      reminder = await repo.dailyReminder();
+      expect(reminder.enabled, isTrue);
+      expect(reminder.hour, 20);
+      expect(reminder.minute, 30);
+    });
+
+    test('repository ignores invalid daily reminder time values', () async {
+      final repo = UserSettingsRepository(db);
+
+      await repo.set(UserSettingsKeys.dailyReminderHour, '99');
+      await repo.set(UserSettingsKeys.dailyReminderMinute, 'bad');
+
+      final reminder = await repo.dailyReminder();
+      expect(reminder.hour, 7);
+      expect(reminder.minute, 0);
+    });
+  });
+
+  group('NotificationRoutes', () {
+    test('maps notification payloads to Today route', () {
+      expect(NotificationRoutes.routeFromPayload(null), '/today');
+      expect(NotificationRoutes.routeFromPayload(''), '/today');
+      expect(
+        NotificationRoutes.routeFromPayload(NotificationRoutes.todayUri),
+        '/today',
+      );
+      expect(NotificationRoutes.routeFromPayload('/today'), '/today');
+      expect(NotificationRoutes.routeFromPayload('not a route'), '/today');
     });
   });
 

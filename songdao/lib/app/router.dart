@@ -21,10 +21,19 @@ final shellNavigatorProgressKey = GlobalKey<NavigatorState>(
   debugLabel: 'progress',
 );
 
+final initialDeepLinkRouteProvider = Provider<String?>((ref) => null);
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final initialRoute = ref.watch(initialDeepLinkRouteProvider);
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/today',
+    initialLocation: initialRoute ?? '/today',
+    redirect: (context, state) {
+      if (state.uri.path.isEmpty || state.uri.path == '/') {
+        return '/today';
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/settings',

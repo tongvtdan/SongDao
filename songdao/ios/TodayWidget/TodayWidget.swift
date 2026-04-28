@@ -3,7 +3,7 @@ import WidgetKit
 
 private let appGroupId = "group.com.dantino.songdao"
 private let latestSnapshotKey = "latest_widget_snapshot"
-private let todayDeepLink = URL(string: "songdao://today")
+private let todayDeepLink = URL(string: "songdao:///today")
 
 struct SongDaoWidgetSnapshot: Decodable {
   struct LiturgicalContext: Decodable {

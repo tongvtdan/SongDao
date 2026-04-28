@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
+import '../../data/local/user_settings_repository.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -14,6 +15,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late Future<_SettingsViewData> _future;
   bool _savingLunar = false;
+  bool _savingReminder = false;
 
   @override
   void initState() {
@@ -26,10 +28,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final locale = await repo.locale();
     final showLunarDate = await repo.showLunarDate();
     final selectedChurchId = await repo.selectedChurchId();
+    final dailyReminder = await repo.dailyReminder();
     return _SettingsViewData(
       locale: locale,
       showLunarDate: showLunarDate,
       selectedChurchId: selectedChurchId,
+      dailyReminder: dailyReminder,
     );
   }
 
@@ -46,6 +50,73 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } finally {
       if (mounted) {
         setState(() => _savingLunar = false);
+      }
+    }
+  }
+
+  Future<void> _setReminderEnabled(bool value, _SettingsViewData data) async {
+    if (_savingReminder) {
+      return;
+    }
+    setState(() => _savingReminder = true);
+    try {
+      if (value) {
+        final allowed = await ref
+            .read(dailyReminderServiceProvider)
+            .enableDailyReminder(
+              hour: data.dailyReminder.hour,
+              minute: data.dailyReminder.minute,
+            );
+        if (!allowed && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Bạn có thể bật quyền thông báo trong Cài đặt hệ thống.',
+              ),
+            ),
+          );
+        }
+      } else {
+        await ref.read(dailyReminderServiceProvider).disableDailyReminder();
+      }
+      if (mounted) {
+        setState(() => _future = _load());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingReminder = false);
+      }
+    }
+  }
+
+  Future<void> _pickReminderTime(_SettingsViewData data) async {
+    final selected = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+        hour: data.dailyReminder.hour,
+        minute: data.dailyReminder.minute,
+      ),
+    );
+    if (selected == null || _savingReminder) {
+      return;
+    }
+    setState(() => _savingReminder = true);
+    try {
+      if (data.dailyReminder.enabled) {
+        await ref
+            .read(dailyReminderServiceProvider)
+            .enableDailyReminder(hour: selected.hour, minute: selected.minute);
+      } else {
+        await ref
+            .read(userSettingsRepositoryProvider)
+            .setDailyReminderTime(hour: selected.hour, minute: selected.minute);
+      }
+      if (mounted) {
+        setState(() => _future = _load());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingReminder = false);
       }
     }
   }
@@ -84,6 +155,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 12),
               _SettingsCard(
+                title: 'Nhắc nhở',
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: data.dailyReminder.enabled,
+                      onChanged: _savingReminder
+                          ? null
+                          : (value) => _setReminderEnabled(value, data),
+                      title: const Text('Nhắc việc sống đạo mỗi ngày'),
+                      subtitle: Text(
+                        'Thông báo cục bộ lúc ${_formatReminderTime(context, data.dailyReminder)}. Không cần tài khoản hay máy chủ.',
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: _savingReminder
+                            ? null
+                            : () => _pickReminderTime(data),
+                        icon: const Icon(Icons.schedule),
+                        label: const Text('Đổi giờ nhắc'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _SettingsCard(
                 title: 'Quyền riêng tư',
                 child: const Text(
                   'Lịch sử thực hành và ghi chú suy niệm mặc định chỉ lưu trên máy. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.',
@@ -104,6 +204,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+}
+
+String _formatReminderTime(
+  BuildContext context,
+  DailyReminderSettings reminder,
+) {
+  return TimeOfDay(
+    hour: reminder.hour,
+    minute: reminder.minute,
+  ).format(context);
 }
 
 class _SettingsCard extends StatelessWidget {
@@ -146,9 +256,11 @@ class _SettingsViewData {
     required this.locale,
     required this.showLunarDate,
     required this.selectedChurchId,
+    required this.dailyReminder,
   });
 
   final String locale;
   final bool showLunarDate;
   final String? selectedChurchId;
+  final DailyReminderSettings dailyReminder;
 }

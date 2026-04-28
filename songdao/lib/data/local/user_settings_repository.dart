@@ -8,6 +8,21 @@ class UserSettingsKeys {
   static const locale = 'locale';
   static const showLunarDate = 'show_lunar_date';
   static const selectedChurchId = 'selected_church_id';
+  static const dailyReminderEnabled = 'daily_reminder_enabled';
+  static const dailyReminderHour = 'daily_reminder_hour';
+  static const dailyReminderMinute = 'daily_reminder_minute';
+}
+
+class DailyReminderSettings {
+  const DailyReminderSettings({
+    required this.enabled,
+    required this.hour,
+    required this.minute,
+  });
+
+  final bool enabled;
+  final int hour;
+  final int minute;
 }
 
 class UserSettingsRepository {
@@ -42,6 +57,29 @@ class UserSettingsRepository {
     return set(UserSettingsKeys.selectedChurchId, churchId);
   }
 
+  Future<DailyReminderSettings> dailyReminder() async {
+    final enabled = await _get(UserSettingsKeys.dailyReminderEnabled);
+    final hour = await _get(UserSettingsKeys.dailyReminderHour);
+    final minute = await _get(UserSettingsKeys.dailyReminderMinute);
+    return DailyReminderSettings(
+      enabled: enabled?.value == 'true',
+      hour: _boundedInt(hour?.value, fallback: 7, min: 0, max: 23),
+      minute: _boundedInt(minute?.value, fallback: 0, min: 0, max: 59),
+    );
+  }
+
+  Future<void> setDailyReminderEnabled(bool value) {
+    return set(UserSettingsKeys.dailyReminderEnabled, value ? 'true' : 'false');
+  }
+
+  Future<void> setDailyReminderTime({
+    required int hour,
+    required int minute,
+  }) async {
+    await set(UserSettingsKeys.dailyReminderHour, hour.toString());
+    await set(UserSettingsKeys.dailyReminderMinute, minute.toString());
+  }
+
   Future<void> set(String key, String value) {
     return db
         .into(db.userSettings)
@@ -58,5 +96,18 @@ class UserSettingsRepository {
     return (db.select(
       db.userSettings,
     )..where((t) => t.key.equals(key))).getSingleOrNull();
+  }
+
+  int _boundedInt(
+    String? value, {
+    required int fallback,
+    required int min,
+    required int max,
+  }) {
+    final parsed = int.tryParse(value ?? '');
+    if (parsed == null || parsed < min || parsed > max) {
+      return fallback;
+    }
+    return parsed;
   }
 }
