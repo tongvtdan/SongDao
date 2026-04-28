@@ -69,7 +69,7 @@ Respond using this exact structure:
 
 If you want something shorter for everyday tasks:
 
-```markdown
+
 You are an expert [ROLE] with clear, precise, and helpful communication style.
 
 Task: [Describe what you want done in 1-2 sentences]
@@ -87,8 +87,8 @@ Output Format:
 **Summary:** [Brief overview]
 **Detailed Response:** [Main content]
 **Key Takeaways / Next Steps:** [Actionable points]
-```
 
+---
 ### Tips for Best Results (from the video + Anthropic best practices)
 
 - **Be specific** in the role and task_context — this dramatically improves quality.
