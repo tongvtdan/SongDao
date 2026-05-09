@@ -92,6 +92,7 @@ dart run tool/symphony/symphony.dart WORKFLOW.md --once
 
 When working from Linear:
 
+- when creating new Linear issues for this project, prefix the title with `SD-`, for example `SD-Improve today reading UI`
 - move the issue to `In Progress` when starting
 - implement the smallest shippable slice
 - add a comment with what changed, verification commands, pass/fail result, and next risk

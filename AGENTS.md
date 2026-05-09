@@ -53,6 +53,7 @@ Use Linear as the project source of truth during development.
 When creating or updating Linear work:
 
 - Attach issues to project `SongDao` and team `DAN`.
+- Prefix every new Linear issue title for this project with `SD-`, for example `SD-Improve today reading UI`.
 - Use product milestones from this file unless Linear has newer milestones.
 - Prefer small implementation tickets that can ship in 1-3 days.
 - Include acceptance criteria and the user outcome in every issue.

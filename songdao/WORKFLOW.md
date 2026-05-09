@@ -78,6 +78,8 @@ Keep work focused on local content reliability, Today, Calendar, Prayer, Church 
 
 ## Linear State Policy
 
+When creating new Linear issues for this project, prefix the issue title with `SD-`, for example `SD-Improve today reading UI`.
+
 1. Move `Todo` issues to `In Progress` before editing.
 2. Work in the smallest shippable slice that satisfies acceptance criteria.
 3. Add a Linear comment with what changed, verification commands, pass/fail result, and follow-up risk.
