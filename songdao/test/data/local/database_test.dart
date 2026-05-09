@@ -890,6 +890,98 @@ void main() {
 
       expect(mass, isNull);
     });
+
+    test('returns weekday Mass on a Monday when no special day', () async {
+      // 2026-04-27 is a Monday, ordinary season
+      await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-monday-0530',
+        churchId: 'church-1',
+        weekday: 'monday',
+        context: 'weekday',
+        time: '05:30',
+        important: true,
+      );
+      await _insertMassTime(
+        db,
+        id: 'sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-04-27');
+
+      expect(mass, isNotNull);
+      expect(mass!.massTime.id, 'weekday-monday-0530');
+    });
+
+    test('returns solemnity Mass on a solemnity day', () async {
+      // 2026-06-11 is a Thursday in ordinary time, but we mark it as solemnity
+      await _insertCalendarDay(db, '2026-06-11', season: 'ordinary');
+      await _insertCelebration(db, '2026-06-11', rank: 'solemnity');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-mass',
+        churchId: 'church-1',
+        weekday: 'thursday',
+        context: 'weekday',
+        time: '05:30',
+        important: false,
+      );
+      await _insertMassTime(
+        db,
+        id: 'solemnity-mass',
+        churchId: 'church-1',
+        weekday: 'thursday',
+        context: 'solemnity',
+        time: '18:00',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-06-11');
+
+      expect(mass, isNotNull);
+      expect(mass!.massTime.id, 'solemnity-mass');
+      expect(mass.label, 'Thánh lễ trọng');
+    });
+
+    test('returns null when church has no Mass times', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
+
+    test('returns null when only Mass time is expired', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'expired-sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+        validTo: DateTime(2025, 12, 31),
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
   });
 
   group('ContentPackImporter', () {
@@ -935,6 +1027,33 @@ void main() {
                   ..where((t) => t.key.equals('active_content_pack_manifest')))
                 .getSingle();
         expect(manifest.value, contains('calendar-vn-demo-2026'));
+      },
+    );
+
+    test(
+      'imports the parish beta seed pack with 3 churches and varied Mass times',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-parishes-vn-beta-2026-0.1.0.json',
+        ).readAsString();
+        final importer = ContentPackImporter(db);
+
+        final result = await importer.importPackJson(source);
+
+        expect(result.packId, 'parishes-vn-beta-2026');
+        expect(result.imported, isTrue);
+        expect(await db.select(db.churches).get(), hasLength(3));
+
+        final massTimes = await db.select(db.massTimes).get();
+        // At least Sunday, weekday, and vigil entries
+        expect(massTimes.length, greaterThanOrEqualTo(10));
+        expect(massTimes.any((m) => m.context == 'sunday'), isTrue);
+        expect(massTimes.any((m) => m.context == 'weekday'), isTrue);
+        expect(massTimes.any((m) => m.context == 'saturday_vigil'), isTrue);
+        // Stale entry (valid_to in 2025) is imported but can be filtered
+        expect(massTimes.any((m) => m.validTo != null), isTrue);
+        // Bilingual: at least one English Mass
+        expect(massTimes.any((m) => m.language == 'en'), isTrue);
       },
     );
   });
@@ -1000,6 +1119,7 @@ Future<void> _insertMassTime(
   required String context,
   required String time,
   required bool important,
+  DateTime? validTo,
 }) {
   return db
       .into(db.massTimes)
@@ -1012,6 +1132,7 @@ Future<void> _insertMassTime(
           time: time,
           language: 'vi',
           validFrom: DateTime(2026, 4, 27),
+          validTo: Value(validTo),
           isImportantDefault: Value(important),
           source: '{}',
         ),
