@@ -156,28 +156,26 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
               children: [
                 _LiturgicalContextCard(data: data),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 _DailyActionCard(
                   data: data,
                   isCompleting: _isCompleting,
                   onComplete: () => _completeAction(data),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 _CompletionStateCard(log: data.log),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 _TodayBento(
                   readings: data.readings,
                   importantMass: data.importantMass,
                   onChooseChurch: () => context.go('/church'),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 _ReflectionNoteCard(
                   controller: _noteController,
                   isSaving: _isSavingNote,
                   onSave: () => _saveNote(data),
                 ),
-                const SizedBox(height: 14),
-                const _DailyQuoteCard(),
               ],
             ),
           );
@@ -207,7 +205,7 @@ class _LiturgicalContextCard extends StatelessWidget {
     final celebration = data.celebrations.isEmpty
         ? _formatVietnameseDate(data.date)
         : data.celebrations.first.name;
-    final color = liturgicalColor(data.calendarDay.color);
+    final accentColor = _liturgicalAccentColor(data.calendarDay.color);
     final showLunar =
         data.locale == 'vi' &&
         data.showLunarDate &&
@@ -216,9 +214,9 @@ class _LiturgicalContextCard extends StatelessWidget {
     return Card(
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 22),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(8),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -248,7 +246,8 @@ class _LiturgicalContextCard extends StatelessWidget {
               style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: 88,
                 height: 0.95,
-                color: color == AppColors.canvas ? AppColors.gold : color,
+                color: accentColor,
+                fontWeight: FontWeight.w800,
               ),
             ),
             if (showLunar) ...[
@@ -266,6 +265,8 @@ class _LiturgicalContextCard extends StatelessWidget {
             Text(
               celebration,
               textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(
                 context,
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -278,7 +279,7 @@ class _LiturgicalContextCard extends StatelessWidget {
               children: [
                 _SignalChip(
                   label: _seasonLabel(data.calendarDay.season),
-                  color: color,
+                  color: accentColor,
                 ),
                 _SignalChip(label: _colorLabel(data.calendarDay.color)),
                 if (data.calendarDay.liturgicalWeek > 0)
@@ -306,7 +307,7 @@ class _DailyActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompleted = data.log?.status == 'completed';
-    final color = liturgicalColor(data.calendarDay.color);
+    final color = _liturgicalAccentColor(data.calendarDay.color);
 
     return Card(
       child: IntrinsicHeight(
@@ -316,15 +317,15 @@ class _DailyActionCard extends StatelessWidget {
             Container(
               width: 5,
               decoration: BoxDecoration(
-                color: color == AppColors.canvas ? AppColors.gold : color,
+                color: color,
                 borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(16),
+                  left: Radius.circular(8),
                 ),
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -345,18 +346,22 @@ class _DailyActionCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     Text(
                       data.action.prompt,
+                      maxLines: 4,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textPrimary,
                         height: 1.45,
                       ),
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
                     FilledButton.icon(
                       onPressed: isCompleted || isCompleting
                           ? null
                           : onComplete,
                       icon: Icon(
-                        isCompleted ? Icons.check_circle : Icons.check_circle,
+                        isCompleted
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked,
                       ),
                       label: Text(
                         isCompleted
@@ -386,10 +391,10 @@ class _CompletionStateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final completed = log?.status == 'completed';
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: completed ? AppColors.brandSoft : AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.borderSubtle),
       ),
       child: Row(
@@ -447,7 +452,7 @@ class _TodayBento extends StatelessWidget {
           return Column(
             children: [
               children.first,
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
               children.last,
             ],
           );
@@ -456,7 +461,7 @@ class _TodayBento extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: children.first),
-            const SizedBox(width: 14),
+            const SizedBox(width: 16),
             Expanded(child: children.last),
           ],
         );
@@ -500,7 +505,7 @@ class _ReadingReferencesCard extends StatelessWidget {
                 ],
                 ...readings.map(
                   (reading) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -580,7 +585,11 @@ class _ImportantMassCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(mass.church.address),
+                Text(
+                  mass.church.address,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
     );
@@ -639,30 +648,6 @@ class _ReflectionNoteCard extends StatelessWidget {
   }
 }
 
-class _DailyQuoteCard extends StatelessWidget {
-  const _DailyQuoteCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Text(
-        '“Ăn chay không chỉ là kiêng thức ăn, mà còn là để tâm hồn hướng về Thiên Chúa.”',
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: AppColors.textSecondary,
-          fontStyle: FontStyle.italic,
-        ),
-      ),
-    );
-  }
-}
-
 class _SectionCard extends StatelessWidget {
   const _SectionCard({
     required this.icon,
@@ -689,6 +674,8 @@ class _SectionCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
@@ -697,7 +684,7 @@ class _SectionCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             DefaultTextStyle.merge(
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
@@ -721,7 +708,7 @@ class _SignalChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: (color ?? AppColors.surfaceSecondary).withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(999),
@@ -827,6 +814,14 @@ String _colorLabel(String color) {
     'black' => 'Đen',
     _ => 'Phụng vụ',
   };
+}
+
+Color _liturgicalAccentColor(String color) {
+  if (color == 'white') {
+    return AppColors.gold;
+  }
+
+  return liturgicalColor(color);
 }
 
 String _readingLabel(String type) {

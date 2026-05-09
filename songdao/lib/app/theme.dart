@@ -2,50 +2,76 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const canvas = Color(0xFFFCF9F3);
+  // Core surfaces
+  static const canvas = Color(0xFFFAF8F3);
   static const surface = Color(0xFFFFFFFF);
-  static const surfaceSecondary = Color(0xFFF6F3ED);
+  static const surfaceSecondary = Color(0xFFF3F0E8);
   static const surfaceContainer = Color(0xFFF0EEE8);
   static const surfaceVariant = Color(0xFFE5E2DC);
-  static const inverse = Color(0xFF31312D);
+  static const inverse = Color(0xFF18221E);
 
-  static const textPrimary = Color(0xFF1C1C18);
-  static const textSecondary = Color(0xFF414941);
-  static const textTertiary = Color(0xFF727970);
+  // Text
+  static const textPrimary = Color(0xFF1F2522);
+  static const textSecondary = Color(0xFF5F6761);
+  static const textTertiary = Color(0xFF8A938D);
+  static const textInverse = Color(0xFFF8F5ED);
+  static const textLink = Color(0xFF1B6E5A);
 
-  static const brand = Color(0xFF204E2B);
-  static const brandPressed = Color(0xFF3A6843);
-  static const brandSoft = Color(0xFFBCEFC0);
+  // Brand & interaction
+  static const brand = Color(0xFF1F7A64);
+  static const brandPressed = Color(0xFF155744);
+  static const brandSoft = Color(0xFFE2F1EA);
+  static const brandDeep = Color(0xFF123C32);
 
+  // Accent
+  static const gold = Color(0xFFB8892E);
+  static const burgundy = Color(0xFF8F2F3D);
+  static const marianBlue = Color(0xFF2F5F8F);
+
+  // Legacy accent aliases kept for existing usage
   static const secondary = Color(0xFF6E5097);
   static const secondarySoft = Color(0xFFD1AFFE);
-
   static const tertiary = Color(0xFF841D24);
   static const tertiarySoft = Color(0xFFA43539);
 
-  static const gold = Color(0xFFB8892E);
-  static const burgundy = Color(0xFF8F2F3D);
+  // Status
+  static const statusComplete = Color(0xFF2F7D4F);
+  static const statusWarning = Color(0xFFB8892E);
+  static const statusError = Color(0xFFB33A3A);
+  static const statusOffline = Color(0xFF5F6761);
 
-  static const borderSubtle = Color(0xFFF0EEE8);
-  static const borderStrong = Color(0xFFC1C9BE);
+  // Borders
+  static const borderSubtle = Color(0xFFE2DDD1);
+  static const borderStrong = Color(0xFFCFC7B7);
+  static const borderFocus = Color(0xFF1F7A64);
+}
+
+class LiturgicalColors {
+  static const green = Color(0xFF2F7D4F); // Ordinary Time
+  static const white = Color(0xFFF7F3E8); // Christmas, Easter, solemnities
+  static const gold = Color(0xFFC69A3D); // High feast emphasis
+  static const red = Color(0xFFB33A3A); // Martyrs, Palm Sunday, Good Friday
+  static const purple = Color(0xFF6B4A7A); // Advent, Lent, penance
+  static const rose = Color(0xFFC9788D); // Gaudete and Laetare Sundays
+  static const black = Color(0xFF242424); // Rare memorial usage only
 }
 
 Color liturgicalColor(String value) {
   switch (value) {
     case 'green':
-      return AppColors.brand; // Ordinary Time
+      return LiturgicalColors.green;
     case 'white':
-      return AppColors.canvas; // Or surface, Easter/Christmas
+      return LiturgicalColors.white;
     case 'gold':
-      return AppColors.gold;
+      return LiturgicalColors.gold;
     case 'red':
-      return const Color(0xFFBC4749); // Feasts & Martyrs
+      return LiturgicalColors.red;
     case 'purple':
-      return const Color(0xFF6A4C93); // Lent & Advent
+      return LiturgicalColors.purple;
     case 'rose':
-      return const Color(0xFFC9788D);
+      return LiturgicalColors.rose;
     case 'black':
-      return AppColors.textPrimary;
+      return LiturgicalColors.black;
     default:
       return AppColors.brand;
   }
@@ -64,14 +90,14 @@ class AppTheme {
         onTertiary: Colors.white,
         surface: AppColors.canvas,
         onSurface: AppColors.textPrimary,
-        error: const Color(0xFFBA1A1A),
+        error: AppColors.statusError,
       ),
       scaffoldBackgroundColor: AppColors.canvas,
       cardTheme: const CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius: BorderRadius.all(Radius.circular(8)),
           side: BorderSide(color: AppColors.borderSubtle, width: 1),
         ),
         margin: EdgeInsets.zero,
@@ -109,8 +135,8 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surfaceSecondary,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+          horizontal: 16,
+          vertical: 12,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
@@ -122,7 +148,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.brand, width: 1.4),
+          borderSide: const BorderSide(color: AppColors.borderFocus, width: 1.4),
         ),
         hintStyle: const TextStyle(color: AppColors.textTertiary),
       ),
@@ -214,37 +240,37 @@ class AppTheme {
         bodyLarge: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w400,
-          height: 1.6,
+          height: 1.5,
           color: AppColors.textPrimary,
         ),
         bodyMedium: GoogleFonts.inter(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w400,
-          height: 1.6,
+          height: 1.45,
           color: AppColors.textPrimary,
         ),
         bodySmall: GoogleFonts.inter(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w400,
           height: 1.4,
           color: AppColors.textPrimary,
         ),
         labelLarge: GoogleFonts.inter(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           letterSpacing: 0.1,
           color: AppColors.textPrimary,
         ),
         labelMedium: GoogleFonts.inter(
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.05,
-          height: 1,
+          height: 1.3,
           color: AppColors.textPrimary,
         ),
         labelSmall: GoogleFonts.inter(
           fontSize: 11,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
           color: AppColors.textPrimary,
         ),
