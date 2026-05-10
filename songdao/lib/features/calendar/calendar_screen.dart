@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
@@ -109,7 +110,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           }
           final data = snapshot.data!;
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: AppSpacing.screenPadding,
             children: [
               _CalendarHeader(
                 month: _visibleMonth,
@@ -203,7 +204,7 @@ class _MonthGrid extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSpacing.x3),
         child: Column(
           children: [
             const Row(
@@ -239,7 +240,7 @@ class _MonthGrid extends StatelessWidget {
                     : liturgicalColor(day.color);
 
                 return InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                   onTap: () => onSelect(date),
                   child: Container(
                     decoration: BoxDecoration(
@@ -250,7 +251,7 @@ class _MonthGrid extends StatelessWidget {
                           : day == null
                           ? Colors.transparent
                           : color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: selected
                             ? AppColors.brand
@@ -285,7 +286,7 @@ class _MonthGrid extends StatelessWidget {
                                 ? Colors.transparent
                                 : selected
                                 ? Colors.white
-                                : color == AppColors.canvas
+                                : color == LiturgicalColors.white
                                 ? AppColors.gold
                                 : color,
                             shape: BoxShape.circle,
@@ -317,7 +318,7 @@ class _WeekdayLabel extends StatelessWidget {
         label,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: sunday ? AppColors.tertiary : AppColors.textSecondary,
+          color: sunday ? AppColors.burgundy : AppColors.textSecondary,
           fontWeight: FontWeight.w800,
         ),
       ),
@@ -336,7 +337,7 @@ class _SelectedDayCard extends StatelessWidget {
     if (day == null) {
       return const Card(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: AppSpacing.cardPadding,
           child: Text(
             'Chưa có dữ liệu phụng vụ cho ngày này trong gói nội dung trên thiết bị.',
           ),
@@ -351,7 +352,7 @@ class _SelectedDayCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -366,9 +367,12 @@ class _SelectedDayCard extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _Chip(label: _seasonLabel(day.season)),
-                _Chip(label: _colorLabel(day.color)),
-                if (showLunar) _Chip(label: day.lunarDate!),
+                AppSignalChip(
+                  label: _seasonLabel(day.season),
+                  color: _liturgicalAccentColor(day.color),
+                ),
+                AppSignalChip(label: _colorLabel(day.color)),
+                if (showLunar) AppSignalChip(label: day.lunarDate!),
               ],
             ),
             if (data.action != null) ...[
@@ -407,31 +411,6 @@ class _SelectedDayCard extends StatelessWidget {
               ),
             ],
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Chip extends StatelessWidget {
-  const _Chip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -496,6 +475,14 @@ String _colorLabel(String color) {
     'black' => 'Đen',
     _ => 'Phụng vụ',
   };
+}
+
+Color _liturgicalAccentColor(String color) {
+  if (color == 'white') {
+    return AppColors.gold;
+  }
+
+  return liturgicalColor(color);
 }
 
 String _readingLabel(String type) {

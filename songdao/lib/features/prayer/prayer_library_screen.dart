@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
@@ -24,7 +25,7 @@ class PrayerLibraryScreen extends ConsumerWidget {
           }
           final prayers = snapshot.data ?? const <Prayer>[];
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: AppSpacing.screenPadding,
             children: [
               Text(
                 'Cầu nguyện',
@@ -83,23 +84,14 @@ class _FeaturedPrayerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.brandSoft,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                '5 phút',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.brandPressed,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+            const AppSignalChip(
+              label: '5 phút',
+              color: AppColors.brand,
+              icon: Icons.schedule_outlined,
             ),
             const SizedBox(height: 12),
             Text(
@@ -174,7 +166,7 @@ class _EmptyPrayerState extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Text(
           'Chưa có kinh nguyện trong gói nội dung hiện tại. Today vẫn hoạt động với hành động hằng ngày và ghi chú riêng.',
         ),

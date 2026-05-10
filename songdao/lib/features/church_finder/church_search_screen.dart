@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
@@ -90,7 +91,7 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
           }).toList();
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: AppSpacing.screenPadding,
             children: [
               TextField(
                 onChanged: (value) => setState(() => _query = value),
@@ -144,7 +145,7 @@ class _SelectedChurchCard extends StatelessWidget {
     if (church == null) {
       return Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: AppSpacing.cardPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -155,8 +156,11 @@ class _SelectedChurchCard extends StatelessWidget {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Chọn thủ công một giáo xứ để Today có thể hiển thị Thánh lễ quan trọng. Không cần quyền vị trí.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -166,23 +170,14 @@ class _SelectedChurchCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.brandSoft,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Text(
-                'Giáo xứ của tôi',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.brandPressed,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+            const AppSignalChip(
+              label: 'Giáo xứ của tôi',
+              color: AppColors.brand,
+              icon: Icons.church_outlined,
             ),
             const SizedBox(height: 10),
             Text(
@@ -199,6 +194,31 @@ class _SelectedChurchCard extends StatelessWidget {
               ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 14),
+            if (massTimes.isNotEmpty) ...[
+              Text(
+                'Thánh lễ kế tiếp',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.brand,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${_weekdayLabel(massTimes.first.weekday)} ${massTimes.first.time}',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: AppColors.brand,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Dữ liệu giáo xứ lưu trên thiết bị. Không dùng vị trí.',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 14),
+            ],
             Text(
               'Lịch Thánh lễ',
               style: Theme.of(
@@ -214,9 +234,10 @@ class _SelectedChurchCard extends StatelessWidget {
                 runSpacing: 8,
                 children: massTimes
                     .map(
-                      (mass) => _MassChip(
+                      (mass) => AppSignalChip(
                         label:
                             '${_weekdayLabel(mass.weekday)} ${mass.time} (${mass.language})',
+                        color: AppColors.brand,
                       ),
                     )
                     .toList(),
@@ -260,30 +281,6 @@ class _ChurchListItem extends StatelessWidget {
   }
 }
 
-class _MassChip extends StatelessWidget {
-  const _MassChip({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700),
-      ),
-    );
-  }
-}
-
 class _EmptyChurchState extends StatelessWidget {
   const _EmptyChurchState();
 
@@ -291,7 +288,7 @@ class _EmptyChurchState extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Card(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Text(
           'Chưa tìm thấy giáo xứ trong gói dữ liệu hiện tại. Bạn vẫn có thể dùng Today và Progress offline.',
         ),

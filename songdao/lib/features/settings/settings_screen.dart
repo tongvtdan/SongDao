@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
@@ -135,7 +136,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           final lunarSupported = data.locale == 'vi';
 
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+            padding: AppSpacing.screenPadding,
             children: [
               _SettingsCard(
                 title: 'Lịch Việt',
@@ -186,7 +187,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               _SettingsCard(
                 title: 'Quyền riêng tư',
                 child: const Text(
-                  'Lịch sử thực hành và ghi chú suy niệm mặc định chỉ lưu trên máy. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.',
+                  'Lịch sử thực hành và ghi chú suy niệm mặc định chỉ lưu trên thiết bị. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.',
                 ),
               ),
               const SizedBox(height: 12),
@@ -226,7 +227,7 @@ class _SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

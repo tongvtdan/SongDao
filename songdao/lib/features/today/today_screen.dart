@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
@@ -153,7 +154,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
             onRefresh: _refresh,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+              padding: AppSpacing.screenPadding,
               children: [
                 _LiturgicalContextCard(data: data),
                 const SizedBox(height: 16),
@@ -212,79 +213,94 @@ class _LiturgicalContextCard extends StatelessWidget {
         data.calendarDay.lunarDate != null;
 
     return Card(
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.surface, AppColors.surfaceSecondary],
-          ),
-        ),
-        child: Column(
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              width: 4,
               decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: 0.88),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: Text(
-                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.tertiary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              parsed.day.toString().padLeft(2, '0'),
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                fontSize: 88,
-                height: 0.95,
                 color: accentColor,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            if (showLunar) ...[
-              const SizedBox(height: 8),
-              Text(
-                data.calendarDay.lunarDate!,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.tertiary,
-                  fontWeight: FontWeight.w600,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(8),
                 ),
               ),
-            ],
-            const SizedBox(height: 16),
-            Text(
-              celebration,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _SignalChip(
-                  label: _seasonLabel(data.calendarDay.season),
-                  color: accentColor,
+            Expanded(
+              child: Padding(
+                padding: AppSpacing.cardPadding,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          parsed.day.toString().padLeft(2, '0'),
+                          style: Theme.of(context).textTheme.displayMedium
+                              ?.copyWith(
+                                color: accentColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                        const SizedBox(width: AppSpacing.x3),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
+                                style: Theme.of(context).textTheme.labelLarge
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                              const SizedBox(height: AppSpacing.x1),
+                              Text(
+                                celebration,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(fontWeight: FontWeight.w700),
+                              ),
+                              if (showLunar) ...[
+                                const SizedBox(height: AppSpacing.x1),
+                                Text(
+                                  data.calendarDay.lunarDate!,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: AppColors.textSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.x3),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        AppSignalChip(
+                          label: _seasonLabel(data.calendarDay.season),
+                          color: accentColor,
+                        ),
+                        AppSignalChip(
+                          label: _colorLabel(data.calendarDay.color),
+                        ),
+                        if (data.calendarDay.liturgicalWeek > 0)
+                          AppSignalChip(
+                            label: 'Tuần ${data.calendarDay.liturgicalWeek}',
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-                _SignalChip(label: _colorLabel(data.calendarDay.color)),
-                if (data.calendarDay.liturgicalWeek > 0)
-                  _SignalChip(label: 'Tuần ${data.calendarDay.liturgicalWeek}'),
-              ],
+              ),
             ),
           ],
         ),
@@ -325,7 +341,7 @@ class _DailyActionCard extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: AppSpacing.cardPadding,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -333,13 +349,13 @@ class _DailyActionCard extends StatelessWidget {
                       children: [
                         const Icon(
                           Icons.volunteer_activism_outlined,
-                          color: AppColors.secondary,
+                          color: AppColors.brand,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           _actionTitle(data.action.type),
                           style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(color: AppColors.secondary),
+                              ?.copyWith(color: AppColors.brand),
                         ),
                       ],
                     ),
@@ -391,7 +407,7 @@ class _CompletionStateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final completed = log?.status == 'completed';
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: AppSpacing.cardPadding,
       decoration: BoxDecoration(
         color: completed ? AppColors.brandSoft : AppColors.surfaceSecondary,
         borderRadius: BorderRadius.circular(8),
@@ -484,7 +500,7 @@ class _ReadingReferencesCard extends StatelessWidget {
         break;
       }
     }
-    return _SectionCard(
+    return AppSectionCard(
       icon: Icons.auto_stories_outlined,
       title: 'Lời Chúa',
       child: readings.isEmpty
@@ -548,7 +564,7 @@ class _ImportantMassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mass = importantMass;
-    return _SectionCard(
+    return AppSectionCard(
       icon: Icons.schedule_outlined,
       title: mass == null ? 'Thánh lễ quan trọng' : mass.label,
       child: mass == null
@@ -609,7 +625,7 @@ class _ReflectionNoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
+    return AppSectionCard(
       icon: Icons.lock_outline,
       title: 'Ghi chú riêng',
       child: Column(
@@ -643,83 +659,6 @@ class _ReflectionNoteCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.icon,
-    required this.title,
-    required this.child,
-  });
-
-  final IconData icon;
-  final String title;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: AppColors.brand),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.35,
-              ),
-              child: child,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SignalChip extends StatelessWidget {
-  const _SignalChip({required this.label, this.color});
-
-  final String label;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: (color ?? AppColors.surfaceSecondary).withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w700,
-        ),
       ),
     );
   }

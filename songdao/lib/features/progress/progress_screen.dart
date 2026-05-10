@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
@@ -22,12 +23,12 @@ class ProgressScreen extends ConsumerWidget {
           }
           final data = snapshot.data!;
           return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+            padding: AppSpacing.screenPadding,
             children: [
               Text(
                 'Nhịp sống đức tin',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppColors.brand,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -100,7 +101,7 @@ class _WeekRhythmCard extends StatelessWidget {
     final count = data.weekCompleted.values.where((value) => value).length;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -192,7 +193,7 @@ class _RecentLogsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

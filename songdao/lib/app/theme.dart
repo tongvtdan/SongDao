@@ -28,11 +28,11 @@ class AppColors {
   static const burgundy = Color(0xFF8F2F3D);
   static const marianBlue = Color(0xFF2F5F8F);
 
-  // Legacy accent aliases kept for existing usage
-  static const secondary = Color(0xFF6E5097);
-  static const secondarySoft = Color(0xFFD1AFFE);
-  static const tertiary = Color(0xFF841D24);
-  static const tertiarySoft = Color(0xFFA43539);
+  // Legacy aliases kept for compatibility; map them to current design tokens.
+  static const secondary = marianBlue;
+  static const secondarySoft = brandSoft;
+  static const tertiary = burgundy;
+  static const tertiarySoft = statusError;
 
   // Status
   static const statusComplete = Color(0xFF2F7D4F);
@@ -148,7 +148,10 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.borderFocus, width: 1.4),
+          borderSide: const BorderSide(
+            color: AppColors.borderFocus,
+            width: 1.4,
+          ),
         ),
         hintStyle: const TextStyle(color: AppColors.textTertiary),
       ),

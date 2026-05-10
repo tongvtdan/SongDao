@@ -135,7 +135,7 @@ struct SongDaoTodayWidgetView: View {
       }
     }
     .padding(14)
-    .background(Color(red: 0.98, green: 0.97, blue: 0.95))
+    .background(canvas)
     .widgetURL(todayDeepLink)
   }
 
@@ -171,7 +171,7 @@ struct SongDaoTodayWidgetView: View {
       }
 
       Divider()
-        .background(Color(red: 0.89, green: 0.87, blue: 0.82))
+        .background(border)
 
       VStack(alignment: .leading, spacing: 8) {
         if entry.isCompleted {
@@ -220,7 +220,7 @@ struct SongDaoTodayWidgetView: View {
   private var contextHeader: some View {
     HStack(spacing: 6) {
       Circle()
-        .fill(entry.isCompleted ? green : gold)
+        .fill(entry.isCompleted ? green : liturgicalAccent)
         .frame(width: 8, height: 8)
       Text(entry.celebration)
         .font(.system(.caption, design: .default).weight(.semibold))
@@ -230,19 +230,44 @@ struct SongDaoTodayWidgetView: View {
   }
 
   private var ink: Color {
-    Color(red: 0.12, green: 0.15, blue: 0.13)
+    Color(red: 0.12, green: 0.15, blue: 0.13) // #1F2522
   }
 
   private var secondaryInk: Color {
-    Color(red: 0.37, green: 0.40, blue: 0.38)
+    Color(red: 0.37, green: 0.40, blue: 0.38) // #5F6761
   }
 
   private var green: Color {
-    Color(red: 0.12, green: 0.48, blue: 0.39)
+    Color(red: 0.12, green: 0.48, blue: 0.39) // #1F7A64
   }
 
   private var gold: Color {
-    Color(red: 0.72, green: 0.54, blue: 0.18)
+    Color(red: 0.72, green: 0.54, blue: 0.18) // #B8892E
+  }
+
+  private var canvas: Color {
+    Color(red: 0.98, green: 0.97, blue: 0.95) // #FAF8F3
+  }
+
+  private var border: Color {
+    Color(red: 0.89, green: 0.87, blue: 0.82) // #E2DDD1
+  }
+
+  private var liturgicalAccent: Color {
+    switch entry.snapshot?.liturgicalContext?.color {
+    case "red":
+      return Color(red: 0.70, green: 0.23, blue: 0.23) // #B33A3A
+    case "purple":
+      return Color(red: 0.42, green: 0.29, blue: 0.48) // #6B4A7A
+    case "rose":
+      return Color(red: 0.79, green: 0.47, blue: 0.55) // #C9788D
+    case "white", "gold":
+      return gold
+    case "black":
+      return ink
+    default:
+      return green
+    }
   }
 }
 
