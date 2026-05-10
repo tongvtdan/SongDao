@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +9,7 @@ import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/mass_service.dart';
+import 'today_controller.dart';
 
 class TodayScreen extends ConsumerStatefulWidget {
   const TodayScreen({super.key});
@@ -19,7 +19,7 @@ class TodayScreen extends ConsumerStatefulWidget {
 }
 
 class _TodayScreenState extends ConsumerState<TodayScreen> {
-  late Future<_TodayViewData> _todayFuture;
+  late Future<TodayViewData> _todayFuture;
   final _noteController = TextEditingController();
   bool _isCompleting = false;
   bool _isSavingNote = false;
@@ -36,66 +36,26 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     super.dispose();
   }
 
-  Future<_TodayViewData> _loadToday() async {
+  Future<TodayViewData> _loadToday() async {
     await ref.read(seedContentBootstrapProvider.future);
+    final data = await TodayController(
+      db: ref.read(databaseProvider),
+      settings: ref.read(userSettingsRepositoryProvider),
+      engine: ref.read(dailyActionEngineProvider),
+      massService: ref.read(massServiceProvider),
+    ).load();
 
-    final db = ref.read(databaseProvider);
-    final settings = ref.read(userSettingsRepositoryProvider);
-    final engine = ref.read(dailyActionEngineProvider);
-    final date = _todayDateKey();
-    final locale = await settings.locale();
-    final showLunarDate = await settings.showLunarDate();
-    final action = await engine.getOrCreateActionForDate(date, locale: locale);
-    final calendarDay =
-        await (db.select(db.calendarDays)..where(
-              (t) => t.date.equals(date) & t.locale.equals(action.locale),
-            ))
-            .getSingle();
-    final celebrations =
-        await (db.select(db.celebrations)
-              ..where(
-                (t) => t.date.equals(date) & t.locale.equals(action.locale),
-              )
-              ..orderBy([(t) => OrderingTerm.asc(t.rank)]))
-            .get();
-    final readings =
-        await (db.select(db.readings)..where(
-              (t) => t.date.equals(date) & t.locale.equals(action.locale),
-            ))
-            .get();
-    readings.sort(
-      (a, b) => _readingOrder(a.type).compareTo(_readingOrder(b.type)),
-    );
-    final log = await db.todayDao.getActionLogForAction(action.id);
-    final importantMass = await ref
-        .read(massServiceProvider)
-        .nextImportantMassForDate(date);
-
-    _noteController.text = log?.note ?? '';
-    return _TodayViewData(
-      date: date,
-      locale: locale,
-      showLunarDate: showLunarDate,
-      calendarDay: calendarDay,
-      celebrations: celebrations,
-      readings: readings,
-      action: action,
-      log: log,
-      importantMass: importantMass,
-    );
+    _noteController.text = data.log?.note ?? '';
+    return data;
   }
 
-  Future<void> _completeAction(_TodayViewData data) async {
+  Future<void> _completeAction(TodayViewData data) async {
     if (_isCompleting) {
       return;
     }
     setState(() => _isCompleting = true);
     try {
-      final note = _noteController.text.trim();
-      await ref
-          .read(databaseProvider)
-          .actionLogDao
-          .markCompleted(data.action.id, note: note.isEmpty ? null : note);
+      await _controller.completeAction(data, note: _noteController.text);
       if (mounted) {
         setState(() => _todayFuture = _loadToday());
       }
@@ -106,16 +66,13 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     }
   }
 
-  Future<void> _saveNote(_TodayViewData data) async {
+  Future<void> _saveNote(TodayViewData data) async {
     if (_isSavingNote) {
       return;
     }
     setState(() => _isSavingNote = true);
     try {
-      await ref
-          .read(databaseProvider)
-          .actionLogDao
-          .saveNote(data.action.id, _noteController.text.trim());
+      await _controller.saveNote(data, _noteController.text);
       if (mounted) {
         setState(() => _todayFuture = _loadToday());
       }
@@ -124,6 +81,15 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         setState(() => _isSavingNote = false);
       }
     }
+  }
+
+  TodayController get _controller {
+    return TodayController(
+      db: ref.read(databaseProvider),
+      settings: ref.read(userSettingsRepositoryProvider),
+      engine: ref.read(dailyActionEngineProvider),
+      massService: ref.read(massServiceProvider),
+    );
   }
 
   @override
@@ -140,7 +106,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           ),
         ],
       ),
-      body: FutureBuilder<_TodayViewData>(
+      body: FutureBuilder<TodayViewData>(
         future: _todayFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -200,16 +166,12 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     setState(() => _todayFuture = _loadToday());
     await _todayFuture;
   }
-
-  String _todayDateKey() {
-    return DateFormat('yyyy-MM-dd').format(DateTime.now());
-  }
 }
 
 class _LiturgicalContextCard extends StatelessWidget {
   const _LiturgicalContextCard({required this.data});
 
-  final _TodayViewData data;
+  final TodayViewData data;
 
   @override
   Widget build(BuildContext context) {
@@ -222,99 +184,256 @@ class _LiturgicalContextCard extends StatelessWidget {
         data.locale == 'vi' &&
         data.showLunarDate &&
         data.calendarDay.lunarDate != null;
+    final quote = _dailyQuoteFor(data.date);
+    final saintOfDay = _saintOfDayLabel(data);
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 26),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              accentColor.withValues(alpha: 0.09),
-              AppColors.surface,
-              AppColors.surfaceSecondary,
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final cardHeight = (screenHeight * 0.58).clamp(430.0, 560.0);
+
+    return SizedBox(
+      height: cardHeight,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            border: Border(top: BorderSide(color: accentColor, width: 5)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceSecondary,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.borderSubtle),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 9,
+                          ),
+                          decoration: BoxDecoration(
+                            color: accentColor,
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: AppColors.textInverse,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  parsed.day.toString().padLeft(2, '0'),
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayLarge
+                                      ?.copyWith(
+                                        fontSize: 112,
+                                        height: 0.9,
+                                        color: accentColor,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                ),
+                                const SizedBox(height: AppSpacing.x3),
+                                Text(
+                                  celebration,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.titleLarge
+                                      ?.copyWith(
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.25,
+                                      ),
+                                ),
+                                if (showLunar) ...[
+                                  const SizedBox(height: AppSpacing.x1),
+                                  Text(
+                                    data.calendarDay.lunarDate!,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
+                                  ),
+                                ],
+                                const SizedBox(height: AppSpacing.x3),
+                                _DailyQuoteBlock(quote: quote),
+                                const SizedBox(height: AppSpacing.x2),
+                                _SaintOfDayBlock(label: saintOfDay),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.x2),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  AppSignalChip(
+                    label: _seasonLabel(data.calendarDay.season),
+                    color: accentColor,
+                    icon: Icons.eco_outlined,
+                  ),
+                  AppSignalChip(label: _colorLabel(data.calendarDay.color)),
+                  if (data.calendarDay.liturgicalWeek > 0)
+                    AppSignalChip(
+                      label: 'Tuần ${data.calendarDay.liturgicalWeek}',
+                    ),
+                ],
+              ),
             ],
           ),
         ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: Text(
-                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.tertiary,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+      ),
+    );
+  }
+}
+
+class _DailyQuoteBlock extends StatelessWidget {
+  const _DailyQuoteBlock({required this.quote});
+
+  final _DailyQuote quote;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.x3,
+        vertical: AppSpacing.x2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface.withValues(alpha: 0.74),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.format_quote_rounded,
+            size: 18,
+            color: AppColors.gold,
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            quote.text,
+            textAlign: TextAlign.center,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: AppColors.textPrimary,
+              height: 1.28,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: AppSpacing.x5),
-            Text(
-              parsed.day.toString().padLeft(2, '0'),
-              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                fontSize: 96,
-                height: 0.9,
-                color: accentColor,
-                fontWeight: FontWeight.w800,
-                shadows: [
-                  Shadow(
-                    color: accentColor.withValues(alpha: 0.16),
-                    offset: const Offset(0, 4),
-                    blurRadius: 12,
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            quote.attribution,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
             ),
-            if (showLunar) ...[
-              const SizedBox(height: AppSpacing.x4),
-              Text(
-                data.calendarDay.lunarDate!,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.tertiary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-            const SizedBox(height: AppSpacing.x4),
-            Text(
-              celebration,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                height: 1.25,
-              ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SaintOfDayBlock extends StatelessWidget {
+  const _SaintOfDayBlock({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.x3,
+        vertical: AppSpacing.x2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.brandSoft.withValues(alpha: 0.66),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 3),
+            child: Icon(
+              Icons.local_florist_outlined,
+              size: 18,
+              color: AppColors.brand,
             ),
-            const SizedBox(height: AppSpacing.x4),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 8,
-              runSpacing: 8,
+          ),
+          const SizedBox(width: AppSpacing.x2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                AppSignalChip(
-                  label: _seasonLabel(data.calendarDay.season),
-                  color: accentColor,
-                  icon: Icons.eco_outlined,
-                ),
-                AppSignalChip(label: _colorLabel(data.calendarDay.color)),
-                if (data.calendarDay.liturgicalWeek > 0)
-                  AppSignalChip(
-                    label: 'Tuần ${data.calendarDay.liturgicalWeek}',
+                Text(
+                  'Vị thánh hôm nay',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.brandPressed,
+                    fontWeight: FontWeight.w800,
                   ),
+                ),
+                Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    height: 1.22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -327,7 +446,7 @@ class _DailyActionCard extends StatelessWidget {
     required this.onComplete,
   });
 
-  final _TodayViewData data;
+  final TodayViewData data;
   final bool isCompleting;
   final VoidCallback onComplete;
 
@@ -361,27 +480,37 @@ class _DailyActionCard extends StatelessWidget {
                       children: [
                         Icon(Icons.volunteer_activism_outlined, color: color),
                         const SizedBox(width: 8),
-                        Text(
-                          _actionTitle(data.action.type),
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: color,
-                                fontWeight: FontWeight.w700,
-                              ),
+                        Expanded(
+                          child: Text(
+                            'Một việc nhỏ để sống đức tin hôm nay',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(
+                                  color: color,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.x2),
+                    Text(
+                      _actionTitle(data.action.type),
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w800, height: 1.2),
+                    ),
+                    const SizedBox(height: AppSpacing.x3),
                     Text(
                       data.action.prompt,
-                      maxLines: 4,
+                      maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textPrimary,
                         height: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.x4),
                     FilledButton.icon(
                       onPressed: isCompleted || isCompleting
                           ? null
@@ -513,9 +642,10 @@ class _ReadingReferencesCard extends StatelessWidget {
         break;
       }
     }
-    final supportingReadings = gospel == null
+    final gospelId = gospel?.id;
+    final supportingReadings = gospelId == null
         ? readings
-        : readings.where((reading) => reading.id != gospel!.id);
+        : readings.where((reading) => reading.id != gospelId);
     return AppSectionCard(
       icon: Icons.auto_stories_outlined,
       title: 'Lời Chúa',
@@ -761,30 +891,6 @@ class _TodayError extends StatelessWidget {
   }
 }
 
-class _TodayViewData {
-  const _TodayViewData({
-    required this.date,
-    required this.locale,
-    required this.showLunarDate,
-    required this.calendarDay,
-    required this.celebrations,
-    required this.readings,
-    required this.action,
-    required this.log,
-    required this.importantMass,
-  });
-
-  final String date;
-  final String locale;
-  final bool showLunarDate;
-  final CalendarDay calendarDay;
-  final List<Celebration> celebrations;
-  final List<Reading> readings;
-  final DailyAction action;
-  final ActionLog? log;
-  final ImportantMass? importantMass;
-}
-
 String _formatVietnameseDate(String date) {
   final parsed = DateTime.parse(date);
   final formattedDate = DateFormat('dd/MM/yyyy').format(parsed);
@@ -837,16 +943,65 @@ String _readingLabel(String type) {
   };
 }
 
-int _readingOrder(String type) {
-  return switch (type) {
-    'first' || 'first_reading' => 0,
-    'psalm' => 1,
-    'second' || 'second_reading' => 2,
-    'alleluia' || 'gospel_acclamation' => 3,
-    'gospel' => 4,
-    _ => 5,
-  };
+_DailyQuote _dailyQuoteFor(String date) {
+  final parsed = DateTime.parse(date);
+  final dayOfYear = int.parse(DateFormat('D').format(parsed));
+  return _dailyQuotes[dayOfYear % _dailyQuotes.length];
 }
+
+String _saintOfDayLabel(TodayViewData data) {
+  final rankedCelebrations = data.celebrations.where(
+    (celebration) =>
+        celebration.rank == 'memorial' ||
+        celebration.rank == 'optional_memorial' ||
+        celebration.rank == 'feast',
+  );
+  for (final celebration in rankedCelebrations) {
+    final name = celebration.name;
+    if (name.startsWith('Thánh ') || name.startsWith('Các Thánh ')) {
+      return name;
+    }
+  }
+  return 'Các thánh nam nữ của Chúa, cầu cho chúng con.';
+}
+
+class _DailyQuote {
+  const _DailyQuote({required this.text, required this.attribution});
+
+  final String text;
+  final String attribution;
+}
+
+const _dailyQuotes = [
+  _DailyQuote(
+    text: 'Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Bình an bắt đầu khi con trao cho Chúa điều con không tự giữ nổi.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Đức tin lớn lên trong những lựa chọn rất nhỏ và rất thật.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Hãy bắt đầu lại nhẹ nhàng; lòng thương xót luôn đi trước con.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Yêu thương hôm nay không cần lớn tiếng, chỉ cần cụ thể.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Một phút thinh lặng có thể mở lại cánh cửa của lòng mình.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _DailyQuote(
+    text: 'Chúa thường gặp ta trong bổn phận nhỏ đang ở ngay trước mặt.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+];
 
 String _actionTitle(String type) {
   return switch (type) {

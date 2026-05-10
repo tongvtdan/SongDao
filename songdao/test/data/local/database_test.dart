@@ -13,6 +13,7 @@ import 'package:songdao/data/local/mass_service.dart';
 import 'package:songdao/data/local/user_settings_repository.dart';
 import 'package:songdao/data/local/widget_snapshot_bridge.dart';
 import 'package:songdao/data/local/widget_snapshot_service.dart';
+import 'package:songdao/features/today/today_controller.dart';
 import 'package:songdao/notifications/local_notification_service.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
@@ -134,6 +135,39 @@ void main() {
       expect(action.type, 'reflection');
     });
 
+    test('selects feast action before seasonal action', () async {
+      await _insertCalendarDay(db, '2026-05-14', season: 'easter');
+      await _insertCelebration(db, '2026-05-14', rank: 'feast');
+      await _insertRule(
+        db,
+        id: 'feast_witness_vi',
+        priority: 15,
+        when: {'is_feast': true},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-14');
+
+      expect(action.sourceRule, 'feast_witness_vi');
+      expect(
+        action.prompt,
+        'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+      );
+    });
+
     test('selects seasonal action before generic Friday action', () async {
       await _insertCalendarDay(db, '2026-05-01', season: 'easter');
       await _insertRule(
@@ -213,6 +247,41 @@ void main() {
       )..where((t) => t.date.equals('2026-07-01'))).getSingle();
       expect(calendarDay.season, 'unknown');
     });
+
+    test(
+      'replaces fallback action after real calendar content arrives',
+      () async {
+        final fallback = await engine.getOrCreateActionForDate('2026-05-14');
+        expect(fallback.sourceRule, DailyActionEngine.fallbackSourceRule);
+
+        await (db.update(
+          db.calendarDays,
+        )..where((t) => t.date.equals('2026-05-14'))).write(
+          const CalendarDaysCompanion(
+            season: Value('easter'),
+            liturgicalWeek: Value(6),
+            color: Value('red'),
+            cycleYear: Value('A'),
+          ),
+        );
+        await _insertCelebration(db, '2026-05-14', rank: 'feast');
+        await _insertRule(
+          db,
+          id: 'feast_witness_vi',
+          priority: 15,
+          when: {'is_feast': true},
+          action: {
+            'type': 'reflection',
+            'prompt': 'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+          },
+        );
+
+        final refreshed = await engine.getOrCreateActionForDate('2026-05-14');
+
+        expect(refreshed.id, fallback.id);
+        expect(refreshed.sourceRule, 'feast_witness_vi');
+      },
+    );
   });
 
   group('ActionLogs', () {
@@ -1054,6 +1123,50 @@ void main() {
         expect(massTimes.any((m) => m.validTo != null), isTrue);
         // Bilingual: at least one English Mass
         expect(massTimes.any((m) => m.language == 'en'), isTrue);
+      },
+    );
+
+    test(
+      'imports post-demo pack and keeps Today useful after demo horizon',
+      () async {
+        final importer = ContentPackImporter(db);
+        final demoSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final postDemoSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-post-demo-2026-0.1.0.json',
+        ).readAsString();
+
+        await importer.importPackJson(demoSource);
+        final result = await importer.importPackJson(postDemoSource);
+
+        expect(result.packId, 'calendar-vn-post-demo-2026');
+
+        final controller = TodayController(
+          db: db,
+          settings: UserSettingsRepository(db),
+          engine: DailyActionEngine(db),
+          massService: MassService(db),
+        );
+        final data = await controller.load(date: '2026-05-14');
+
+        expect(data.calendarDay.season, 'easter');
+        expect(data.celebrations.single.name, 'Thánh Matthia, Tông đồ');
+        expect(
+          data.readings.any((reading) => reading.type == 'gospel'),
+          isTrue,
+        );
+        expect(
+          data.readings.every((reading) => reading.textContent == null),
+          isTrue,
+        );
+        expect(data.action.sourceRule, 'feast_witness_vi');
+
+        await controller.completeAction(data, note: 'Một việc nhỏ đã làm.');
+        final snapshot = await db.todayDao.getWidgetSnapshot('2026-05-14');
+        final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+        final action = payload['action']! as Map<String, Object?>;
+        expect(action['completed'], isTrue);
       },
     );
   });

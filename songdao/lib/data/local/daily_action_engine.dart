@@ -22,18 +22,26 @@ class DailyActionEngine {
   }) async {
     final existing = await _existingAction(date, locale);
     if (existing != null) {
-      await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
-      return existing;
+      final seededCalendar = await _calendarDay(date, locale);
+      if (existing.sourceRule != fallbackSourceRule ||
+          seededCalendar == null ||
+          seededCalendar.season == 'unknown') {
+        await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
+        return existing;
+      }
     }
 
     final action = await db.transaction(() async {
       final insideTransactionExisting = await _existingAction(date, locale);
-      if (insideTransactionExisting != null) {
+      var calendarDay = await _calendarDay(date, locale);
+      final hasSeededCalendar =
+          calendarDay != null && calendarDay.season != 'unknown';
+      if (insideTransactionExisting != null &&
+          (insideTransactionExisting.sourceRule != fallbackSourceRule ||
+              !hasSeededCalendar)) {
         return insideTransactionExisting;
       }
 
-      var calendarDay = await _calendarDay(date, locale);
-      final hasSeededCalendar = calendarDay != null;
       calendarDay ??= await _ensureFallbackCalendarDay(date, locale);
 
       final rule = hasSeededCalendar
@@ -94,6 +102,7 @@ class DailyActionEngine {
       weekday: weekday,
       isSunday: weekday == 'sunday',
       isSolemnity: celebrations.any((item) => item.rank == 'solemnity'),
+      isFeast: celebrations.any((item) => item.rank == 'feast'),
       isHolyDay: celebrations.any(
         (item) =>
             item.rank == 'holy_day' || item.rank == 'holy_day_of_obligation',
@@ -136,6 +145,7 @@ class DailyActionEngine {
         _fieldMatches(condition['weekday'], context.weekday) &&
         _fieldMatches(condition['is_sunday'], context.isSunday) &&
         _fieldMatches(condition['is_solemnity'], context.isSolemnity) &&
+        _fieldMatches(condition['is_feast'], context.isFeast) &&
         _fieldMatches(condition['is_holy_day'], context.isHolyDay) &&
         _fieldMatches(condition['has_parish_event'], context.hasParishEvent);
   }
@@ -155,16 +165,19 @@ class DailyActionEngine {
     if (condition['is_sunday'] == true || condition['weekday'] == 'sunday') {
       return 1;
     }
-    if (condition['season'] != null) {
+    if (condition['is_feast'] == true) {
       return 2;
     }
-    if (condition['has_parish_event'] == true) {
+    if (condition['season'] != null) {
       return 3;
     }
-    if (condition['weekday'] != null) {
+    if (condition['has_parish_event'] == true) {
       return 4;
     }
-    return 5;
+    if (condition['weekday'] != null) {
+      return 5;
+    }
+    return 6;
   }
 
   DailyActionsCompanion _actionFromRule(
@@ -227,6 +240,7 @@ class _RuleContext {
     required this.weekday,
     required this.isSunday,
     required this.isSolemnity,
+    required this.isFeast,
     required this.isHolyDay,
     required this.hasParishEvent,
   });
@@ -235,6 +249,7 @@ class _RuleContext {
   final String weekday;
   final bool isSunday;
   final bool isSolemnity;
+  final bool isFeast;
   final bool isHolyDay;
   final bool hasParishEvent;
 }
