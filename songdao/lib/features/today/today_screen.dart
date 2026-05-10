@@ -130,6 +130,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('Sống Đạo'),
         actions: [
           IconButton(
@@ -156,26 +157,36 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: AppSpacing.screenPadding,
               children: [
-                _LiturgicalContextCard(data: data),
-                const SizedBox(height: 16),
-                _DailyActionCard(
-                  data: data,
-                  isCompleting: _isCompleting,
-                  onComplete: () => _completeAction(data),
-                ),
-                const SizedBox(height: 16),
-                _CompletionStateCard(log: data.log),
-                const SizedBox(height: 16),
-                _TodayBento(
-                  readings: data.readings,
-                  importantMass: data.importantMass,
-                  onChooseChurch: () => context.go('/church'),
-                ),
-                const SizedBox(height: 16),
-                _ReflectionNoteCard(
-                  controller: _noteController,
-                  isSaving: _isSavingNote,
-                  onSave: () => _saveNote(data),
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 680),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _LiturgicalContextCard(data: data),
+                        const SizedBox(height: AppSpacing.x6),
+                        _DailyActionCard(
+                          data: data,
+                          isCompleting: _isCompleting,
+                          onComplete: () => _completeAction(data),
+                        ),
+                        const SizedBox(height: AppSpacing.x4),
+                        _CompletionStateCard(log: data.log),
+                        const SizedBox(height: AppSpacing.x4),
+                        _TodayBento(
+                          readings: data.readings,
+                          importantMass: data.importantMass,
+                          onChooseChurch: () => context.go('/church'),
+                        ),
+                        const SizedBox(height: AppSpacing.x4),
+                        _ReflectionNoteCard(
+                          controller: _noteController,
+                          isSaving: _isSavingNote,
+                          onSave: () => _saveNote(data),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -213,94 +224,94 @@ class _LiturgicalContextCard extends StatelessWidget {
         data.calendarDay.lunarDate != null;
 
     return Card(
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 26),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              accentColor.withValues(alpha: 0.09),
+              AppColors.surface,
+              AppColors.surfaceSecondary,
+            ],
+          ),
+        ),
+        child: Column(
           children: [
             Container(
-              width: 4,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(8),
+                color: AppColors.surface.withValues(alpha: 0.9),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppColors.borderSubtle),
+              ),
+              child: Text(
+                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.tertiary,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: AppSpacing.cardPadding,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          parsed.day.toString().padLeft(2, '0'),
-                          style: Theme.of(context).textTheme.displayMedium
-                              ?.copyWith(
-                                color: accentColor,
-                                fontWeight: FontWeight.w700,
-                              ),
-                        ),
-                        const SizedBox(width: AppSpacing.x3),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
-                                style: Theme.of(context).textTheme.labelLarge
-                                    ?.copyWith(
-                                      color: AppColors.textSecondary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                              const SizedBox(height: AppSpacing.x1),
-                              Text(
-                                celebration,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.w700),
-                              ),
-                              if (showLunar) ...[
-                                const SizedBox(height: AppSpacing.x1),
-                                Text(
-                                  data.calendarDay.lunarDate!,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.x3),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        AppSignalChip(
-                          label: _seasonLabel(data.calendarDay.season),
-                          color: accentColor,
-                        ),
-                        AppSignalChip(
-                          label: _colorLabel(data.calendarDay.color),
-                        ),
-                        if (data.calendarDay.liturgicalWeek > 0)
-                          AppSignalChip(
-                            label: 'Tuần ${data.calendarDay.liturgicalWeek}',
-                          ),
-                      ],
-                    ),
-                  ],
+            const SizedBox(height: AppSpacing.x5),
+            Text(
+              parsed.day.toString().padLeft(2, '0'),
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                fontSize: 96,
+                height: 0.9,
+                color: accentColor,
+                fontWeight: FontWeight.w800,
+                shadows: [
+                  Shadow(
+                    color: accentColor.withValues(alpha: 0.16),
+                    offset: const Offset(0, 4),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+            ),
+            if (showLunar) ...[
+              const SizedBox(height: AppSpacing.x4),
+              Text(
+                data.calendarDay.lunarDate!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.tertiary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
+            ],
+            const SizedBox(height: AppSpacing.x4),
+            Text(
+              celebration,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x4),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                AppSignalChip(
+                  label: _seasonLabel(data.calendarDay.season),
+                  color: accentColor,
+                  icon: Icons.eco_outlined,
+                ),
+                AppSignalChip(label: _colorLabel(data.calendarDay.color)),
+                if (data.calendarDay.liturgicalWeek > 0)
+                  AppSignalChip(
+                    label: 'Tuần ${data.calendarDay.liturgicalWeek}',
+                  ),
+              ],
             ),
           ],
         ),
@@ -326,6 +337,7 @@ class _DailyActionCard extends StatelessWidget {
     final color = _liturgicalAccentColor(data.calendarDay.color);
 
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -347,15 +359,15 @@ class _DailyActionCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(
-                          Icons.volunteer_activism_outlined,
-                          color: AppColors.brand,
-                        ),
+                        Icon(Icons.volunteer_activism_outlined, color: color),
                         const SizedBox(width: 8),
                         Text(
                           _actionTitle(data.action.type),
                           style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(color: AppColors.brand),
+                              ?.copyWith(
+                                color: color,
+                                fontWeight: FontWeight.w700,
+                              ),
                         ),
                       ],
                     ),
@@ -366,7 +378,7 @@ class _DailyActionCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textPrimary,
-                        height: 1.45,
+                        height: 1.5,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -419,6 +431,7 @@ class _CompletionStateCard extends StatelessWidget {
             completed
                 ? Icons.check_circle_outline
                 : Icons.radio_button_unchecked,
+            size: 20,
             color: completed ? AppColors.brand : AppColors.textSecondary,
           ),
           const SizedBox(width: 10),
@@ -500,6 +513,9 @@ class _ReadingReferencesCard extends StatelessWidget {
         break;
       }
     }
+    final supportingReadings = gospel == null
+        ? readings
+        : readings.where((reading) => reading.id != gospel!.id);
     return AppSectionCard(
       icon: Icons.auto_stories_outlined,
       title: 'Lời Chúa',
@@ -512,14 +528,25 @@ class _ReadingReferencesCard extends StatelessWidget {
               children: [
                 if (gospel != null) ...[
                   Text(
-                    gospel.citation,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: AppColors.textPrimary,
+                    'Tin Mừng hôm nay',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.brand,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.x2),
+                  Text(
+                    gospel.citation,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.x3),
                 ],
-                ...readings.map(
+                if (supportingReadings.isNotEmpty)
+                  const Divider(color: AppColors.borderSubtle),
+                ...supportingReadings.map(
                   (reading) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
@@ -564,50 +591,86 @@ class _ImportantMassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mass = importantMass;
-    return AppSectionCard(
-      icon: Icons.schedule_outlined,
-      title: mass == null ? 'Thánh lễ quan trọng' : mass.label,
-      child: mass == null
-          ? Column(
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      color: AppColors.surfaceContainer,
+      child: Stack(
+        children: [
+          Positioned(
+            top: 12,
+            right: 14,
+            child: Icon(
+              Icons.church_outlined,
+              size: 58,
+              color: AppColors.borderStrong.withValues(alpha: 0.5),
+            ),
+          ),
+          Padding(
+            padding: AppSpacing.cardPadding,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Chưa chọn giáo xứ. Khi bạn chọn giáo xứ, giờ lễ Chúa nhật hoặc lễ trọng sẽ hiện ở đây.',
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.schedule_outlined,
+                      size: 20,
+                      color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: AppSpacing.x2),
+                    Expanded(
+                      child: Text(
+                        mass == null ? 'Thánh lễ quan trọng' : mass.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w800,
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                OutlinedButton.icon(
-                  onPressed: onChooseChurch,
-                  icon: const Icon(Icons.church_outlined),
-                  label: const Text('Chọn giáo xứ'),
-                ),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  mass.massTime.time,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: AppColors.brand,
-                    fontWeight: FontWeight.w700,
+                const SizedBox(height: AppSpacing.x4),
+                if (mass == null) ...[
+                  const Text(
+                    'Chưa chọn giáo xứ. Khi bạn chọn giáo xứ, giờ lễ Chúa nhật hoặc lễ trọng sẽ hiện ở đây.',
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  mass.church.name,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w700,
+                  const SizedBox(height: AppSpacing.x3),
+                  OutlinedButton.icon(
+                    onPressed: onChooseChurch,
+                    icon: const Icon(Icons.church_outlined),
+                    label: const Text('Chọn giáo xứ'),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  mass.church.address,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                ] else ...[
+                  Text(
+                    mass.massTime.time,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.x2),
+                  Text(
+                    mass.church.name,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.x1),
+                  Text(
+                    mass.church.address,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ],
             ),
+          ),
+        ],
+      ),
     );
   }
 }
