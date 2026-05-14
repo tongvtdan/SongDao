@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 
 import '../../data/local/app_database.dart';
 import '../../data/local/daily_action_engine.dart';
-import '../../data/local/mass_service.dart';
 import '../../data/local/user_settings_repository.dart';
 
 class TodayController {
@@ -11,13 +10,11 @@ class TodayController {
     required this.db,
     required this.settings,
     required this.engine,
-    required this.massService,
   });
 
   final AppDatabase db;
   final UserSettingsRepository settings;
   final DailyActionEngine engine;
-  final MassService massService;
 
   Future<TodayViewData> load({String? date}) async {
     final dateKey = date ?? todayDateKey();
@@ -48,7 +45,6 @@ class TodayController {
       (a, b) => readingOrder(a.type).compareTo(readingOrder(b.type)),
     );
     final log = await db.todayDao.getActionLogForAction(action.id);
-    final importantMass = await massService.nextImportantMassForDate(dateKey);
     final reflection =
         await (db.select(db.dailyReflections)..where(
               (t) => t.date.equals(dateKey) & t.locale.equals(action.locale),
@@ -64,7 +60,6 @@ class TodayController {
       readings: readings,
       action: action,
       log: log,
-      importantMass: importantMass,
       reflection: reflection,
     );
   }
@@ -96,7 +91,6 @@ class TodayViewData {
     required this.readings,
     required this.action,
     required this.log,
-    required this.importantMass,
     required this.reflection,
   });
 
@@ -108,7 +102,6 @@ class TodayViewData {
   final List<Reading> readings;
   final DailyAction action;
   final ActionLog? log;
-  final ImportantMass? importantMass;
   final DailyReflection? reflection;
 }
 

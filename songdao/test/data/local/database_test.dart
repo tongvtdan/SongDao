@@ -1150,7 +1150,6 @@ void main() {
           db: db,
           settings: UserSettingsRepository(db),
           engine: DailyActionEngine(db),
-          massService: MassService(db),
         );
         final data = await controller.load(date: '2026-05-14');
 
@@ -1224,7 +1223,6 @@ void main() {
         db: db,
         settings: UserSettingsRepository(db),
         engine: DailyActionEngine(db),
-        massService: MassService(db),
       );
       final data = await controller.load(date: '2026-06-15');
 

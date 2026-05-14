@@ -8,7 +8,6 @@ import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
-import '../../data/local/mass_service.dart';
 import 'today_controller.dart';
 
 class TodayScreen extends ConsumerStatefulWidget {
@@ -43,7 +42,6 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         db: ref.read(databaseProvider),
         settings: ref.read(userSettingsRepositoryProvider),
         engine: ref.read(dailyActionEngineProvider),
-        massService: ref.read(massServiceProvider),
       ).load();
 
       _noteController.text = data.log?.note ?? '';
@@ -93,7 +91,6 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       db: ref.read(databaseProvider),
       settings: ref.read(userSettingsRepositoryProvider),
       engine: ref.read(dailyActionEngineProvider),
-      massService: ref.read(massServiceProvider),
     );
   }
 
@@ -144,11 +141,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                         const SizedBox(height: AppSpacing.x4),
                         _CompletionStateCard(log: data.log),
                         const SizedBox(height: AppSpacing.x4),
-                        _TodayBento(
-                          readings: data.readings,
-                          importantMass: data.importantMass,
-                          onChooseChurch: () => context.go('/church'),
-                        ),
+                        _ReadingReferencesCard(readings: data.readings),
                         if (data.reflection != null) ...[
                           const SizedBox(height: AppSpacing.x4),
                           _DailyReflectionCard(reflection: data.reflection!),
@@ -648,51 +641,6 @@ class _CompletionStateCard extends StatelessWidget {
   }
 }
 
-class _TodayBento extends StatelessWidget {
-  const _TodayBento({
-    required this.readings,
-    required this.importantMass,
-    required this.onChooseChurch,
-  });
-
-  final List<Reading> readings;
-  final ImportantMass? importantMass;
-  final VoidCallback onChooseChurch;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final wide = constraints.maxWidth >= 640;
-        final children = [
-          _ReadingReferencesCard(readings: readings),
-          _ImportantMassCard(
-            importantMass: importantMass,
-            onChooseChurch: onChooseChurch,
-          ),
-        ];
-        if (!wide) {
-          return Column(
-            children: [
-              children.first,
-              const SizedBox(height: 16),
-              children.last,
-            ],
-          );
-        }
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: children.first),
-            const SizedBox(width: 16),
-            Expanded(child: children.last),
-          ],
-        );
-      },
-    );
-  }
-}
-
 class _ReadingReferencesCard extends StatelessWidget {
   const _ReadingReferencesCard({required this.readings});
 
@@ -770,102 +718,6 @@ class _ReadingReferencesCard extends StatelessWidget {
                 ),
               ],
             ),
-    );
-  }
-}
-
-class _ImportantMassCard extends StatelessWidget {
-  const _ImportantMassCard({
-    required this.importantMass,
-    required this.onChooseChurch,
-  });
-
-  final ImportantMass? importantMass;
-  final VoidCallback onChooseChurch;
-
-  @override
-  Widget build(BuildContext context) {
-    final mass = importantMass;
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      color: AppColors.surfaceContainer,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 12,
-            right: 14,
-            child: Icon(
-              Icons.church_outlined,
-              size: 58,
-              color: AppColors.borderStrong.withValues(alpha: 0.5),
-            ),
-          ),
-          Padding(
-            padding: AppSpacing.cardPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.schedule_outlined,
-                      size: 20,
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: AppSpacing.x2),
-                    Expanded(
-                      child: Text(
-                        mass == null ? 'Thánh lễ quan trọng' : mass.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: AppColors.textSecondary,
-                              fontWeight: FontWeight.w800,
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.x4),
-                if (mass == null) ...[
-                  const Text(
-                    'Chưa chọn giáo xứ. Khi bạn chọn giáo xứ, giờ lễ Chúa nhật hoặc lễ trọng sẽ hiện ở đây.',
-                  ),
-                  const SizedBox(height: AppSpacing.x3),
-                  OutlinedButton.icon(
-                    onPressed: onChooseChurch,
-                    icon: const Icon(Icons.church_outlined),
-                    label: const Text('Chọn giáo xứ'),
-                  ),
-                ] else ...[
-                  Text(
-                    mass.massTime.time,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.x2),
-                  Text(
-                    mass.church.name,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.x1),
-                  Text(
-                    mass.church.address,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
