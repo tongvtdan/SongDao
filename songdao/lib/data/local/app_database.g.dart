@@ -2610,6 +2610,558 @@ class DailyActionsCompanion extends UpdateCompanion<DailyAction> {
   }
 }
 
+class $DailyReflectionsTable extends DailyReflections
+    with TableInfo<$DailyReflectionsTable, DailyReflection> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DailyReflectionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES calendar_days (date)',
+    ),
+  );
+  static const VerificationMeta _localeMeta = const VerificationMeta('locale');
+  @override
+  late final GeneratedColumn<String> locale = GeneratedColumn<String>(
+    'locale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceUrlMeta = const VerificationMeta(
+    'sourceUrl',
+  );
+  @override
+  late final GeneratedColumn<String> sourceUrl = GeneratedColumn<String>(
+    'source_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _licenseMeta = const VerificationMeta(
+    'license',
+  );
+  @override
+  late final GeneratedColumn<String> license = GeneratedColumn<String>(
+    'license',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    date,
+    locale,
+    title,
+    body,
+    sourceUrl,
+    license,
+    source,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'daily_reflections';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DailyReflection> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('locale')) {
+      context.handle(
+        _localeMeta,
+        locale.isAcceptableOrUnknown(data['locale']!, _localeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('source_url')) {
+      context.handle(
+        _sourceUrlMeta,
+        sourceUrl.isAcceptableOrUnknown(data['source_url']!, _sourceUrlMeta),
+      );
+    }
+    if (data.containsKey('license')) {
+      context.handle(
+        _licenseMeta,
+        license.isAcceptableOrUnknown(data['license']!, _licenseMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_licenseMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DailyReflection map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DailyReflection(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      locale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}locale'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      sourceUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_url'],
+      ),
+      license: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}license'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DailyReflectionsTable createAlias(String alias) {
+    return $DailyReflectionsTable(attachedDatabase, alias);
+  }
+}
+
+class DailyReflection extends DataClass implements Insertable<DailyReflection> {
+  final String id;
+  final String date;
+  final String locale;
+  final String title;
+  final String body;
+  final String? sourceUrl;
+  final String license;
+  final String source;
+  final DateTime createdAt;
+  const DailyReflection({
+    required this.id,
+    required this.date,
+    required this.locale,
+    required this.title,
+    required this.body,
+    this.sourceUrl,
+    required this.license,
+    required this.source,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date'] = Variable<String>(date);
+    map['locale'] = Variable<String>(locale);
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    if (!nullToAbsent || sourceUrl != null) {
+      map['source_url'] = Variable<String>(sourceUrl);
+    }
+    map['license'] = Variable<String>(license);
+    map['source'] = Variable<String>(source);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  DailyReflectionsCompanion toCompanion(bool nullToAbsent) {
+    return DailyReflectionsCompanion(
+      id: Value(id),
+      date: Value(date),
+      locale: Value(locale),
+      title: Value(title),
+      body: Value(body),
+      sourceUrl: sourceUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceUrl),
+      license: Value(license),
+      source: Value(source),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DailyReflection.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DailyReflection(
+      id: serializer.fromJson<String>(json['id']),
+      date: serializer.fromJson<String>(json['date']),
+      locale: serializer.fromJson<String>(json['locale']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      sourceUrl: serializer.fromJson<String?>(json['sourceUrl']),
+      license: serializer.fromJson<String>(json['license']),
+      source: serializer.fromJson<String>(json['source']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'date': serializer.toJson<String>(date),
+      'locale': serializer.toJson<String>(locale),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'sourceUrl': serializer.toJson<String?>(sourceUrl),
+      'license': serializer.toJson<String>(license),
+      'source': serializer.toJson<String>(source),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  DailyReflection copyWith({
+    String? id,
+    String? date,
+    String? locale,
+    String? title,
+    String? body,
+    Value<String?> sourceUrl = const Value.absent(),
+    String? license,
+    String? source,
+    DateTime? createdAt,
+  }) => DailyReflection(
+    id: id ?? this.id,
+    date: date ?? this.date,
+    locale: locale ?? this.locale,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    sourceUrl: sourceUrl.present ? sourceUrl.value : this.sourceUrl,
+    license: license ?? this.license,
+    source: source ?? this.source,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DailyReflection copyWithCompanion(DailyReflectionsCompanion data) {
+    return DailyReflection(
+      id: data.id.present ? data.id.value : this.id,
+      date: data.date.present ? data.date.value : this.date,
+      locale: data.locale.present ? data.locale.value : this.locale,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      sourceUrl: data.sourceUrl.present ? data.sourceUrl.value : this.sourceUrl,
+      license: data.license.present ? data.license.value : this.license,
+      source: data.source.present ? data.source.value : this.source,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyReflection(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('locale: $locale, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    date,
+    locale,
+    title,
+    body,
+    sourceUrl,
+    license,
+    source,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DailyReflection &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.locale == this.locale &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.sourceUrl == this.sourceUrl &&
+          other.license == this.license &&
+          other.source == this.source &&
+          other.createdAt == this.createdAt);
+}
+
+class DailyReflectionsCompanion extends UpdateCompanion<DailyReflection> {
+  final Value<String> id;
+  final Value<String> date;
+  final Value<String> locale;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<String?> sourceUrl;
+  final Value<String> license;
+  final Value<String> source;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const DailyReflectionsCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.locale = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.sourceUrl = const Value.absent(),
+    this.license = const Value.absent(),
+    this.source = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DailyReflectionsCompanion.insert({
+    required String id,
+    required String date,
+    required String locale,
+    required String title,
+    required String body,
+    this.sourceUrl = const Value.absent(),
+    required String license,
+    required String source,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       date = Value(date),
+       locale = Value(locale),
+       title = Value(title),
+       body = Value(body),
+       license = Value(license),
+       source = Value(source);
+  static Insertable<DailyReflection> custom({
+    Expression<String>? id,
+    Expression<String>? date,
+    Expression<String>? locale,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? sourceUrl,
+    Expression<String>? license,
+    Expression<String>? source,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (locale != null) 'locale': locale,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (sourceUrl != null) 'source_url': sourceUrl,
+      if (license != null) 'license': license,
+      if (source != null) 'source': source,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DailyReflectionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? date,
+    Value<String>? locale,
+    Value<String>? title,
+    Value<String>? body,
+    Value<String?>? sourceUrl,
+    Value<String>? license,
+    Value<String>? source,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return DailyReflectionsCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      locale: locale ?? this.locale,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      license: license ?? this.license,
+      source: source ?? this.source,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (locale.present) {
+      map['locale'] = Variable<String>(locale.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (sourceUrl.present) {
+      map['source_url'] = Variable<String>(sourceUrl.value);
+    }
+    if (license.present) {
+      map['license'] = Variable<String>(license.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyReflectionsCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('locale: $locale, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('sourceUrl: $sourceUrl, ')
+          ..write('license: $license, ')
+          ..write('source: $source, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ActionLogsTable extends ActionLogs
     with TableInfo<$ActionLogsTable, ActionLog> {
   @override
@@ -5633,6 +6185,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ReadingsTable readings = $ReadingsTable(this);
   late final $ActionRulesTable actionRules = $ActionRulesTable(this);
   late final $DailyActionsTable dailyActions = $DailyActionsTable(this);
+  late final $DailyReflectionsTable dailyReflections = $DailyReflectionsTable(
+    this,
+  );
   late final $ActionLogsTable actionLogs = $ActionLogsTable(this);
   late final $UserSettingsTable userSettings = $UserSettingsTable(this);
   late final $WidgetSnapshotsTable widgetSnapshots = $WidgetSnapshotsTable(
@@ -5653,6 +6208,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     readings,
     actionRules,
     dailyActions,
+    dailyReflections,
     actionLogs,
     userSettings,
     widgetSnapshots,
@@ -5739,6 +6295,29 @@ final class $$CalendarDaysTableReferences
     ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
 
     final cache = $_typedResult.readTableOrNull(_dailyActionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$DailyReflectionsTable, List<DailyReflection>>
+  _dailyReflectionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.dailyReflections,
+    aliasName: $_aliasNameGenerator(
+      db.calendarDays.date,
+      db.dailyReflections.date,
+    ),
+  );
+
+  $$DailyReflectionsTableProcessedTableManager get dailyReflectionsRefs {
+    final manager = $$DailyReflectionsTableTableManager(
+      $_db,
+      $_db.dailyReflections,
+    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _dailyReflectionsRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -5855,6 +6434,31 @@ class $$CalendarDaysTableFilterComposer
           }) => $$DailyActionsTableFilterComposer(
             $db: $db,
             $table: $db.dailyActions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> dailyReflectionsRefs(
+    Expression<bool> Function($$DailyReflectionsTableFilterComposer f) f,
+  ) {
+    final $$DailyReflectionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.dailyReflections,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DailyReflectionsTableFilterComposer(
+            $db: $db,
+            $table: $db.dailyReflections,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6016,6 +6620,31 @@ class $$CalendarDaysTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> dailyReflectionsRefs<T extends Object>(
+    Expression<T> Function($$DailyReflectionsTableAnnotationComposer a) f,
+  ) {
+    final $$DailyReflectionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.dailyReflections,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DailyReflectionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.dailyReflections,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CalendarDaysTableTableManager
@@ -6035,6 +6664,7 @@ class $$CalendarDaysTableTableManager
             bool celebrationsRefs,
             bool readingsRefs,
             bool dailyActionsRefs,
+            bool dailyReflectionsRefs,
           })
         > {
   $$CalendarDaysTableTableManager(_$AppDatabase db, $CalendarDaysTable table)
@@ -6101,6 +6731,7 @@ class $$CalendarDaysTableTableManager
                 celebrationsRefs = false,
                 readingsRefs = false,
                 dailyActionsRefs = false,
+                dailyReflectionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -6108,6 +6739,7 @@ class $$CalendarDaysTableTableManager
                     if (celebrationsRefs) db.celebrations,
                     if (readingsRefs) db.readings,
                     if (dailyActionsRefs) db.dailyActions,
+                    if (dailyReflectionsRefs) db.dailyReflections,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -6175,6 +6807,27 @@ class $$CalendarDaysTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (dailyReflectionsRefs)
+                        await $_getPrefetchedData<
+                          CalendarDay,
+                          $CalendarDaysTable,
+                          DailyReflection
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CalendarDaysTableReferences
+                              ._dailyReflectionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CalendarDaysTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).dailyReflectionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.date == item.date,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6199,6 +6852,7 @@ typedef $$CalendarDaysTableProcessedTableManager =
         bool celebrationsRefs,
         bool readingsRefs,
         bool dailyActionsRefs,
+        bool dailyReflectionsRefs,
       })
     >;
 typedef $$CelebrationsTableCreateCompanionBuilder =
@@ -7723,6 +8377,410 @@ typedef $$DailyActionsTableProcessedTableManager =
       (DailyAction, $$DailyActionsTableReferences),
       DailyAction,
       PrefetchHooks Function({bool date, bool actionLogsRefs})
+    >;
+typedef $$DailyReflectionsTableCreateCompanionBuilder =
+    DailyReflectionsCompanion Function({
+      required String id,
+      required String date,
+      required String locale,
+      required String title,
+      required String body,
+      Value<String?> sourceUrl,
+      required String license,
+      required String source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$DailyReflectionsTableUpdateCompanionBuilder =
+    DailyReflectionsCompanion Function({
+      Value<String> id,
+      Value<String> date,
+      Value<String> locale,
+      Value<String> title,
+      Value<String> body,
+      Value<String?> sourceUrl,
+      Value<String> license,
+      Value<String> source,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$DailyReflectionsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $DailyReflectionsTable, DailyReflection> {
+  $$DailyReflectionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
+      db.calendarDays.createAlias(
+        $_aliasNameGenerator(db.dailyReflections.date, db.calendarDays.date),
+      );
+
+  $$CalendarDaysTableProcessedTableManager get date {
+    final $_column = $_itemColumn<String>('date')!;
+
+    final manager = $$CalendarDaysTableTableManager(
+      $_db,
+      $_db.calendarDays,
+    ).filter((f) => f.date.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_dateTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$DailyReflectionsTableFilterComposer
+    extends Composer<_$AppDatabase, $DailyReflectionsTable> {
+  $$DailyReflectionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CalendarDaysTableFilterComposer get date {
+    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableFilterComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DailyReflectionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DailyReflectionsTable> {
+  $$DailyReflectionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locale => $composableBuilder(
+    column: $table.locale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceUrl => $composableBuilder(
+    column: $table.sourceUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get license => $composableBuilder(
+    column: $table.license,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CalendarDaysTableOrderingComposer get date {
+    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableOrderingComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DailyReflectionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DailyReflectionsTable> {
+  $$DailyReflectionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get locale =>
+      $composableBuilder(column: $table.locale, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceUrl =>
+      $composableBuilder(column: $table.sourceUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get license =>
+      $composableBuilder(column: $table.license, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$CalendarDaysTableAnnotationComposer get date {
+    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.date,
+      referencedTable: $db.calendarDays,
+      getReferencedColumn: (t) => t.date,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CalendarDaysTableAnnotationComposer(
+            $db: $db,
+            $table: $db.calendarDays,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$DailyReflectionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DailyReflectionsTable,
+          DailyReflection,
+          $$DailyReflectionsTableFilterComposer,
+          $$DailyReflectionsTableOrderingComposer,
+          $$DailyReflectionsTableAnnotationComposer,
+          $$DailyReflectionsTableCreateCompanionBuilder,
+          $$DailyReflectionsTableUpdateCompanionBuilder,
+          (DailyReflection, $$DailyReflectionsTableReferences),
+          DailyReflection,
+          PrefetchHooks Function({bool date})
+        > {
+  $$DailyReflectionsTableTableManager(
+    _$AppDatabase db,
+    $DailyReflectionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DailyReflectionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DailyReflectionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DailyReflectionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<String> locale = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String?> sourceUrl = const Value.absent(),
+                Value<String> license = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyReflectionsCompanion(
+                id: id,
+                date: date,
+                locale: locale,
+                title: title,
+                body: body,
+                sourceUrl: sourceUrl,
+                license: license,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String date,
+                required String locale,
+                required String title,
+                required String body,
+                Value<String?> sourceUrl = const Value.absent(),
+                required String license,
+                required String source,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyReflectionsCompanion.insert(
+                id: id,
+                date: date,
+                locale: locale,
+                title: title,
+                body: body,
+                sourceUrl: sourceUrl,
+                license: license,
+                source: source,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$DailyReflectionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({date = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (date) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.date,
+                                referencedTable:
+                                    $$DailyReflectionsTableReferences
+                                        ._dateTable(db),
+                                referencedColumn:
+                                    $$DailyReflectionsTableReferences
+                                        ._dateTable(db)
+                                        .date,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$DailyReflectionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DailyReflectionsTable,
+      DailyReflection,
+      $$DailyReflectionsTableFilterComposer,
+      $$DailyReflectionsTableOrderingComposer,
+      $$DailyReflectionsTableAnnotationComposer,
+      $$DailyReflectionsTableCreateCompanionBuilder,
+      $$DailyReflectionsTableUpdateCompanionBuilder,
+      (DailyReflection, $$DailyReflectionsTableReferences),
+      DailyReflection,
+      PrefetchHooks Function({bool date})
     >;
 typedef $$ActionLogsTableCreateCompanionBuilder =
     ActionLogsCompanion Function({
@@ -9603,6 +10661,8 @@ class $AppDatabaseManager {
       $$ActionRulesTableTableManager(_db, _db.actionRules);
   $$DailyActionsTableTableManager get dailyActions =>
       $$DailyActionsTableTableManager(_db, _db.dailyActions);
+  $$DailyReflectionsTableTableManager get dailyReflections =>
+      $$DailyReflectionsTableTableManager(_db, _db.dailyReflections);
   $$ActionLogsTableTableManager get actionLogs =>
       $$ActionLogsTableTableManager(_db, _db.actionLogs);
   $$UserSettingsTableTableManager get userSettings =>

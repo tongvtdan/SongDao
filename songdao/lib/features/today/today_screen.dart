@@ -37,16 +37,21 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   }
 
   Future<TodayViewData> _loadToday() async {
-    await ref.read(seedContentBootstrapProvider.future);
-    final data = await TodayController(
-      db: ref.read(databaseProvider),
-      settings: ref.read(userSettingsRepositoryProvider),
-      engine: ref.read(dailyActionEngineProvider),
-      massService: ref.read(massServiceProvider),
-    ).load();
+    try {
+      await ref.read(seedContentBootstrapProvider.future);
+      final data = await TodayController(
+        db: ref.read(databaseProvider),
+        settings: ref.read(userSettingsRepositoryProvider),
+        engine: ref.read(dailyActionEngineProvider),
+        massService: ref.read(massServiceProvider),
+      ).load();
 
-    _noteController.text = data.log?.note ?? '';
-    return data;
+      _noteController.text = data.log?.note ?? '';
+      return data;
+    } catch (error, stackTrace) {
+      debugPrint('Today load failed: $error\n$stackTrace');
+      rethrow;
+    }
   }
 
   Future<void> _completeAction(TodayViewData data) async {
@@ -144,6 +149,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                           importantMass: data.importantMass,
                           onChooseChurch: () => context.go('/church'),
                         ),
+                        if (data.reflection != null) ...[
+                          const SizedBox(height: AppSpacing.x4),
+                          _DailyReflectionCard(reflection: data.reflection!),
+                        ],
                         const SizedBox(height: AppSpacing.x4),
                         _ReflectionNoteCard(
                           controller: _noteController,
@@ -163,8 +172,49 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   }
 
   Future<void> _refresh() async {
+    ref.invalidate(seedContentBootstrapProvider);
     setState(() => _todayFuture = _loadToday());
     await _todayFuture;
+  }
+}
+
+class _DailyReflectionCard extends StatelessWidget {
+  const _DailyReflectionCard({required this.reflection});
+
+  final DailyReflection reflection;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: AppSpacing.cardPadding,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AppSignalChip(
+              label: 'Suy niệm',
+              color: AppColors.gold,
+              icon: Icons.lightbulb_outline,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              reflection.title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              reflection.body,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -185,7 +235,7 @@ class _LiturgicalContextCard extends StatelessWidget {
         data.showLunarDate &&
         data.calendarDay.lunarDate != null;
     final quote = _dailyQuoteFor(data.date);
-    final saintOfDay = _saintOfDayLabel(data);
+    final saintOfDay = _saintOfDayLabel(data, celebration);
 
     final screenHeight = MediaQuery.sizeOf(context).height;
     final cardHeight = (screenHeight * 0.58).clamp(430.0, 560.0);
@@ -239,7 +289,7 @@ class _LiturgicalContextCard extends StatelessWidget {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -250,42 +300,38 @@ class _LiturgicalContextCard extends StatelessWidget {
                                       .textTheme
                                       .displayLarge
                                       ?.copyWith(
-                                        fontSize: 112,
+                                        fontSize: 130,
                                         height: 0.9,
                                         color: accentColor,
                                         fontWeight: FontWeight.w800,
                                       ),
                                 ),
-                                const SizedBox(height: AppSpacing.x3),
+                                const SizedBox(height: AppSpacing.x2),
+                                if (showLunar) ...[
+                                  _LunarDateText(
+                                    label: data.calendarDay.lunarDate!,
+                                  ),
+                                  const SizedBox(height: AppSpacing.x1),
+                                ],
                                 Text(
                                   celebration,
                                   textAlign: TextAlign.center,
-                                  maxLines: 3,
+                                  maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.titleLarge
                                       ?.copyWith(
+                                        fontSize: 12,
                                         color: AppColors.textPrimary,
                                         fontWeight: FontWeight.w700,
-                                        height: 1.25,
+                                        height: 1.2,
                                       ),
                                 ),
-                                if (showLunar) ...[
-                                  const SizedBox(height: AppSpacing.x1),
-                                  Text(
-                                    data.calendarDay.lunarDate!,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                  ),
-                                ],
-                                const SizedBox(height: AppSpacing.x3),
-                                _DailyQuoteBlock(quote: quote),
                                 const SizedBox(height: AppSpacing.x2),
-                                _SaintOfDayBlock(label: saintOfDay),
+                                _DailyQuoteBlock(quote: quote),
+                                if (saintOfDay != null) ...[
+                                  const SizedBox(height: AppSpacing.x1),
+                                  _SaintOfDayBlock(label: saintOfDay),
+                                ],
                               ],
                             ),
                           ),
@@ -332,7 +378,7 @@ class _DailyQuoteBlock extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
+        vertical: AppSpacing.x1,
       ),
       decoration: BoxDecoration(
         color: AppColors.surface.withValues(alpha: 0.74),
@@ -344,33 +390,52 @@ class _DailyQuoteBlock extends StatelessWidget {
         children: [
           const Icon(
             Icons.format_quote_rounded,
-            size: 18,
+            size: 16,
             color: AppColors.gold,
           ),
-          const SizedBox(height: AppSpacing.x1),
           Text(
             quote.text,
             textAlign: TextAlign.center,
-            maxLines: 3,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.textPrimary,
-              height: 1.28,
+              height: 1.2,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: AppSpacing.x1),
           Text(
             quote.attribution,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
               color: AppColors.textSecondary,
               fontWeight: FontWeight.w700,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LunarDateText extends StatelessWidget {
+  const _LunarDateText({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: AppColors.textSecondary,
+        height: 1.18,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
@@ -387,7 +452,7 @@ class _SaintOfDayBlock extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.x3,
-        vertical: AppSpacing.x2,
+        vertical: AppSpacing.x1,
       ),
       decoration: BoxDecoration(
         color: AppColors.brandSoft.withValues(alpha: 0.66),
@@ -401,7 +466,7 @@ class _SaintOfDayBlock extends StatelessWidget {
             padding: EdgeInsets.only(top: 3),
             child: Icon(
               Icons.local_florist_outlined,
-              size: 18,
+              size: 16,
               color: AppColors.brand,
             ),
           ),
@@ -415,7 +480,7 @@ class _SaintOfDayBlock extends StatelessWidget {
                   'Vị thánh hôm nay',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: AppColors.brandPressed,
                     fontWeight: FontWeight.w800,
                   ),
@@ -424,9 +489,9 @@ class _SaintOfDayBlock extends StatelessWidget {
                   label,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.textPrimary,
-                    height: 1.22,
+                    height: 1.18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -949,7 +1014,7 @@ _DailyQuote _dailyQuoteFor(String date) {
   return _dailyQuotes[dayOfYear % _dailyQuotes.length];
 }
 
-String _saintOfDayLabel(TodayViewData data) {
+String? _saintOfDayLabel(TodayViewData data, String primaryCelebration) {
   final rankedCelebrations = data.celebrations.where(
     (celebration) =>
         celebration.rank == 'memorial' ||
@@ -958,11 +1023,14 @@ String _saintOfDayLabel(TodayViewData data) {
   );
   for (final celebration in rankedCelebrations) {
     final name = celebration.name;
-    if (name.startsWith('Thánh ') || name.startsWith('Các Thánh ')) {
+    final isSaint = name.startsWith('Thánh ') || name.startsWith('Các Thánh ');
+    final isDuplicate =
+        name.trim().toLowerCase() == primaryCelebration.trim().toLowerCase();
+    if (isSaint && !isDuplicate) {
       return name;
     }
   }
-  return 'Các thánh nam nữ của Chúa, cầu cho chúng con.';
+  return null;
 }
 
 class _DailyQuote {

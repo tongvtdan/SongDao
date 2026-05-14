@@ -32,5 +32,5 @@ The primary build path remains:
 - [Catholic Liturgical Calendar](https://www.catholicliturgicalcalendar.com/)
 - [Catholic Daily Reflections](https://catholic-daily-reflections.com/)
 - [Ascension Press homepage](https://ascensionpress.com/pages/homepage)
-- [mycatholic.life](https://mycatholic.life/)
+- https://mycatholic.life/
 - 

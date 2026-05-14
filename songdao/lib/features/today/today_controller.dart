@@ -49,6 +49,11 @@ class TodayController {
     );
     final log = await db.todayDao.getActionLogForAction(action.id);
     final importantMass = await massService.nextImportantMassForDate(dateKey);
+    final reflection =
+        await (db.select(db.dailyReflections)..where(
+              (t) => t.date.equals(dateKey) & t.locale.equals(action.locale),
+            ))
+            .getSingleOrNull();
 
     return TodayViewData(
       date: dateKey,
@@ -60,6 +65,7 @@ class TodayController {
       action: action,
       log: log,
       importantMass: importantMass,
+      reflection: reflection,
     );
   }
 
@@ -91,6 +97,7 @@ class TodayViewData {
     required this.action,
     required this.log,
     required this.importantMass,
+    required this.reflection,
   });
 
   final String date;
@@ -102,6 +109,7 @@ class TodayViewData {
   final DailyAction action;
   final ActionLog? log;
   final ImportantMass? importantMass;
+  final DailyReflection? reflection;
 }
 
 int readingOrder(String type) {

@@ -25,7 +25,10 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "0.1"
+      "enum": [
+        "0.1",
+        "0.2"
+      ]
     },
     "pack_id": {
       "$ref": "#/$defs/id"
@@ -99,6 +102,12 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/mass_time"
+      }
+    },
+    "daily_reflections": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/daily_reflection"
       }
     }
   },
@@ -541,6 +550,52 @@
           }
         }
       ]
+    },
+    "daily_reflection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "date",
+        "locale",
+        "title",
+        "body",
+        "license",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "date": {
+          "$ref": "#/$defs/date"
+        },
+        "locale": {
+          "$ref": "#/$defs/locale"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      }
     },
     "church": {
       "type": "object",

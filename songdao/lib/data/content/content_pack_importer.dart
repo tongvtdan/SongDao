@@ -59,6 +59,9 @@ class ContentPackImporter {
       await _importCalendarDays(_list(decoded, 'calendar_days'));
       await _importCelebrations(_list(decoded, 'celebrations'));
       await _importReadings(_list(decoded, 'readings'));
+      await _importDailyReflections(
+        _optionalList(decoded, 'daily_reflections'),
+      );
       await _importActionRules(_list(decoded, 'action_rules'), packId);
       await _importPrayers(_list(decoded, 'prayers'));
       await _importChurches(_list(decoded, 'churches'));
@@ -141,7 +144,7 @@ class ContentPackImporter {
         throw FormatException('Content pack missing required field: $field');
       }
     }
-    if (pack['schema_version'] != '0.1') {
+    if (pack['schema_version'] != '0.1' && pack['schema_version'] != '0.2') {
       throw FormatException(
         'Unsupported content pack schema: ${pack['schema_version']}',
       );
@@ -162,6 +165,14 @@ class ContentPackImporter {
           text != null) {
         throw FormatException(
           'Reading ${reading['id']} cannot include text with $license license.',
+        );
+      }
+    }
+    for (final reflection in _optionalList(pack, 'daily_reflections')) {
+      _requireKnownDate(calendarDates, reflection, 'daily reflection');
+      if (reflection['license'] == 'reference-only') {
+        throw FormatException(
+          'Daily reflection ${reflection['id']} cannot use reference-only license.',
         );
       }
     }
@@ -247,6 +258,25 @@ class ContentPackImporter {
               sourceUrl: Value(row['source_url'] as String?),
               license: row['license']! as String,
               locale: row['locale']! as String,
+            ),
+          );
+    }
+  }
+
+  Future<void> _importDailyReflections(List<Map<String, Object?>> rows) async {
+    for (final row in rows) {
+      await db
+          .into(db.dailyReflections)
+          .insertOnConflictUpdate(
+            DailyReflectionsCompanion.insert(
+              id: row['id']! as String,
+              date: row['date']! as String,
+              locale: row['locale']! as String,
+              title: row['title']! as String,
+              body: row['body']! as String,
+              sourceUrl: Value(row['source_url'] as String?),
+              license: row['license']! as String,
+              source: _canonicalJson(row['source']),
             ),
           );
     }
@@ -352,6 +382,16 @@ class ContentPackImporter {
           return item;
         })
         .toList(growable: false);
+  }
+
+  List<Map<String, Object?>> _optionalList(
+    Map<String, Object?> pack,
+    String key,
+  ) {
+    if (!pack.containsKey(key)) {
+      return const [];
+    }
+    return _list(pack, key);
   }
 
   void _requireKnownDate(

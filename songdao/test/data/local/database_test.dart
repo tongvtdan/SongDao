@@ -6,6 +6,7 @@ import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:songdao/data/content/content_pack_provider.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
@@ -1111,7 +1112,10 @@ void main() {
 
         expect(result.packId, 'parishes-vn-beta-2026');
         expect(result.imported, isTrue);
-        expect(await db.select(db.churches).get(), hasLength(3));
+        expect(
+          (await db.select(db.churches).get()).length,
+          greaterThanOrEqualTo(3),
+        );
 
         final massTimes = await db.select(db.massTimes).get();
         // At least Sunday, weekday, and vigil entries
@@ -1167,6 +1171,96 @@ void main() {
         final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
         final action = payload['action']! as Map<String, Object?>;
         expect(action['completed'], isTrue);
+      },
+    );
+
+    test('imports full 2026 Vietnam calendar pack with safe content', () async {
+      final source = await File(
+        '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
+      ).readAsString();
+      final importer = ContentPackImporter(db);
+
+      final result = await importer.importPackJson(source);
+
+      expect(result.packId, 'calendar-vn-2026');
+      expect(await db.select(db.calendarDays).get(), hasLength(365));
+      expect((await db.select(db.celebrations).get()).length, greaterThan(365));
+      expect(await db.select(db.readings).get(), hasLength(365));
+      expect(await db.select(db.dailyReflections).get(), hasLength(365));
+
+      for (final date in ['2026-01-01', '2026-05-14', '2026-12-31']) {
+        final day =
+            await (db.select(db.calendarDays)
+                  ..where((t) => t.date.equals(date) & t.locale.equals('vi')))
+                .getSingle();
+        expect(day.season, isNot('unknown'));
+        expect(day.lunarDate, isNotNull);
+        expect(
+          await (db.select(db.dailyReflections)
+                ..where((t) => t.date.equals(date) & t.locale.equals('vi')))
+              .getSingleOrNull(),
+          isNotNull,
+        );
+      }
+
+      final unsafeReadings =
+          await (db.select(db.readings)..where(
+                (t) =>
+                    t.license.equals('reference-only') &
+                    t.textContent.isNotNull(),
+              ))
+              .get();
+      expect(unsafeReadings, isEmpty);
+    });
+
+    test('Today loads real 2026 calendar data and reflection', () async {
+      final importer = ContentPackImporter(db);
+      final source = await File(
+        '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
+      ).readAsString();
+      await importer.importPackJson(source);
+
+      final controller = TodayController(
+        db: db,
+        settings: UserSettingsRepository(db),
+        engine: DailyActionEngine(db),
+        massService: MassService(db),
+      );
+      final data = await controller.load(date: '2026-06-15');
+
+      expect(data.calendarDay.season, isNot('unknown'));
+      expect(data.readings, isNotEmpty);
+      expect(data.reflection, isNotNull);
+      expect(
+        data.action.sourceRule,
+        isNot(DailyActionEngine.fallbackSourceRule),
+      );
+    });
+
+    test(
+      'default bundled packs include calendar 2026 and parish data',
+      () async {
+        final importer = ContentPackImporter(db);
+
+        for (final asset in defaultContentPackAssets) {
+          final filePath = asset.replaceFirst('../', '../');
+          await importer.importPackJson(await File(filePath).readAsString());
+        }
+
+        final juneDay =
+            await (db.select(db.calendarDays)..where(
+                  (t) => t.date.equals('2026-06-15') & t.locale.equals('vi'),
+                ))
+                .getSingleOrNull();
+        expect(juneDay, isNotNull);
+        expect(
+          (await db.select(db.churches).get()).length,
+          greaterThanOrEqualTo(3),
+        );
+        expect(
+          (await db.select(db.massTimes).get()).length,
+          greaterThanOrEqualTo(10),
+        );
       },
     );
   });

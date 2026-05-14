@@ -72,6 +72,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           .read(dailyActionEngineProvider)
           .getOrCreateActionForDate(_selectedDate, locale: locale);
     }
+    final reflection =
+        await (db.select(db.dailyReflections)..where(
+              (t) => t.date.equals(_selectedDate) & t.locale.equals(locale),
+            ))
+            .getSingleOrNull();
 
     return _CalendarViewData(
       locale: locale,
@@ -81,6 +86,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       celebrations: celebrations,
       readings: readings,
       action: action,
+      reflection: reflection,
     );
   }
 
@@ -410,6 +416,25 @@ class _SelectedDayCard extends StatelessWidget {
                 ),
               ),
             ],
+            if (data.reflection != null) ...[
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 10),
+              Text(
+                data.reflection!.title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                data.reflection!.body,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -426,6 +451,7 @@ class _CalendarViewData {
     required this.celebrations,
     required this.readings,
     required this.action,
+    required this.reflection,
   });
 
   final String locale;
@@ -435,6 +461,7 @@ class _CalendarViewData {
   final List<Celebration> celebrations;
   final List<Reading> readings;
   final DailyAction? action;
+  final DailyReflection? reflection;
 }
 
 String _dateKey(DateTime date) {
