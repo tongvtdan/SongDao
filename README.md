@@ -27,3 +27,10 @@ The primary build path remains:
 - [Milestone 0 foundation decisions](docs/milestone-0-foundation.md)
 - [Local seed content pack format](docs/content-pack-format.md)
 - [Today and widget wireframes](docs/today-widget-wireframes.md)
+
+## References
+- [Catholic Liturgical Calendar](https://www.catholicliturgicalcalendar.com/)
+- [Catholic Daily Reflections](https://catholic-daily-reflections.com/)
+- [Ascension Press homepage](https://ascensionpress.com/pages/homepage)
+- [mycatholic.life](https://mycatholic.life/)
+- 
