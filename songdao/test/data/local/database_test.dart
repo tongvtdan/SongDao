@@ -1079,8 +1079,8 @@ void main() {
         expect(await db.select(db.readings).get(), hasLength(31));
         expect(await db.select(db.actionRules).get(), hasLength(5));
         expect(await db.select(db.prayers).get(), hasLength(3));
-        expect(await db.select(db.churches).get(), hasLength(1));
-        expect(await db.select(db.massTimes).get(), hasLength(2));
+        expect(await db.select(db.churches).get(), isEmpty);
+        expect(await db.select(db.massTimes).get(), isEmpty);
 
         final readings = await db.select(db.readings).get();
         expect(

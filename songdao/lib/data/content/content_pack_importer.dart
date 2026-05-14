@@ -5,7 +5,10 @@ import 'package:drift/drift.dart';
 
 import '../local/app_database.dart';
 import '../local/daily_action_engine.dart';
+import '../local/user_settings_repository.dart';
 import '../local/widget_snapshot_service.dart';
+
+const _legacyDemoChurchId = 'giao_xu_demo_tan_dinh';
 
 class ContentPackImportResult {
   const ContentPackImportResult({
@@ -56,6 +59,7 @@ class ContentPackImporter {
     }
 
     await db.transaction(() async {
+      await _removeLegacyDemoChurch();
       await _importCalendarDays(_list(decoded, 'calendar_days'));
       await _importCelebrations(_list(decoded, 'celebrations'));
       await _importReadings(_list(decoded, 'readings'));
@@ -344,6 +348,21 @@ class ContentPackImporter {
             ),
           );
     }
+  }
+
+  Future<void> _removeLegacyDemoChurch() async {
+    await (db.delete(
+      db.massTimes,
+    )..where((t) => t.churchId.equals(_legacyDemoChurchId))).go();
+    await (db.delete(
+      db.churches,
+    )..where((t) => t.id.equals(_legacyDemoChurchId))).go();
+    await (db.delete(db.userSettings)..where(
+          (t) =>
+              t.key.equals(UserSettingsKeys.selectedChurchId) &
+              t.value.equals(_legacyDemoChurchId),
+        ))
+        .go();
   }
 
   Future<void> _importMassTimes(List<Map<String, Object?>> rows) async {

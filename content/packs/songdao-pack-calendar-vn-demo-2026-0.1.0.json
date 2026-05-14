@@ -8,7 +8,7 @@
   "valid_to": "2026-05-10",
   "source_summary": "Internal 14-day Vietnamese demo pack for validating the SongDao beta content-pack importer.",
   "license_summary": "Reference-only readings; no copyrighted full-text readings or prayer bodies.",
-  "checksum": "sha256:98648313ffd51dbc889956ec802526c4edcdaaee130af8f3d1c243d4c193d9ea",
+  "checksum": "sha256:68addce361ee510c125e4d48b75f9e4156947f7b3b8ee090d590aa22dbd62ec9",
   "calendar_days": [
     {
       "id": "calendar_day_2026_04_27_vi",
@@ -1105,56 +1105,6 @@
       }
     }
   ],
-  "churches": [
-    {
-      "id": "giao_xu_demo_tan_dinh",
-      "locale": "vi",
-      "name": "Giáo xứ Demo Tân Định",
-      "diocese": "Tổng Giáo phận Sài Gòn",
-      "address": "Demo address, Quận 3, TP. Hồ Chí Minh",
-      "latitude": null,
-      "longitude": null,
-      "phone": null,
-      "website": null,
-      "verified_at": "2026-04-27",
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo"
-      }
-    }
-  ],
-  "mass_times": [
-    {
-      "id": "mass_demo_tan_dinh_weekday_0530_vi",
-      "church_id": "giao_xu_demo_tan_dinh",
-      "weekday": "monday",
-      "context": "weekday",
-      "time": "05:30",
-      "language": "vi",
-      "valid_from": "2026-04-27",
-      "valid_to": null,
-      "is_important_default": false,
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo",
-        "verified_at": "2026-04-27"
-      }
-    },
-    {
-      "id": "mass_demo_tan_dinh_sunday_0730_vi",
-      "church_id": "giao_xu_demo_tan_dinh",
-      "weekday": "sunday",
-      "context": "sunday",
-      "time": "07:30",
-      "language": "vi",
-      "valid_from": "2026-04-27",
-      "valid_to": null,
-      "is_important_default": true,
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo",
-        "verified_at": "2026-04-27"
-      }
-    }
-  ]
+  "churches": [],
+  "mass_times": []
 }
