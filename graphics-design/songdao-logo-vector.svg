@@ -28,7 +28,7 @@
       <stop offset="0" stop-color="#00614F"/>
       <stop offset="1" stop-color="#064337"/>
     </linearGradient>
-    <linearGradient id="pathFill" x1="444" y1="1017" x2="674" y2="560" gradientUnits="userSpaceOnUse">
+    <linearGradient id="pathFill" x1="392" y1="1017" x2="604" y2="560" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#DFF0E5"/>
       <stop offset="0.62" stop-color="#F2F7E8"/>
       <stop offset="1" stop-color="#FFFFFF"/>
@@ -42,7 +42,7 @@
       <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#1F2522" flood-opacity="0.18"/>
     </filter>
     <filter id="smallShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1F2522" flood-opacity="0.22"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1F2522" flood-opacity="0.18"/>
     </filter>
     <clipPath id="innerWindowClip">
       <path d="M341 674V431c0-90 55-181 171-310 116 129 171 220 171 310v243Z"/>
@@ -72,28 +72,28 @@
   </g>
 
   <g id="integrated-cross" filter="url(#smallShadow)">
-    <path id="cross-white-cut" d="M492 236H532C548 257 552 270 552 289V735H492V289C492 270 476 257 492 236Z" fill="#FFFFFF"/>
-    <path id="cross-vertical" d="M506 260H518C530 278 533 287 533 300V726H491V300C491 287 494 278 506 260Z" fill="#D99A25"/>
-    <rect id="cross-horizontal-white-cut" x="330" y="400" width="364" height="63" fill="#FFFFFF"/>
-    <rect id="cross-horizontal" x="341" y="414" width="342" height="35" fill="#D99A25"/>
-    <path id="cross-inner-highlight" d="M512 262V724M344 416H681" fill="none" stroke="#F8D982" stroke-width="3" stroke-linecap="round"/>
+    <path id="cross-white-cut" d="M493 236H531C546 255 550 269 550 287V596H493V287C493 269 478 255 493 236Z" fill="#FFFFFF"/>
+    <path id="cross-vertical" d="M507 259H517C528 276 531 286 531 300V592H493V300C493 286 496 276 507 259Z" fill="#D99A25"/>
+    <rect id="cross-horizontal-white-cut" x="329" y="403" width="365" height="46" fill="#FFFFFF"/>
+    <rect id="cross-horizontal" x="341" y="414" width="342" height="24" fill="#D99A25"/>
+    <path id="cross-inner-highlight" d="M512 262V592M344 426H681" fill="none" stroke="#F8D982" stroke-width="3" stroke-linecap="round"/>
   </g>
 
   <g id="foreground-hills">
-    <path id="left-hill" d="M249 1024V650c88-15 161 8 235 50 66 38 129 42 212 9v315Z" fill="#155744"/>
-    <path id="right-hill" d="M461 1024V685c98-23 174-3 231 52 61-78 116-92 166-133v420Z" fill="url(#hillGreen)"/>
-    <path id="hill-gold-edge" d="M249 650c88-15 161 8 235 50 66 38 129 42 212 9" fill="none" stroke="#F0C966" stroke-width="6" stroke-linecap="round"/>
+    <path id="left-hill" d="M249 1024V658c78-15 143 2 215 37 74 36 143 35 216-1v330Z" fill="#155744"/>
+    <path id="right-hill" d="M454 1024V691c100-23 177-1 234 55 55-75 105-96 149-130v408Z" fill="url(#hillGreen)"/>
+    <path id="hill-gold-edge" d="M249 658c78-15 143 2 215 37 74 36 143 35 216-1" fill="none" stroke="#F0C966" stroke-width="5" stroke-linecap="round"/>
   </g>
 
   <g id="daily-path" filter="url(#smallShadow)">
-    <path id="path-gold-border" d="M445 1024V839c0-74 53-115 111-149 40-24 46-57 9-84-20-15-51-21-89-17 78-45 149-35 194 8 48 47 38 95-24 136-85 55-89 121 24 177 63 31 103 72 103 114Z" fill="#D99A25"/>
-    <path id="path-fill" d="M473 1024V850c0-61 45-95 98-126 59-35 62-88 4-120-12-7-27-12-45-15 48-10 91 1 124 30 39 35 29 68-32 108-93 60-96 150 33 211 43 20 77 49 84 86Z" fill="url(#pathFill)"/>
-    <path id="path-center-light" d="M501 1024V866c0-54 39-80 87-109 87-52 82-119 8-155 27 4 53 15 73 33" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.72"/>
+    <path id="path-gold-border" d="M304 1024V958c0-126 72-210 194-281 48-28 69-48 76-77 46 8 85 36 102 75 24 57-24 99-78 139-68 50-71 118 35 183 16 10 29 19 40 27Z" fill="none" stroke="#D99A25" stroke-width="11" stroke-linejoin="round"/>
+    <path id="path-fill" d="M304 1024V958c0-126 72-210 194-281 48-28 69-48 76-77 46 8 85 36 102 75 24 57-24 99-78 139-68 50-71 118 35 183 16 10 29 19 40 27Z" fill="url(#pathFill)"/>
+    <path id="path-center-light" d="M342 1010c2-96 60-167 167-230 54-32 88-71 93-116" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.72"/>
   </g>
 
   <g id="leaf" filter="url(#smallShadow)">
-    <path id="leaf-outer" d="M704 724c42-94 105-113 123-163 0 89-24 155-97 190-24 12-47 14-70 9 14-12 29-24 44-36Z" fill="#008064" stroke="#F0C966" stroke-width="5" stroke-linejoin="round"/>
-    <path id="leaf-inner" d="M724 735c23-58 65-74 91-91-15 49-46 86-91 108-20 10-41 12-58 9 18-7 38-15 58-26Z" fill="#C7E4C8" stroke="#F5F3EA" stroke-width="4" stroke-linejoin="round"/>
-    <path id="leaf-vein" d="M681 760c45-32 91-65 134-116" fill="none" stroke="#1F7A64" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <path id="leaf-outer" d="M697 706c47-94 110-115 140-164-1 83-28 147-97 183-31 16-60 19-87 12 13-10 28-20 44-31Z" fill="#008064" stroke="#F0C966" stroke-width="5" stroke-linejoin="round"/>
+    <path id="leaf-inner" d="M723 721c27-58 72-76 101-96-18 48-50 83-94 105-24 12-45 14-64 10 18-6 38-12 57-19Z" fill="#C7E4C8" stroke="#F5F3EA" stroke-width="4" stroke-linejoin="round"/>
+    <path id="leaf-vein" d="M664 740c54-34 106-70 160-115" fill="none" stroke="#1F7A64" stroke-width="3" stroke-linecap="round" opacity="0.48"/>
   </g>
 </svg>
