@@ -153,12 +153,16 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                           children: [
                             SizedBox(
                               width: double.infinity,
-                              child: _ReadingReferencesCard(readings: data.readings),
+                              child: _ReadingReferencesCard(
+                                readings: data.readings,
+                              ),
                             ),
                             if (data.reflection != null)
                               SizedBox(
                                 width: double.infinity,
-                                child: _DailyReflectionCard(reflection: data.reflection!),
+                                child: _DailyReflectionCard(
+                                  reflection: data.reflection!,
+                                ),
                               ),
                           ],
                         ),
@@ -275,7 +279,8 @@ class _LiturgicalContextCard extends StatelessWidget {
                         child: Text(
                           'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
                                 color: AppColors.textInverse,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -290,9 +295,7 @@ class _LiturgicalContextCard extends StatelessWidget {
                               Text(
                                 parsed.day.toString().padLeft(2, '0'),
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge
+                                style: Theme.of(context).textTheme.displayLarge
                                     ?.copyWith(
                                       fontSize: 130,
                                       height: 0.9,
@@ -312,7 +315,8 @@ class _LiturgicalContextCard extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
                                       fontSize: 12,
                                       color: AppColors.textPrimary,
                                       fontWeight: FontWeight.w700,
@@ -514,16 +518,16 @@ class _DailyActionCard extends StatelessWidget {
 
     return AppBentoCard(
       accentColor: isCompleted ? AppColors.statusComplete : accentColor,
-      gradient: isCompleted 
-        ? LinearGradient(
-            colors: [
-              AppColors.surface,
-              AppColors.brandSoft.withValues(alpha: 0.15),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
-        : null,
+      gradient: isCompleted
+          ? LinearGradient(
+              colors: [
+                AppColors.surface,
+                AppColors.brandSoft.withValues(alpha: 0.15),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            )
+          : null,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 400),
         child: Column(
@@ -561,19 +565,22 @@ class _DailyActionCard extends StatelessWidget {
                 onPressed: isCompleting ? null : onComplete,
                 icon: isCompleting
                     ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Icon(Icons.check),
                 label: const Text('Hoàn thành'),
               )
             else
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.brandSoft.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(8),
@@ -594,7 +601,6 @@ class _DailyActionCard extends StatelessWidget {
     );
   }
 }
-
 
 class _ReadingReferencesCard extends StatelessWidget {
   const _ReadingReferencesCard({required this.readings});
@@ -877,13 +883,3 @@ const _dailyQuotes = [
     attribution: 'Lời gợi hứng hôm nay',
   ),
 ];
-
-String _actionTitle(String type) {
-  return switch (type) {
-    'sacrifice' => 'Hy sinh hôm nay',
-    'mass_preparation' => 'Chuẩn bị Thánh lễ',
-    'reflection' => 'Suy niệm hôm nay',
-    'solemnity' => 'Mừng lễ hôm nay',
-    _ => 'Một việc nhỏ hôm nay',
-  };
-}
