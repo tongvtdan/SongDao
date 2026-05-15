@@ -76,38 +76,96 @@ class AppSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: AppColors.brand),
-                const SizedBox(width: AppSpacing.x2),
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    ),
+    return AppBentoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: AppColors.brand),
+              const SizedBox(width: AppSpacing.x2),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.x3),
+          DefaultTextStyle.merge(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.35,
+            ),
+            child: child,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppBentoCard extends StatelessWidget {
+  const AppBentoCard({
+    super.key,
+    required this.child,
+    this.padding = AppSpacing.cardPadding,
+    this.accentColor,
+    this.gradient,
+    this.onTap,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final Color? accentColor;
+  final Gradient? gradient;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.textPrimary.withValues(alpha: 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        gradient: gradient,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Stack(
+              children: [
+                if (accentColor != null)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: 4,
+                    child: Container(color: accentColor),
+                  ),
+                Padding(
+                  padding: padding,
+                  child: child,
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.x3),
-            DefaultTextStyle.merge(
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.35,
-              ),
-              child: child,
-            ),
-          ],
+          ),
         ),
       ),
     );

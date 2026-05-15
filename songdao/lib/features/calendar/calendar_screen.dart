@@ -208,104 +208,101 @@ class _MonthGrid extends StatelessWidget {
     final gridStart = first.subtract(Duration(days: startOffset));
     final todayKey = _dateKey(DateTime.now());
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.x3),
-        child: Column(
-          children: [
-            const Row(
-              children: [
-                _WeekdayLabel('CN', sunday: true),
-                _WeekdayLabel('T2'),
-                _WeekdayLabel('T3'),
-                _WeekdayLabel('T4'),
-                _WeekdayLabel('T5'),
-                _WeekdayLabel('T6'),
-                _WeekdayLabel('T7'),
-              ],
+    return AppBentoCard(
+      child: Column(
+        children: [
+          const Row(
+            children: [
+              _WeekdayLabel('CN', sunday: true),
+              _WeekdayLabel('T2'),
+              _WeekdayLabel('T3'),
+              _WeekdayLabel('T4'),
+              _WeekdayLabel('T5'),
+              _WeekdayLabel('T6'),
+              _WeekdayLabel('T7'),
+            ],
+          ),
+          const SizedBox(height: 6),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              mainAxisSpacing: 6,
+              crossAxisSpacing: 6,
             ),
-            const SizedBox(height: 6),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                mainAxisSpacing: 6,
-                crossAxisSpacing: 6,
-              ),
-              itemCount: 42,
-              itemBuilder: (context, index) {
-                final date = gridStart.add(Duration(days: index));
-                final key = _dateKey(date);
-                final day = days[key];
-                final inMonth = date.month == month.month;
-                final selected = key == selectedDate;
-                final isToday = key == todayKey;
-                final color = day == null
-                    ? AppColors.textTertiary
-                    : liturgicalColor(day.color);
+            itemCount: 42,
+            itemBuilder: (context, index) {
+              final date = gridStart.add(Duration(days: index));
+              final key = _dateKey(date);
+              final day = days[key];
+              final inMonth = date.month == month.month;
+              final selected = key == selectedDate;
+              final isToday = key == todayKey;
+              final color = day == null
+                  ? AppColors.textTertiary
+                  : liturgicalColor(day.color);
 
-                return InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () => onSelect(date),
-                  child: Container(
-                    decoration: BoxDecoration(
+              return InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () => onSelect(date),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.brand
+                        : isToday
+                        ? AppColors.brandSoft
+                        : day == null
+                        ? Colors.transparent
+                        : color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
                       color: selected
                           ? AppColors.brand
-                          : isToday
-                          ? AppColors.brandSoft
                           : day == null
                           ? Colors.transparent
-                          : color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: selected
-                            ? AppColors.brand
-                            : day == null
-                            ? Colors.transparent
-                            : AppColors.borderSubtle,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${date.day}',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: selected
-                                    ? Colors.white
-                                    : inMonth
-                                    ? AppColors.textPrimary
-                                    : AppColors.textTertiary,
-                                fontWeight: isToday || selected
-                                    ? FontWeight.w800
-                                    : FontWeight.w500,
-                              ),
-                        ),
-                        const SizedBox(height: 3),
-                        Container(
-                          width: 5,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: day == null
-                                ? Colors.transparent
-                                : selected
-                                ? Colors.white
-                                : color == LiturgicalColors.white
-                                ? AppColors.gold
-                                : color,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ],
+                          : AppColors.borderSubtle,
                     ),
                   ),
-                );
-              },
-            ),
-          ],
-        ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${date.day}',
+                        style: Theme.of(context).textTheme.bodyMedium
+                            ?.copyWith(
+                              color: selected
+                                  ? Colors.white
+                                  : inMonth
+                                  ? AppColors.textPrimary
+                                  : AppColors.textTertiary,
+                              fontWeight: isToday || selected
+                                  ? FontWeight.w800
+                                  : FontWeight.w500,
+                            ),
+                      ),
+                      const SizedBox(height: 3),
+                      Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: day == null
+                              ? Colors.transparent
+                              : selected
+                              ? Colors.white
+                              : color == LiturgicalColors.white
+                              ? AppColors.gold
+                              : color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -341,12 +338,9 @@ class _SelectedDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final day = data.selectedDay;
     if (day == null) {
-      return const Card(
-        child: Padding(
-          padding: AppSpacing.cardPadding,
-          child: Text(
-            'Chưa có dữ liệu phụng vụ cho ngày này trong gói nội dung trên thiết bị.',
-          ),
+      return const AppBentoCard(
+        child: Text(
+          'Chưa có dữ liệu phụng vụ cho ngày này trong gói nội dung trên thiết bị.',
         ),
       );
     }
@@ -356,87 +350,87 @@ class _SelectedDayCard extends StatelessWidget {
     final showLunar =
         data.locale == 'vi' && data.showLunarDate && day.lunarDate != null;
 
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    final accentColor = _liturgicalAccentColor(day.color);
+
+    return AppBentoCard(
+      accentColor: accentColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            celebration,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              AppSignalChip(
+                label: _seasonLabel(day.season),
+                color: _liturgicalAccentColor(day.color),
+              ),
+              AppSignalChip(label: _colorLabel(day.color)),
+              if (showLunar) AppSignalChip(label: day.lunarDate!),
+            ],
+          ),
+          if (data.action != null) ...[
+            const SizedBox(height: 16),
             Text(
-              celebration,
+              'Việc sống đạo',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: AppColors.brand,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(data.action!.prompt),
+          ],
+          if (data.readings.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 10),
+            Text(
+              'Bài đọc',
               style: Theme.of(
                 context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                AppSignalChip(
-                  label: _seasonLabel(day.season),
-                  color: _liturgicalAccentColor(day.color),
-                ),
-                AppSignalChip(label: _colorLabel(day.color)),
-                if (showLunar) AppSignalChip(label: day.lunarDate!),
-              ],
-            ),
-            if (data.action != null) ...[
-              const SizedBox(height: 16),
-              Text(
-                'Việc sống đạo',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.brand,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(data.action!.prompt),
-            ],
-            if (data.readings.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 10),
-              Text(
-                'Bài đọc',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 6),
-              ...data.readings.map(
-                (reading) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Text(
-                    '${reading.displayLabel ?? _readingLabel(reading.type)}: ${reading.citation}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+            const SizedBox(height: 6),
+            ...data.readings.map(
+              (reading) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  '${reading.displayLabel ?? _readingLabel(reading.type)}: ${reading.citation}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),
-            ],
-            if (data.reflection != null) ...[
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 10),
-              Text(
-                data.reflection!.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                data.reflection!.body,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.45,
-                ),
-              ),
-            ],
+            ),
           ],
-        ),
+          if (data.reflection != null) ...[
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 10),
+            Text(
+              data.reflection!.title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              data.reflection!.body,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.45,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

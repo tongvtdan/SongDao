@@ -82,33 +82,31 @@ class _FeaturedPrayerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AppSignalChip(
-              label: '5 phút',
-              color: AppColors.brand,
-              icon: Icons.schedule_outlined,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Kinh hằng ngày',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Bắt đầu hoặc kết thúc ngày bằng một lời kinh ngắn, không cần mở mạng.',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
+    return AppBentoCard(
+      accentColor: AppColors.brand,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppSignalChip(
+            label: '5 phút',
+            color: AppColors.brand,
+            icon: Icons.schedule_outlined,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Kinh hằng ngày',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Bắt đầu hoặc kết thúc ngày bằng một lời kinh ngắn, không cần mở mạng.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
       ),
     );
   }
@@ -122,30 +120,34 @@ class _PrayerListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tags = _decodeTags(prayer.tags);
-    return Card(
-      child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        leading: const Icon(
-          Icons.auto_stories_outlined,
-          color: AppColors.brand,
-        ),
-        title: Text(prayer.title),
-        subtitle: Text(
-          tags.isEmpty ? 'Kinh nguyện Công giáo' : tags.join(' · '),
-        ),
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              prayer.body ??
-                  'Nội dung kinh đang chờ rà soát bản quyền. Bản beta chỉ lưu tiêu đề và nguồn để tránh dùng nội dung chưa được phép.',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-            ),
+    return AppBentoCard(
+      padding: EdgeInsets.zero,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          leading: const Icon(
+            Icons.auto_stories_outlined,
+            color: AppColors.brand,
           ),
-        ],
+          title: Text(prayer.title),
+          subtitle: Text(
+            tags.isEmpty ? 'Kinh nguyện Công giáo' : tags.join(' · '),
+          ),
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                prayer.body ??
+                    'Nội dung kinh đang chờ rà soát bản quyền. Bản beta chỉ lưu tiêu đề và nguồn để tránh dùng nội dung chưa được phép.',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -164,12 +166,9 @@ class _EmptyPrayerState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Text(
-          'Chưa có kinh nguyện trong gói nội dung hiện tại. Today vẫn hoạt động với hành động hằng ngày và ghi chú riêng.',
-        ),
+    return const AppBentoCard(
+      child: Text(
+        'Chưa có kinh nguyện trong gói nội dung hiện tại. Today vẫn hoạt động với hành động hằng ngày và ghi chú riêng.',
       ),
     );
   }

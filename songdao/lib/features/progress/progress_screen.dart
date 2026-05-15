@@ -99,49 +99,47 @@ class _WeekRhythmCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = data.weekCompleted.values.where((value) => value).length;
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Tuần này',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: data.weekKeys.map((key) {
-                final completed = data.weekCompleted[key] ?? false;
-                final date = DateTime.parse(key);
-                return _DayDot(
-                  label: _weekdayShort(date.weekday),
-                  completed: completed,
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 14),
-            LinearProgressIndicator(
-              value: count / 7,
-              minHeight: 7,
-              borderRadius: BorderRadius.circular(999),
-              backgroundColor: AppColors.surfaceSecondary,
-              color: AppColors.brand,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              count == 0
-                  ? 'Một việc nhỏ hôm nay là đủ để bắt đầu lại.'
-                  : 'Bạn đã giữ nhịp $count/7 ngày trong tuần này.',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-            ),
-          ],
-        ),
+    return AppBentoCard(
+      accentColor: AppColors.brand,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tuần này',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: data.weekKeys.map((key) {
+              final completed = data.weekCompleted[key] ?? false;
+              final date = DateTime.parse(key);
+              return _DayDot(
+                label: _weekdayShort(date.weekday),
+                completed: completed,
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 14),
+          LinearProgressIndicator(
+            value: count / 7,
+            minHeight: 7,
+            borderRadius: BorderRadius.circular(999),
+            backgroundColor: AppColors.surfaceSecondary,
+            color: AppColors.brand,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            count == 0
+                ? 'Một việc nhỏ hôm nay là đủ để bắt đầu lại.'
+                : 'Bạn đã giữ nhịp $count/7 ngày trong tuần này.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
       ),
     );
   }
@@ -191,52 +189,51 @@ class _RecentLogsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return AppBentoCard(
+      accentColor: AppColors.brand.withValues(alpha: 0.5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Việc đã hoàn thành',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          if (logs.isEmpty)
             Text(
-              'Việc đã hoàn thành',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 10),
-            if (logs.isEmpty)
-              Text(
-                'Chưa có lịch sử hoàn thành. Khi bạn ghi nhận một việc nhỏ, nó sẽ hiện ở đây.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              )
-            else
-              ...logs.map(
-                (item) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(
-                        Icons.check_circle_outline,
-                        color: AppColors.brand,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.action.prompt,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              _formatLogDate(item.log),
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: AppColors.textSecondary),
+              'Chưa có lịch sử hoàn thành. Khi bạn ghi nhận một việc nhỏ, nó sẽ hiện ở đây.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            )
+          else
+            ...logs.map(
+              (item) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: AppColors.brand,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.action.prompt,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            _formatLogDate(item.log),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
                             ),
                             if ((item.log.note ?? '').isNotEmpty) ...[
                               const SizedBox(height: 6),
@@ -264,8 +261,7 @@ class _RecentLogsCard extends StatelessWidget {
                   ),
                 ),
               ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -143,107 +143,103 @@ class _SelectedChurchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (church == null) {
-      return Card(
-        child: Padding(
-          padding: AppSpacing.cardPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Giáo xứ của tôi',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+      return AppBentoCard(
+        accentColor: AppColors.brand.withValues(alpha: 0.3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Giáo xứ của tôi',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Chọn thủ công một giáo xứ để Today có thể hiển thị Thánh lễ quan trọng. Không cần quyền vị trí.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Chọn thủ công một giáo xứ để Today có thể hiển thị Thánh lễ quan trọng. Không cần quyền vị trí.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
 
-    return Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const AppSignalChip(
-              label: 'Giáo xứ của tôi',
-              color: AppColors.brand,
-              icon: Icons.church_outlined,
-            ),
-            const SizedBox(height: 10),
+    return AppBentoCard(
+      accentColor: AppColors.brand,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppSignalChip(
+            label: 'Giáo xứ của tôi',
+            color: AppColors.brand,
+            icon: Icons.church_outlined,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            church!.name,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            church!.address,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 14),
+          if (massTimes.isNotEmpty) ...[
             Text(
-              church!.name,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+              'Thánh lễ kế tiếp',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: AppColors.brand,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             const SizedBox(height: 6),
             Text(
-              church!.address,
+              '${_weekdayLabel(massTimes.first.weekday)} ${massTimes.first.time}',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: AppColors.brand,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Dữ liệu giáo xứ lưu trên thiết bị. Không dùng vị trí.',
               style: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 14),
-            if (massTimes.isNotEmpty) ...[
-              Text(
-                'Thánh lễ kế tiếp',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppColors.brand,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '${_weekdayLabel(massTimes.first.weekday)} ${massTimes.first.time}',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: AppColors.brand,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Dữ liệu giáo xứ lưu trên thiết bị. Không dùng vị trí.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 14),
-            ],
-            Text(
-              'Lịch Thánh lễ',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            if (massTimes.isEmpty)
-              const Text('Chưa có giờ lễ trong gói dữ liệu hiện tại.')
-            else
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: massTimes
-                    .map(
-                      (mass) => AppSignalChip(
-                        label:
-                            '${_weekdayLabel(mass.weekday)} ${mass.time} (${mass.language})',
-                        color: AppColors.brand,
-                      ),
-                    )
-                    .toList(),
-              ),
           ],
-        ),
+          Text(
+            'Lịch Thánh lễ',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          if (massTimes.isEmpty)
+            const Text('Chưa có giờ lễ trong gói dữ liệu hiện tại.')
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: massTimes
+                  .map(
+                    (mass) => AppSignalChip(
+                      label:
+                          '${_weekdayLabel(mass.weekday)} ${mass.time} (${mass.language})',
+                      color: AppColors.brand,
+                    ),
+                  )
+                  .toList(),
+            ),
+        ],
       ),
     );
   }
@@ -262,7 +258,9 @@ class _ChurchListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AppBentoCard(
+      padding: EdgeInsets.zero,
+      onTap: onSelect,
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: selected
@@ -275,7 +273,7 @@ class _ChurchListItem extends StatelessWidget {
         subtitle: Text(church.address),
         trailing: selected
             ? const Icon(Icons.check_circle, color: AppColors.brand)
-            : TextButton(onPressed: onSelect, child: const Text('Chọn')),
+            : const Icon(Icons.chevron_right, color: AppColors.textTertiary),
       ),
     );
   }
@@ -286,12 +284,9 @@ class _EmptyChurchState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
-      child: Padding(
-        padding: AppSpacing.cardPadding,
-        child: Text(
-          'Chưa tìm thấy giáo xứ trong gói dữ liệu hiện tại. Bạn vẫn có thể dùng Today và Progress offline.',
-        ),
+    return const AppBentoCard(
+      child: Text(
+        'Chưa tìm thấy giáo xứ trong gói dữ liệu hiện tại. Bạn vẫn có thể dùng Today và Progress offline.',
       ),
     );
   }
