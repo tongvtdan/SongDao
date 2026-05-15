@@ -20,6 +20,7 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
       actionLogs,
     )..where((t) => t.actionId.equals(actionId))).getSingleOrNull();
     final now = DateTime.now();
+    final normalizedNote = _normalizeNote(note);
     if (existing == null) {
       await into(actionLogs).insert(
         ActionLogsCompanion.insert(
@@ -28,7 +29,7 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
           date: action.date,
           status: const Value('completed'),
           completedAt: Value(now),
-          note: Value(note),
+          note: Value(normalizedNote),
           updatedAt: Value(now),
         ),
       );
@@ -39,7 +40,7 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
         ActionLogsCompanion(
           status: const Value('completed'),
           completedAt: Value(now),
-          note: Value(note),
+          note: Value(normalizedNote),
           updatedAt: Value(now),
         ),
       );
@@ -55,24 +56,30 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
       actionLogs,
     )..where((t) => t.actionId.equals(actionId))).getSingleOrNull();
     final now = DateTime.now();
+    final normalizedNote = _normalizeNote(note);
     if (existing == null) {
       await into(actionLogs).insert(
         ActionLogsCompanion.insert(
           id: _logId(actionId),
           actionId: actionId,
           date: action.date,
-          note: Value(note),
+          note: Value(normalizedNote),
           updatedAt: Value(now),
         ),
       );
     } else {
-      await (update(actionLogs)..where((t) => t.actionId.equals(actionId)))
-          .write(ActionLogsCompanion(note: Value(note), updatedAt: Value(now)));
+      await (update(
+        actionLogs,
+      )..where((t) => t.actionId.equals(actionId))).write(
+        ActionLogsCompanion(note: Value(normalizedNote), updatedAt: Value(now)),
+      );
     }
     await WidgetSnapshotService(
       db,
     ).regenerateForDate(action.date, locale: action.locale);
   }
+
+  Future<void> clearNote(String actionId) => saveNote(actionId, '');
 
   Future<void> markSkipped(String actionId) async {
     final action = await _getAction(actionId);
@@ -108,8 +115,63 @@ class ActionLogDao extends DatabaseAccessor<AppDatabase>
   Future<List<ActionLog>> getLogsForDate(String date) =>
       (select(actionLogs)..where((t) => t.date.equals(date))).get();
 
+  Future<List<JournalEntry>> getJournalEntries({String query = ''}) async {
+    final normalizedQuery = query.trim().toLowerCase();
+    final logs =
+        await (select(actionLogs)
+              ..where((t) => t.note.isNotNull())
+              ..orderBy([
+                (t) =>
+                    OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+                (t) => OrderingTerm(
+                  expression: t.updatedAt,
+                  mode: OrderingMode.desc,
+                ),
+              ]))
+            .get();
+
+    final entries = <JournalEntry>[];
+    for (final log in logs) {
+      final note = _normalizeNote(log.note);
+      if (note == null) {
+        continue;
+      }
+      final action = await (select(
+        dailyActions,
+      )..where((t) => t.id.equals(log.actionId))).getSingleOrNull();
+      if (action == null) {
+        continue;
+      }
+      if (normalizedQuery.isNotEmpty) {
+        final searchable = '${action.prompt} $note'.toLowerCase();
+        if (!searchable.contains(normalizedQuery)) {
+          continue;
+        }
+      }
+      entries.add(JournalEntry(log: log, action: action, note: note));
+    }
+    return entries;
+  }
+
   Future<DailyAction> _getAction(String actionId) =>
       (select(dailyActions)..where((t) => t.id.equals(actionId))).getSingle();
 
   String _logId(String actionId) => 'log_$actionId';
+
+  String? _normalizeNote(String? note) {
+    final trimmed = note?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+}
+
+class JournalEntry {
+  const JournalEntry({
+    required this.log,
+    required this.action,
+    required this.note,
+  });
+
+  final ActionLog log;
+  final DailyAction action;
+  final String note;
 }

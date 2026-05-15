@@ -7,6 +7,7 @@ import '../features/today/today_screen.dart';
 import '../features/calendar/calendar_screen.dart';
 import '../features/prayer/prayer_library_screen.dart';
 import '../features/church_finder/church_search_screen.dart';
+import '../features/progress/journal_screen.dart';
 import '../features/progress/progress_screen.dart';
 import '../features/settings/settings_screen.dart';
 
@@ -87,6 +88,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/progress',
                 builder: (context, state) => const ProgressScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'journal',
+                    builder: (context, state) => const JournalScreen(),
+                  ),
+                ],
               ),
             ],
           ),

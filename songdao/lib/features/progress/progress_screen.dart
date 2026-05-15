@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/design_system.dart';
@@ -8,11 +9,18 @@ import '../../app/theme.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
 
-class ProgressScreen extends ConsumerWidget {
+class ProgressScreen extends ConsumerStatefulWidget {
   const ProgressScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProgressScreen> createState() => _ProgressScreenState();
+}
+
+class _ProgressScreenState extends ConsumerState<ProgressScreen> {
+  String? _selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Tiến trình')),
       body: FutureBuilder<_ProgressViewData>(
@@ -40,9 +48,24 @@ class ProgressScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              _WeekRhythmCard(data: data),
+              _JournalEntryPoint(
+                onTap: () => context.push('/progress/journal'),
+              ),
               const SizedBox(height: 14),
-              _RecentLogsCard(logs: data.recentLogs),
+              _WeekRhythmCard(
+                data: data,
+                selectedDate: _selectedDate,
+                onSelectDate: (date) {
+                  setState(() {
+                    _selectedDate = _selectedDate == date ? null : date;
+                  });
+                },
+              ),
+              const SizedBox(height: 14),
+              _RecentLogsCard(
+                logs: data.logsForDate(_selectedDate),
+                selectedDate: _selectedDate,
+              ),
             ],
           );
         },
@@ -72,29 +95,88 @@ class ProgressScreen extends ConsumerWidget {
         key: logs.any((log) => log.date == key && log.status == 'completed'),
     };
     final recentLogs = <_CompletedLog>[];
+    final completedLogs = <_CompletedLog>[];
     for (final log in logs.where((log) => log.status == 'completed')) {
       final action = await (db.select(
         db.dailyActions,
       )..where((t) => t.id.equals(log.actionId))).getSingleOrNull();
       if (action != null) {
-        recentLogs.add(_CompletedLog(log: log, action: action));
-      }
-      if (recentLogs.length == 8) {
-        break;
+        final item = _CompletedLog(log: log, action: action);
+        completedLogs.add(item);
+        if (recentLogs.length < 8) {
+          recentLogs.add(item);
+        }
       }
     }
     return _ProgressViewData(
       weekKeys: weekKeys,
       weekCompleted: weekCompleted,
       recentLogs: recentLogs,
+      completedLogs: completedLogs,
+    );
+  }
+}
+
+class _JournalEntryPoint extends StatelessWidget {
+  const _JournalEntryPoint({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBentoCard(
+      accentColor: AppColors.gold,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.gold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.menu_book_outlined, color: AppColors.gold),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Nhật ký riêng',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Xem, tìm và sửa ghi chú chỉ lưu trên thiết bị.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+        ],
+      ),
     );
   }
 }
 
 class _WeekRhythmCard extends StatelessWidget {
-  const _WeekRhythmCard({required this.data});
+  const _WeekRhythmCard({
+    required this.data,
+    required this.selectedDate,
+    required this.onSelectDate,
+  });
 
   final _ProgressViewData data;
+  final String? selectedDate;
+  final ValueChanged<String> onSelectDate;
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +201,8 @@ class _WeekRhythmCard extends StatelessWidget {
               return _DayDot(
                 label: _weekdayShort(date.weekday),
                 completed: completed,
+                selected: selectedDate == key,
+                onTap: () => onSelectDate(key),
               );
             }).toList(),
           ),
@@ -146,67 +230,107 @@ class _WeekRhythmCard extends StatelessWidget {
 }
 
 class _DayDot extends StatelessWidget {
-  const _DayDot({required this.label, required this.completed});
+  const _DayDot({
+    required this.label,
+    required this.completed,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
   final bool completed;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: completed ? AppColors.brand : AppColors.surfaceSecondary,
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.borderSubtle),
-          ),
-          child: Icon(
-            completed ? Icons.check : Icons.circle_outlined,
-            size: 16,
-            color: completed ? Colors.white : AppColors.textTertiary,
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '$label, xem việc đã hoàn thành',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Column(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: completed
+                      ? AppColors.brand
+                      : AppColors.surfaceSecondary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: selected ? AppColors.gold : AppColors.borderSubtle,
+                    width: selected ? 2 : 1,
+                  ),
+                ),
+                child: Icon(
+                  completed ? Icons.check : Icons.circle_outlined,
+                  size: 17,
+                  color: completed ? Colors.white : AppColors.textTertiary,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: selected ? AppColors.brand : AppColors.textSecondary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
 class _RecentLogsCard extends StatelessWidget {
-  const _RecentLogsCard({required this.logs});
+  const _RecentLogsCard({required this.logs, required this.selectedDate});
 
   final List<_CompletedLog> logs;
+  final String? selectedDate;
 
   @override
   Widget build(BuildContext context) {
+    final hasSelectedDate = selectedDate != null;
     return AppBentoCard(
       accentColor: AppColors.brand.withValues(alpha: 0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Việc đã hoàn thành',
+            hasSelectedDate
+                ? 'Việc đã hoàn thành ngày này'
+                : 'Việc đã hoàn thành',
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
           ),
+          if (hasSelectedDate) ...[
+            const SizedBox(height: 4),
+            Text(
+              _formatSelectedDate(selectedDate!),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           if (logs.isEmpty)
             Text(
-              'Chưa có lịch sử hoàn thành. Khi bạn ghi nhận một việc nhỏ, nó sẽ hiện ở đây.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              hasSelectedDate
+                  ? 'Chưa có việc hoàn thành trong ngày này.'
+                  : 'Chưa có lịch sử hoàn thành. Khi bạn ghi nhận một việc nhỏ, nó sẽ hiện ở đây.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             )
           else
             ...logs.map(
@@ -234,33 +358,33 @@ class _RecentLogsCard extends StatelessWidget {
                             _formatLogDate(item.log),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(color: AppColors.textSecondary),
-                            ),
-                            if ((item.log.note ?? '').isNotEmpty) ...[
-                              const SizedBox(height: 6),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: AppColors.surfaceSecondary,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  item.log.note!,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(
-                                        color: AppColors.textSecondary,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                ),
+                          ),
+                          if ((item.log.note ?? '').isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceSecondary,
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            ],
+                              child: Text(
+                                item.log.note!,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                              ),
+                            ),
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+            ),
         ],
       ),
     );
@@ -272,11 +396,20 @@ class _ProgressViewData {
     required this.weekKeys,
     required this.weekCompleted,
     required this.recentLogs,
+    required this.completedLogs,
   });
 
   final List<String> weekKeys;
   final Map<String, bool> weekCompleted;
   final List<_CompletedLog> recentLogs;
+  final List<_CompletedLog> completedLogs;
+
+  List<_CompletedLog> logsForDate(String? date) {
+    if (date == null) {
+      return recentLogs;
+    }
+    return completedLogs.where((item) => item.log.date == date).toList();
+  }
 }
 
 class _CompletedLog {
@@ -308,4 +441,8 @@ String _weekdayShort(int weekday) {
 String _formatLogDate(ActionLog log) {
   final when = log.completedAt ?? log.updatedAt;
   return DateFormat('dd/MM/yyyy, HH:mm').format(when);
+}
+
+String _formatSelectedDate(String date) {
+  return DateFormat('dd/MM/yyyy').format(DateTime.parse(date));
 }

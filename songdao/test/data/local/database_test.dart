@@ -609,6 +609,99 @@ void main() {
         expect(logs.single.note, 'Cập nhật');
       },
     );
+
+    test(
+      'ActionLogDao.getJournalEntries lists non-empty notes newest first',
+      () async {
+        await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+        await _insertCalendarDay(db, '2026-04-28', season: 'ordinary');
+        await _insertDailyAction(
+          db,
+          id: 'journal-action-1',
+          date: '2026-04-27',
+          prompt: 'Đọc Tin Mừng',
+        );
+        await _insertDailyAction(
+          db,
+          id: 'journal-action-2',
+          date: '2026-04-28',
+          prompt: 'Cầu nguyện',
+        );
+        await _insertDailyAction(
+          db,
+          id: 'journal-action-empty',
+          date: '2026-04-28',
+          prompt: 'Ghi chú trống',
+        );
+
+        await db.actionLogDao.saveNote('journal-action-1', 'Một câu riêng tư');
+        await db.actionLogDao.saveNote('journal-action-2', 'Lời cầu hôm nay');
+        await db.actionLogDao.saveNote('journal-action-empty', '   ');
+
+        final entries = await db.actionLogDao.getJournalEntries();
+
+        expect(entries, hasLength(2));
+        expect(entries.first.action.id, 'journal-action-2');
+        expect(entries.first.note, 'Lời cầu hôm nay');
+        expect(entries.last.action.id, 'journal-action-1');
+      },
+    );
+
+    test('ActionLogDao.getJournalEntries searches note and prompt', () async {
+      await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+      await _insertCalendarDay(db, '2026-04-28', season: 'ordinary');
+      await _insertDailyAction(
+        db,
+        id: 'journal-search-1',
+        date: '2026-04-27',
+        prompt: 'Đọc Tin Mừng',
+      );
+      await _insertDailyAction(
+        db,
+        id: 'journal-search-2',
+        date: '2026-04-28',
+        prompt: 'Dâng một lời cầu',
+      );
+
+      await db.actionLogDao.saveNote('journal-search-1', 'Bình an trong ngày');
+      await db.actionLogDao.saveNote('journal-search-2', 'Tạ ơn buổi sáng');
+
+      final byNote = await db.actionLogDao.getJournalEntries(query: 'bình an');
+      final byPrompt = await db.actionLogDao.getJournalEntries(
+        query: 'lời cầu',
+      );
+
+      expect(byNote.single.action.id, 'journal-search-1');
+      expect(byPrompt.single.action.id, 'journal-search-2');
+    });
+
+    test(
+      'ActionLogDao.saveNote edits and clearNote removes journal note',
+      () async {
+        await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+        await _insertDailyAction(
+          db,
+          id: 'journal-edit',
+          date: '2026-04-27',
+          prompt: 'Viết một câu',
+        );
+
+        await db.actionLogDao.saveNote('journal-edit', 'Bản đầu');
+        await db.actionLogDao.saveNote('journal-edit', 'Bản sửa');
+
+        var entries = await db.actionLogDao.getJournalEntries();
+        expect(entries.single.note, 'Bản sửa');
+
+        await db.actionLogDao.clearNote('journal-edit');
+        entries = await db.actionLogDao.getJournalEntries();
+        final log = await (db.select(
+          db.actionLogs,
+        )..where((t) => t.actionId.equals('journal-edit'))).getSingle();
+
+        expect(entries, isEmpty);
+        expect(log.note, isNull);
+      },
+    );
   });
 
   group('Readings', () {
@@ -1278,6 +1371,27 @@ Future<void> _insertCalendarDay(
           liturgicalWeek: 1,
           color: 'green',
           cycleYear: 'C',
+          locale: 'vi',
+        ),
+      );
+}
+
+Future<void> _insertDailyAction(
+  AppDatabase db, {
+  required String id,
+  required String date,
+  required String prompt,
+}) {
+  return db
+      .into(db.dailyActions)
+      .insert(
+        DailyActionsCompanion.insert(
+          id: id,
+          date: date,
+          sourceRule: 'test_rule',
+          prompt: prompt,
+          type: 'reflection',
+          priority: 1,
           locale: 'vi',
         ),
       );
