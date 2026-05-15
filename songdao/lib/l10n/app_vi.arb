@@ -4,5 +4,11 @@
   "tabCalendar": "Lịch",
   "tabPray": "Cầu nguyện",
   "tabChurch": "Nhà thờ",
-  "tabProgress": "Tiến trình"
+  "tabProgress": "Tiến trình",
+  "prayerTagDaily": "Hằng ngày",
+  "prayerTagMorning": "Buổi sáng",
+  "prayerTagEvening": "Buổi tối",
+  "prayerTagReflection": "Xét mình",
+  "prayerTagWork": "Công việc",
+  "prayerTagPeace": "Bình an"
 }

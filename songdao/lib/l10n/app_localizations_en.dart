@@ -22,4 +22,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabProgress => 'Progress';
+
+  @override
+  String get prayerTagDaily => 'Daily';
+
+  @override
+  String get prayerTagMorning => 'Morning';
+
+  @override
+  String get prayerTagEvening => 'Evening';
+
+  @override
+  String get prayerTagReflection => 'Examen';
+
+  @override
+  String get prayerTagWork => 'Work';
+
+  @override
+  String get prayerTagPeace => 'Peace';
 }

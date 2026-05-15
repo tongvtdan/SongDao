@@ -127,6 +127,42 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Tiến trình'**
   String get tabProgress;
+
+  /// No description provided for @prayerTagDaily.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hằng ngày'**
+  String get prayerTagDaily;
+
+  /// No description provided for @prayerTagMorning.
+  ///
+  /// In vi, this message translates to:
+  /// **'Buổi sáng'**
+  String get prayerTagMorning;
+
+  /// No description provided for @prayerTagEvening.
+  ///
+  /// In vi, this message translates to:
+  /// **'Buổi tối'**
+  String get prayerTagEvening;
+
+  /// No description provided for @prayerTagReflection.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xét mình'**
+  String get prayerTagReflection;
+
+  /// No description provided for @prayerTagWork.
+  ///
+  /// In vi, this message translates to:
+  /// **'Công việc'**
+  String get prayerTagWork;
+
+  /// No description provided for @prayerTagPeace.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bình an'**
+  String get prayerTagPeace;
 }
 
 class _AppLocalizationsDelegate

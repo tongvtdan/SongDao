@@ -9,6 +9,7 @@ import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 class PrayerLibraryScreen extends ConsumerWidget {
   const PrayerLibraryScreen({super.key});
@@ -119,7 +120,8 @@ class _PrayerListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tags = _decodeTags(prayer.tags);
+    final l10n = AppLocalizations.of(context)!;
+    final tags = _displayTagsForPrayer(prayer.tags, l10n);
     return AppBentoCard(
       padding: EdgeInsets.zero,
       child: Theme(
@@ -141,9 +143,9 @@ class _PrayerListItem extends StatelessWidget {
               child: Text(
                 prayer.body ??
                     'Nội dung kinh đang chờ rà soát bản quyền. Bản beta chỉ lưu tiêu đề và nguồn để tránh dùng nội dung chưa được phép.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ),
           ],
@@ -152,13 +154,36 @@ class _PrayerListItem extends StatelessWidget {
     );
   }
 
-  List<String> _decodeTags(String source) {
-    final decoded = jsonDecode(source);
+  List<String> _displayTagsForPrayer(String source, AppLocalizations l10n) {
+    final decoded = _decodeTags(source);
     if (decoded is! List) {
       return const [];
     }
-    return decoded.map((item) => item.toString()).toList(growable: false);
+    return decoded
+        .map((item) => _prayerTagLabel(item.toString(), l10n))
+        .whereType<String>()
+        .toList(growable: false);
   }
+
+  Object? _decodeTags(String source) {
+    try {
+      return jsonDecode(source);
+    } on FormatException {
+      return null;
+    }
+  }
+}
+
+String? _prayerTagLabel(String tag, AppLocalizations l10n) {
+  return switch (tag) {
+    'daily' => l10n.prayerTagDaily,
+    'morning' => l10n.prayerTagMorning,
+    'evening' => l10n.prayerTagEvening,
+    'reflection' => l10n.prayerTagReflection,
+    'work' => l10n.prayerTagWork,
+    'peace' => l10n.prayerTagPeace,
+    _ => null,
+  };
 }
 
 class _EmptyPrayerState extends StatelessWidget {

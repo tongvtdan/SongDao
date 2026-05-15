@@ -22,4 +22,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get tabProgress => 'Tiến trình';
+
+  @override
+  String get prayerTagDaily => 'Hằng ngày';
+
+  @override
+  String get prayerTagMorning => 'Buổi sáng';
+
+  @override
+  String get prayerTagEvening => 'Buổi tối';
+
+  @override
+  String get prayerTagReflection => 'Xét mình';
+
+  @override
+  String get prayerTagWork => 'Công việc';
+
+  @override
+  String get prayerTagPeace => 'Bình an';
 }
