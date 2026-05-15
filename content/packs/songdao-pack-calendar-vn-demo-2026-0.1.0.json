@@ -8,7 +8,7 @@
   "valid_to": "2026-05-10",
   "source_summary": "Internal 14-day Vietnamese demo pack for validating the SongDao beta content-pack importer.",
   "license_summary": "Reference-only readings; no copyrighted full-text readings or prayer bodies.",
-  "checksum": "sha256:fe2708d22f73639147f0d87738a45c8b71b2c792ca33113ac2934690535f5498",
+  "checksum": "sha256:68addce361ee510c125e4d48b75f9e4156947f7b3b8ee090d590aa22dbd62ec9",
   "calendar_days": [
     {
       "id": "calendar_day_2026_04_27_vi",
@@ -18,6 +18,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "11 tháng 3, Bính Ngọ",
       "weekday": "monday",
       "is_sunday": false,
       "source": {
@@ -35,6 +36,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "12 tháng 3, Bính Ngọ",
       "weekday": "tuesday",
       "is_sunday": false,
       "source": {
@@ -52,6 +54,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "13 tháng 3, Bính Ngọ",
       "weekday": "wednesday",
       "is_sunday": false,
       "source": {
@@ -69,6 +72,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "14 tháng 3, Bính Ngọ",
       "weekday": "thursday",
       "is_sunday": false,
       "source": {
@@ -86,6 +90,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "15 tháng 3, Bính Ngọ",
       "weekday": "friday",
       "is_sunday": false,
       "source": {
@@ -103,6 +108,7 @@
       "liturgical_week": "Tuần II Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "16 tháng 3, Bính Ngọ",
       "weekday": "saturday",
       "is_sunday": false,
       "source": {
@@ -120,6 +126,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "17 tháng 3, Bính Ngọ",
       "weekday": "sunday",
       "is_sunday": true,
       "source": {
@@ -137,6 +144,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "18 tháng 3, Bính Ngọ",
       "weekday": "monday",
       "is_sunday": false,
       "source": {
@@ -154,6 +162,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "19 tháng 3, Bính Ngọ",
       "weekday": "tuesday",
       "is_sunday": false,
       "source": {
@@ -171,6 +180,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "20 tháng 3, Bính Ngọ",
       "weekday": "wednesday",
       "is_sunday": false,
       "source": {
@@ -188,6 +198,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "21 tháng 3, Bính Ngọ",
       "weekday": "thursday",
       "is_sunday": false,
       "source": {
@@ -205,6 +216,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "22 tháng 3, Bính Ngọ",
       "weekday": "friday",
       "is_sunday": false,
       "source": {
@@ -222,6 +234,7 @@
       "liturgical_week": "Tuần III Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "23 tháng 3, Bính Ngọ",
       "weekday": "saturday",
       "is_sunday": false,
       "source": {
@@ -239,6 +252,7 @@
       "liturgical_week": "Tuần IV Phục Sinh",
       "liturgical_color": "white",
       "cycle_year": "A",
+      "lunar_date": "24 tháng 3, Bính Ngọ",
       "weekday": "sunday",
       "is_sunday": true,
       "source": {
@@ -1043,72 +1057,54 @@
   ],
   "prayers": [
     {
-      "id": "kinh_lay_cha_vi",
+      "id": "loi_nguyen_buoi_sang_vi",
       "locale": "vi",
-      "title": "Kinh Lạy Cha",
-      "body": null,
+      "title": "Lời nguyện buổi sáng",
+      "body": "Lạy Chúa, con dâng ngày hôm nay cho Chúa. Xin giúp con sống chậm lại, yêu thương cụ thể hơn, và nhận ra một việc nhỏ con có thể làm trong bình an.",
       "source_url": null,
-      "license": "pending-review",
+      "license": "internal-original",
+      "tags": [
+        "core",
+        "morning"
+      ],
+      "source": {
+        "name": "SongDao original beta prayer",
+        "license": "internal-original"
+      }
+    },
+    {
+      "id": "xet_minh_ngan_vi",
+      "locale": "vi",
+      "title": "Xét mình ngắn",
+      "body": "Trong thinh lặng, con nhìn lại hôm nay: con đã yêu thương ở đâu, đã vội vàng ở đâu, và ngày mai con muốn bắt đầu lại bằng việc nhỏ nào?",
+      "source_url": null,
+      "license": "internal-original",
+      "tags": [
+        "core",
+        "evening"
+      ],
+      "source": {
+        "name": "SongDao original beta prayer",
+        "license": "internal-original"
+      }
+    },
+    {
+      "id": "cau_nguyen_tham_5_phut_vi",
+      "locale": "vi",
+      "title": "Cầu nguyện thầm trong 5 phút",
+      "body": "Ngồi yên, thở chậm, và thưa với Chúa một câu thật đơn sơ: Lạy Chúa, xin ở lại với con hôm nay.",
+      "source_url": null,
+      "license": "internal-original",
       "tags": [
         "core",
         "daily"
       ],
       "source": {
-        "name": "Pending license review",
-        "license": "pending-review"
+        "name": "SongDao original beta prayer",
+        "license": "internal-original"
       }
     }
   ],
-  "churches": [
-    {
-      "id": "giao_xu_demo_tan_dinh",
-      "locale": "vi",
-      "name": "Giáo xứ Demo Tân Định",
-      "diocese": "Tổng Giáo phận Sài Gòn",
-      "address": "Demo address, Quận 3, TP. Hồ Chí Minh",
-      "latitude": null,
-      "longitude": null,
-      "phone": null,
-      "website": null,
-      "verified_at": "2026-04-27",
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo"
-      }
-    }
-  ],
-  "mass_times": [
-    {
-      "id": "mass_demo_tan_dinh_weekday_0530_vi",
-      "church_id": "giao_xu_demo_tan_dinh",
-      "weekday": "monday",
-      "context": "weekday",
-      "time": "05:30",
-      "language": "vi",
-      "valid_from": "2026-04-27",
-      "valid_to": null,
-      "is_important_default": false,
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo",
-        "verified_at": "2026-04-27"
-      }
-    },
-    {
-      "id": "mass_demo_tan_dinh_sunday_0730_vi",
-      "church_id": "giao_xu_demo_tan_dinh",
-      "weekday": "sunday",
-      "context": "sunday",
-      "time": "07:30",
-      "language": "vi",
-      "valid_from": "2026-04-27",
-      "valid_to": null,
-      "is_important_default": true,
-      "source": {
-        "name": "SongDao beta seed",
-        "license": "internal-demo",
-        "verified_at": "2026-04-27"
-      }
-    }
-  ]
+  "churches": [],
+  "mass_times": []
 }

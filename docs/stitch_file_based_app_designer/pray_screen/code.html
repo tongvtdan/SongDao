@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#afe2b3",
+                    "on-tertiary-container": "#ffc8c6",
+                    "secondary-fixed": "#eddcff",
+                    "on-background": "#1c1c18",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414941",
+                    "on-surface": "#1c1c18",
+                    "outline": "#727970",
+                    "surface": "#fcf9f3",
+                    "primary-fixed-dim": "#a0d3a5",
+                    "secondary-container": "#d1affe",
+                    "on-primary-fixed": "#00210a",
+                    "surface-dim": "#dcdad4",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#28054f",
+                    "primary-fixed": "#bcefc0",
+                    "primary-container": "#386641",
+                    "tertiary": "#841d24",
+                    "inverse-on-surface": "#f3f0ea",
+                    "surface-container-highest": "#e5e2dc",
+                    "on-primary-fixed-variant": "#22502d",
+                    "tertiary-container": "#a43539",
+                    "surface-container": "#f0eee8",
+                    "surface-variant": "#e5e2dc",
+                    "surface-container-low": "#f6f3ed",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d8b9ff",
+                    "surface-tint": "#3a6843",
+                    "secondary": "#6e5097",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f3",
+                    "inverse-surface": "#31312d",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#a0d3a5",
+                    "on-tertiary-fixed": "#410007",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#861f25",
+                    "outline-variant": "#c1c9be",
+                    "surface-container-high": "#ebe8e2",
+                    "tertiary-fixed-dim": "#ffb3b0",
+                    "primary": "#204e2b",
+                    "tertiary-fixed": "#ffdad8",
+                    "on-secondary-fixed-variant": "#55387d",
+                    "background": "#fcf9f3",
+                    "on-secondary-container": "#5c3e84",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "base": "8px",
+                    "container-max": "1200px",
+                    "xl": "64px",
+                    "xs": "4px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Noto Serif"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Noto Serif"],
+                    "headline-lg": ["Noto Serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f3;
+            color: #1c1c18;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .sacred-center {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 z-40 w-full h-16 px-6 flex justify-between items-center bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800 shadow-sm dark:shadow-none">
+<button class="text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-xl font-bold font-serif text-green-900 dark:text-green-100 tracking-tight">Sống Đạo</h1>
+<button class="text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</header>
+<main class="pt-24 px-gutter sacred-center">
+<!-- Hero Section -->
+<section class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Cầu nguyện</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Tìm thấy sự bình yên trong lời kinh và sự hiện diện của Chúa.</p>
+</section>
+<!-- Featured Card: Kinh hằng ngày -->
+<section class="mb-lg">
+<div class="relative overflow-hidden rounded-xl bg-surface-container shadow-sm border border-outline-variant/30 transition-all hover:shadow-md group">
+<div class="absolute inset-0 opacity-10 bg-cover bg-center mix-blend-overlay" data-alt="close up of an old bible with soft warm candlelight illuminating the pages in a peaceful church setting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBg_1IsSHflM4AYAGlieRSLbXqrOIeYBCKgFY4h56kA7ihWft0cgqk--9PUBGYpGbpaNJ-_kKSusoqrobdOZwNCGJwYN3jWnrO77OhFte_9GseKdWldTGpQ0jbq3boW6ZXeXsXp_dIJ4kiP5MecJvbWU237NoTR6plNRoRetQgVKo2X-NbhH8wSI1tc-zaCMqU3OBbqkbpZ6BR3gPXg1vYSlr7gyq91iTdLB4ozG8pL_V-wo2NXhzTXEt4T7NJL9CeeD6dTkrt31PZ9')"></div>
+<div class="p-md relative z-10">
+<div class="flex items-center gap-sm mb-sm">
+<span class="px-3 py-1 bg-primary/10 text-primary font-label-sm text-label-sm rounded-full uppercase tracking-widest">Phổ biến</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">5 phút</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-xs">Kinh hằng ngày</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md max-w-md">Bắt đầu và kết thúc ngày của bạn với những lời cầu nguyện truyền thống đẹp đẽ nhất.</p>
+<button class="flex items-center gap-xs bg-primary text-on-primary px-md py-sm rounded-lg font-label-sm text-label-sm hover:opacity-90 transition-opacity">
+                        CẦU NGUYỆN NGAY
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Grid Layout for Other Sections -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-lg">
+<!-- Kinh Mân Côi -->
+<div class="bg-surface-container-low p-md rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/20">
+<div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined" data-icon="brightness_7">brightness_7</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-xs">Kinh Mân Côi</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Suy niệm các mầu nhiệm cùng Đức Mẹ thông qua chuỗi hạt Mân Côi.</p>
+<a class="text-primary font-label-sm text-label-sm flex items-center gap-xs group" href="#">
+                    BẮT ĐẦU
+                    <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+<!-- Xét mình xưng tội -->
+<div class="bg-surface-container-low p-md rounded-xl shadow-sm hover:shadow-md transition-shadow border border-outline-variant/20">
+<div class="w-12 h-12 bg-tertiary/10 text-tertiary rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined" data-icon="self_improvement">self_improvement</span>
+</div>
+<h4 class="font-headline-md text-headline-md mb-xs">Xét mình xưng tội</h4>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">Chuẩn bị tâm hồn xứng đáng để đón nhận Bí tích Hòa giải.</p>
+<a class="text-primary font-label-sm text-label-sm flex items-center gap-xs group" href="#">
+                    HƯỚNG DẪN
+                    <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform" data-icon="chevron_right">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Thư viện kinh Section -->
+<section class="mb-xl">
+<div class="flex justify-between items-end mb-md">
+<div>
+<h3 class="font-headline-md text-headline-md">Thư viện kinh</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Bộ sưu tập đầy đủ các kinh nguyện Công giáo.</p>
+</div>
+<button class="text-primary font-label-sm text-label-sm underline underline-offset-4">XEM TẤT CẢ</button>
+</div>
+<div class="space-y-sm">
+<!-- Library Item 1 -->
+<div class="flex items-center p-md bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors border border-outline-variant/10 cursor-pointer">
+<div class="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center mr-md">
+<span class="material-symbols-outlined text-stone-500" data-icon="auto_stories">auto_stories</span>
+</div>
+<div class="flex-grow">
+<h5 class="font-body-lg text-body-lg font-medium">Kinh Tiệc Ly</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Kinh nguyện truyền thống</p>
+</div>
+<span class="material-symbols-outlined text-stone-400" data-icon="bookmark">bookmark</span>
+</div>
+<!-- Library Item 2 -->
+<div class="flex items-center p-md bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors border border-outline-variant/10 cursor-pointer">
+<div class="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center mr-md">
+<span class="material-symbols-outlined text-stone-500" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<div class="flex-grow">
+<h5 class="font-body-lg text-body-lg font-medium">Kinh Lòng Thương Xót Chúa</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Cầu nguyện lúc 3 giờ chiều</p>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="bookmark" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</div>
+<!-- Library Item 3 -->
+<div class="flex items-center p-md bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors border border-outline-variant/10 cursor-pointer">
+<div class="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center mr-md">
+<span class="material-symbols-outlined text-stone-500" data-icon="family_restroom">family_restroom</span>
+</div>
+<div class="flex-grow">
+<h5 class="font-body-lg text-body-lg font-medium">Kinh Thánh Hóa Gia Đình</h5>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Dành cho đời sống hôn nhân</p>
+</div>
+<span class="material-symbols-outlined text-stone-400" data-icon="bookmark">bookmark</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-3 pb-safe bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50 rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-serif text-[11px] font-medium">Hôm nay</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-serif text-[11px] font-medium">Lịch</span>
+</a>
+<a class="flex flex-col items-center justify-center text-green-800 dark:text-green-400 bg-green-50/50 dark:bg-green-900/20 rounded-xl px-3 py-1 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-serif text-[11px] font-medium">Cầu nguyện</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="church">church</span>
+<span class="font-serif text-[11px] font-medium">Nhà thờ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-serif text-[11px] font-medium">Tiến triển</span>
+</a>
+</nav>
+</body></html>

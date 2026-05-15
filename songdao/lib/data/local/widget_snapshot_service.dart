@@ -3,11 +3,17 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import 'app_database.dart';
+import 'mass_service.dart';
+import 'widget_snapshot_bridge.dart';
 
 class WidgetSnapshotService {
-  WidgetSnapshotService(this.db);
+  WidgetSnapshotService(
+    this.db, {
+    WidgetSnapshotBridge bridge = const WidgetSnapshotBridge(),
+  }) : _bridge = bridge;
 
   final AppDatabase db;
+  final WidgetSnapshotBridge _bridge;
 
   Future<WidgetSnapshot?> regenerateForDate(
     String date, {
@@ -42,6 +48,7 @@ class WidgetSnapshotService {
     final log = await (db.select(
       db.actionLogs,
     )..where((t) => t.actionId.equals(action.id))).getSingleOrNull();
+    final importantMass = await MassService(db).nextImportantMassForDate(date);
 
     final now = DateTime.now().toUtc();
     final payload = _canonicalJson({
@@ -54,6 +61,7 @@ class WidgetSnapshotService {
         'color': calendarDay.color,
         'liturgical_week': calendarDay.liturgicalWeek,
         'cycle_year': calendarDay.cycleYear,
+        'lunar_date': locale == 'vi' ? calendarDay.lunarDate : null,
         'celebration': celebrations.isEmpty ? null : celebrations.first.name,
       },
       'action': {
@@ -72,7 +80,14 @@ class WidgetSnapshotService {
             },
           )
           .toList(growable: false),
-      'mass': null,
+      'mass': importantMass == null
+          ? null
+          : {
+              'church': importantMass.church.name,
+              'time': importantMass.massTime.time,
+              'language': importantMass.massTime.language,
+              'label': importantMass.label,
+            },
     });
 
     await db.todayDao.upsertWidgetSnapshot(
@@ -82,7 +97,11 @@ class WidgetSnapshotService {
         generatedAt: now,
       ),
     );
-    return db.todayDao.getWidgetSnapshot(date);
+    final snapshot = await db.todayDao.getWidgetSnapshot(date);
+    if (snapshot != null) {
+      await _bridge.writeLatestSnapshot(date: date, payload: snapshot.payload);
+    }
+    return snapshot;
   }
 
   Future<void> regenerateRange({

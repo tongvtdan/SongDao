@@ -1,73 +1,156 @@
 # Sống Đạo Design System
 
-Design direction for **Sống Đạo**, a local-first Catholic daily practice app. This file follows the `DESIGN.md` pattern referenced by VoltAgent's `awesome-design-md`: visual atmosphere, tokens, typography, components, layout, states, responsive behavior, and agent guardrails.
+Design direction for **Sống Đạo / SongDao**, a local-first Catholic daily practice app and its landing page.
 
-The product is not a Catholic content encyclopedia. It is a quiet daily practice surface: one action, today’s liturgical context, my parish, important Mass, private rhythm, and widget-first reminders.
+The product is not a Catholic content encyclopedia. It is a daily practice operating system:
+
+> Sống Đạo helps Catholics live today's faith through one clear daily action, liturgical context, reminders, private tracking, and a home-screen widget.
+
+This file is the visual and product design source of truth for:
+
+- Flutter app UI.
+- iOS WidgetKit surfaces.
+- Marketing / waitlist / launch landing page.
+- Future product screenshots, App Store assets, and onboarding.
 
 ---
 
-## 1. Visual Theme & Atmosphere
+## 1. Product Design Thesis
 
-Sống Đạo should feel like a calm chapel notebook translated into a modern mobile operating system.
+### Insight
 
-The interface must be:
+Ascension wins by feeling authoritative, content-rich, and trustworthy: Bible, Catechism, Rosary, daily readings, reflections, podcasts, study plans, high ratings, social proof, and a direct download funnel. SongDao should not compete as a smaller content library.
 
-- **Quiet, sacred, and practical**: prayerful without becoming ornamental.
-- **Daily-use friendly**: fast to scan in under 10 seconds.
-- **Private and non-judgmental**: progress feels like rhythm, not scoring.
-- **Vietnamese Catholic by default**: copy, dates, parish names, and feast names must render gracefully.
-- **Local-first**: UI should never feel broken when offline.
+### Decision
 
-The visual tone sits between:
+SongDao should own the smaller, sharper promise:
 
-- A clean habit tracker
-- A liturgical calendar
-- A parish reminder tool
-- A private prayer journal
+> "What should I do today to live my faith?"
 
-Avoid building a church brochure, saints encyclopedia, or devotional wallpaper app. The Today screen is an action dashboard, not a shrine.
+Calendar, readings, feast days, Mass schedules, and prayers are inputs. The daily action loop is the product.
+
+### Execution
+
+Every primary surface must make this loop obvious:
+
+```mermaid
+flowchart LR
+  A["Today's liturgical context"] --> B["One concrete Catholic action"]
+  B --> C["One-tap completion"]
+  C --> D["Private rhythm"]
+  D --> E["Widget and reminders bring user back"]
+  E --> A
+```
+
+Design must optimize for:
+
+- Activation: first useful Today screen in under 10 seconds.
+- Retention: widget, reminder, completion, weekly rhythm.
+- Trust: Catholic, Vietnamese-ready, private, local-first.
+- Distribution: landing page explains the daily loop faster than a feature list.
+
+---
+
+## 2. Reference Synthesis
+
+References reviewed:
+
+- [Ascension Press homepage](https://ascensionpress.com/pages/homepage)
+- [Ascension App landing page](https://ascensionpress.com/pages/ascension-app)
+- [Ascension Catholic Bible App Store page](https://apps.apple.com/us/app/ascension-catholic-bible/id1660909501)
+
+What to learn:
+
+- Lead with one clear category claim.
+- Show app screenshots early.
+- Use trust proof near the top: ratings, users, testimonials, recognizable features.
+- Make download conversion obvious through App Store buttons, QR code, or phone/email capture.
+- Keep the content ecosystem visible, but package it into simple paths.
+
+What not to copy:
+
+- Do not position SongDao as "the complete Catholic Bible app."
+- Do not lead with dozens of content modules.
+- Do not require account signup for the core promise.
+- Do not use trust proof we do not yet have.
+- Do not borrow Ascension's blue/yellow identity, Bible Timeline visual language, or content-library hierarchy.
+
+SongDao's visual lane:
+
+> A calm Vietnamese Catholic chapel notebook translated into a modern mobile utility.
+
+---
+
+## 3. Brand Principles
 
 ### Core Feeling
 
-Use warm whites, ink text, chapel green, deep burgundy, and restrained gold. The interface should feel human and grounded, but never sepia-heavy or old-fashioned.
+The product should feel:
 
-### Distinctive Product Signal
+- Quiet, sacred, and practical.
+- Warm but not nostalgic.
+- Native, fast, and daily-use friendly.
+- Vietnamese Catholic by default.
+- Private and non-judgmental.
+- Offline-capable without drama.
 
-Every primary surface should answer:
+### Brand Words
 
-> What is today, and what one concrete act should I do?
+Use these words to guide visual decisions:
 
-This should be visually obvious on:
+- Daily
+- Gentle
+- Sacred
+- Practical
+- Local
+- Private
+- Vietnamese
+- Faithful
 
-- Today screen
-- Home screen widget
-- Notification landing state
-- Calendar day detail
-- Weekly rhythm screen
+Avoid:
+
+- Grand
+- Academic
+- Gamified
+- Ornamental
+- Content-heavy
+- Influencer-led
+- Shame-based
+
+### Product Promise
+
+Primary:
+
+> Một việc nhỏ để sống đức tin hôm nay.
+
+English support line:
+
+> One clear Catholic action for today.
 
 ---
 
-## 2. Color Palette & Roles
+## 4. Color System
 
-Use semantic roles first. Liturgical colors are accents, not the whole UI.
+Use semantic roles first. Liturgical colors are compact meaning signals, not the whole UI.
 
 ### Core Surfaces
 
 | Token | Hex | Role |
 |---|---:|---|
-| `surface.canvas` | `#FAF8F3` | Main app background, warm but not yellow |
-| `surface.primary` | `#FFFFFF` | Cards, sheets, forms, widget content |
-| `surface.secondary` | `#F3F0E8` | Calendar bands, secondary grouped sections |
-| `surface.elevated` | `#FFFFFF` | Bottom sheets, modals, floating controls |
-| `surface.inverse` | `#18221E` | Dark seasonal/widget surfaces |
+| `surface.canvas` | `#FAF8F3` | Main app and landing background |
+| `surface.primary` | `#FFFFFF` | Cards, sheets, forms, screenshot frames |
+| `surface.secondary` | `#F3F0E8` | Grouped sections, landing bands, calendar bands |
+| `surface.container` | `#F0EEE8` | Subtle controls and inset surfaces |
+| `surface.variant` | `#E5E2DC` | Disabled surfaces and dividers |
+| `surface.inverse` | `#18221E` | Dark widget, footer, high-contrast landing strip |
 
 ### Text
 
 | Token | Hex | Role |
 |---|---:|---|
-| `text.primary` | `#1F2522` | Main reading text and headings |
-| `text.secondary` | `#5F6761` | Supporting labels, descriptions |
-| `text.tertiary` | `#8A938D` | Metadata, captions, placeholders |
+| `text.primary` | `#1F2522` | Headings, primary body |
+| `text.secondary` | `#5F6761` | Supporting labels and descriptions |
+| `text.tertiary` | `#8A938D` | Metadata, placeholders |
 | `text.inverse` | `#F8F5ED` | Text on dark surfaces |
 | `text.link` | `#1B6E5A` | Links and tappable text |
 
@@ -75,23 +158,23 @@ Use semantic roles first. Liturgical colors are accents, not the whole UI.
 
 | Token | Hex | Role |
 |---|---:|---|
-| `brand.primary` | `#1F7A64` | Primary action, selected nav, focus |
+| `brand.primary` | `#1F7A64` | Primary CTA, selected nav, focus |
 | `brand.primaryPressed` | `#155744` | Pressed primary state |
-| `brand.soft` | `#E2F1EA` | Selected chips, gentle success surfaces |
+| `brand.soft` | `#E2F1EA` | Selected chips, complete states, soft CTA bands |
 | `brand.deep` | `#123C32` | High-emphasis text on green surfaces |
-| `accent.gold` | `#B8892E` | Solemnity, sacred emphasis, small highlights |
+| `accent.gold` | `#B8892E` | Solemnity, sacred emphasis, landing proof accents |
 | `accent.burgundy` | `#8F2F3D` | Lent, sacrifice, confession preparation |
 | `accent.blue` | `#2F5F8F` | Marian content, informational states |
 
 ### Liturgical Colors
 
-Use liturgical colors as compact signals: left rails, small dots, badges, calendar markers, icon tints, widget accents.
+Use as left rails, dots, small badges, icon tints, calendar markers, widget accent strips, and screenshot annotations.
 
-| Liturgical Token | Hex | Use |
+| Token | Hex | Use |
 |---|---:|---|
 | `liturgical.green` | `#2F7D4F` | Ordinary Time |
 | `liturgical.white` | `#F7F3E8` | Christmas, Easter, solemnities |
-| `liturgical.gold` | `#C69A3D` | High feast emphasis on white days |
+| `liturgical.gold` | `#C69A3D` | High feast emphasis |
 | `liturgical.red` | `#B33A3A` | Martyrs, Palm Sunday, Good Friday |
 | `liturgical.purple` | `#6B4A7A` | Advent, Lent, penance |
 | `liturgical.rose` | `#C9788D` | Gaudete and Laetare Sundays |
@@ -103,61 +186,54 @@ Use liturgical colors as compact signals: left rails, small dots, badges, calend
 |---|---:|---|
 | `status.complete` | `#2F7D4F` | Completed daily action |
 | `status.warning` | `#B8892E` | Missing content, stale Mass data |
-| `status.error` | `#B33A3A` | Sync/import failures |
+| `status.error` | `#B33A3A` | Import/sync failure |
 | `status.offline` | `#5F6761` | Offline indicator |
 
-### Borders & Dividers
+### Borders & Shadows
 
 | Token | Value | Role |
 |---|---|---|
 | `border.subtle` | `#E2DDD1` | Cards, list dividers |
 | `border.strong` | `#CFC7B7` | Inputs, selected boundaries |
 | `border.focus` | `#1F7A64` | Accessibility focus ring |
+| `shadow.level2` | `0 6px 18px rgba(31, 37, 34, 0.08)` | Bottom sheets, sticky bars |
+| `shadow.level3` | `0 16px 40px rgba(31, 37, 34, 0.16)` | Dialogs only |
+
+Do not use glow effects, bokeh, decorative orbs, glassmorphism, or app-wide purple/gold dominance.
 
 ---
 
-## 3. Typography Rules
+## 5. Typography
 
-Use system fonts for speed and native feel.
+The current Flutter theme uses:
 
-### Font Family
+- Inter for body/UI.
+- Noto Serif for major headings and navigation labels.
 
-Flutter default:
-
-```dart
-fontFamily: null
-```
-
-Prefer platform typography:
-
-- iOS: SF Pro
-- Android: Roboto
-- Fallback: system sans
-
-Do not introduce a custom font for MVP unless Vietnamese rendering is visibly poor.
+Keep that direction. It gives SongDao a sacred editorial note without making the app feel old.
 
 ### Type Scale
 
 | Role | Size | Weight | Line Height | Use |
 |---|---:|---:|---:|---|
-| `display` | 32 | 700 | 1.15 | Today action title, onboarding headline |
-| `headlineLarge` | 28 | 700 | 1.18 | Screen titles |
-| `headline` | 24 | 700 | 1.22 | Major card title |
-| `titleLarge` | 20 | 700 | 1.30 | Section title, widget large title |
+| `display` | 32-40 | 600-700 | 1.20 | Landing hero, Today action title |
+| `headlineLarge` | 28-32 | 600-700 | 1.25 | Screen title, major landing sections |
+| `headline` | 24 | 600 | 1.35 | Major card title |
+| `titleLarge` | 20-22 | 600 | 1.35 | Section title, widget large title |
 | `title` | 18 | 600 | 1.35 | Card title, selected day title |
-| `bodyLarge` | 17 | 400 | 1.50 | Reflection prompt, devotional reading |
+| `bodyLarge` | 17-18 | 400 | 1.50 | Reflection prompt, devotional reading |
 | `body` | 15 | 400 | 1.45 | Standard UI body |
 | `label` | 14 | 600 | 1.30 | Buttons, tabs, chips |
-| `caption` | 13 | 500 | 1.30 | Metadata, feast rank, time labels |
+| `caption` | 13 | 500-600 | 1.30 | Metadata, feast rank, time labels |
 | `micro` | 11 | 600 | 1.20 | Calendar dots, compact widget labels |
 
-### Typography Principles
+### Rules
 
-- Use **sentence case**, not all caps, except tiny metadata chips where space requires it.
-- Do not use negative letter spacing. Vietnamese diacritics need room.
-- Long Vietnamese feast names must wrap cleanly to two lines.
-- The daily action title gets the strongest type treatment.
-- Scripture citations should be compact and legible, never decorative.
+- Vietnamese diacritics must never feel cramped.
+- Letter spacing should be `0` in most UI. Avoid all caps except compact chips.
+- Long feast names must wrap to two lines.
+- The daily action title gets the strongest treatment in the app.
+- The landing page headline may be bigger, but app screens stay utility-dense.
 
 ### Copy Tone
 
@@ -168,6 +244,7 @@ Good:
 - "Viết một câu suy niệm"
 - "Nhịp sống tuần này"
 - "Dữ liệu này đang lưu trên thiết bị"
+- "Chọn giáo xứ của bạn"
 
 Avoid:
 
@@ -179,11 +256,11 @@ Avoid:
 
 ---
 
-## 4. Component Styling
+## 6. App Component System
 
 ### App Shell
 
-Primary navigation uses bottom tabs:
+Bottom navigation:
 
 1. Today
 2. Calendar
@@ -191,7 +268,12 @@ Primary navigation uses bottom tabs:
 4. Church
 5. Progress
 
-Use icons plus short labels. Today is the home destination and should be visually privileged.
+Rules:
+
+- Today is the home destination.
+- Use icons plus short labels.
+- Selected state uses `brand.primary`.
+- Background uses `surface.secondary`.
 
 ### Today Header
 
@@ -199,237 +281,547 @@ Purpose: identify the liturgical day quickly.
 
 Structure:
 
-- Solar date
-- Optional lunar date
-- Liturgical season
-- Celebration or weekday title
-- Liturgical color marker
+- Solar date.
+- Optional lunar date.
+- Liturgical season.
+- Celebration or weekday title.
+- Liturgical color marker.
 
 Styling:
 
-- White or warm-white surface
-- 8px corner radius
-- 1px subtle border
-- Liturgical color as a 4px vertical rail or small circular marker
-- No heavy religious imagery
+- White or warm-white surface.
+- 8px radius.
+- 1px `border.subtle`.
+- 4px liturgical color rail or small circular marker.
+- No heavy religious imagery.
 
 ### Daily Action Card
 
-This is the most important component in the app.
+This is the most important component.
 
 Structure:
 
-- Small context label: season or rule source
-- Large action title
-- Duration chip
-- Prompt text
-- Primary completion button
-- Optional note affordance
+- Small context label: season or rule source.
+- Large action title.
+- Duration chip.
+- Prompt text.
+- Primary completion button.
+- Optional note affordance.
 
-Styling:
-
-- Use `surface.primary`
-- 8px radius
-- 1px `border.subtle`
-- A small liturgical accent rail
-- Completion button uses `brand.primary`
-- Completed state uses `brand.soft` with `status.complete`
-
-Behavior:
+Rules:
 
 - One primary action only.
-- Secondary actions must not compete visually.
-- Completion should be one tap.
-- Note entry appears after completion or through a clear secondary action.
+- Completion is one tap.
+- Secondary actions must not visually compete.
+- Completed state uses `brand.soft` and `status.complete`.
+- Note entry appears after completion or through a quiet secondary action.
+
+### Reading Reference Card
+
+Purpose: support action without turning MVP into a licensed Bible product.
+
+Structure:
+
+- Reading type.
+- Citation.
+- Optional short legally safe excerpt or source link.
+- "View readings" action.
+
+Rules:
+
+- References first, full text only when licensing is solved.
+- Never visually outrank the daily action.
+
+### Important Mass Card
+
+Purpose: help the user prepare for Sunday, solemnities, and parish rhythm.
+
+Structure:
+
+- Next important Mass time.
+- Church name.
+- Context: Sunday, solemnity, weekday.
+- Last verified state.
+- Change parish / suggest correction affordance.
+
+Rules:
+
+- Time first.
+- Stale data gets warning styling, not error styling.
+- Distance appears only after location permission.
+
+### Progress Components
+
+Progress must feel private and gentle.
+
+Use:
+
+- Weekly rhythm row.
+- Completed action list.
+- Reflection notes.
+- Soft streak language.
+
+Do not use:
+
+- Public ranking.
+- Red missed-day states.
+- Aggressive gamification.
+- Shame-based empty states.
 
 ### Buttons
 
-#### Primary
+Primary:
 
-- Background: `brand.primary`
-- Text: white
-- Height: 48px minimum
-- Radius: 8px
-- Padding: 16px horizontal
-- Pressed: `brand.primaryPressed`
-- Disabled: `surface.secondary` with `text.tertiary`
+- Background: `brand.primary`.
+- Text: white.
+- Height: 48px minimum.
+- Radius: 8px.
+- Pressed: `brand.primaryPressed`.
 
 Use for:
 
 - "I did this"
 - "Choose my parish"
 - "Save reminder"
+- Landing page "Join waitlist" / "Download"
 
-#### Secondary
+Secondary:
 
-- Background: `surface.primary`
-- Border: `border.subtle`
-- Text: `text.primary`
-- Height: 44px minimum
-- Radius: 8px
+- Background: `surface.primary`.
+- Border: `border.subtle` or `border.strong`.
+- Text: `text.primary`.
+- Height: 44px minimum.
+- Radius: 8px.
 
-Use for:
+Quiet:
 
-- "Add note"
-- "View readings"
-- "Change parish"
-
-#### Quiet / Text Button
-
-- Background: transparent
-- Text: `text.link`
-- No border
-
-Use for low-risk navigation and inline actions.
+- Transparent.
+- Text: `text.link`.
+- Use for inline low-risk navigation.
 
 ### Cards
 
-Use cards for individual information units only:
+Use cards only for individual information units:
 
-- Daily action
-- Reading references
-- Important Mass
-- Weekly rhythm summary
-- Parish row
-- Prayer item
+- Daily action.
+- Reading references.
+- Important Mass.
+- Weekly rhythm summary.
+- Parish row.
+- Prayer item.
+- Landing page proof item or feature item.
 
-Do not nest cards inside cards.
+Rules:
 
-Card styling:
-
-- Radius: 8px
-- Border: `1px solid #E2DDD1`
-- Background: `surface.primary`
-- Shadow: none by default
-- Shadow only for bottom sheets/modals
+- Radius: 8px.
+- Border: 1px `border.subtle`.
+- Background: `surface.primary`.
+- Shadow: none by default.
+- Do not nest cards inside cards.
 
 ### Inputs
 
-Use native-feeling input fields:
+Use native-feeling inputs:
 
-- Background: `surface.primary`
-- Border: `border.strong`
-- Focus border: `brand.primary`
-- Radius: 8px
-- Height: 48px minimum
-- Placeholder: `text.tertiary`
-
-Search inputs should include a search icon and clear button.
+- Background: `surface.primary` in cards or `surface.secondary` on page canvas.
+- Border: `border.strong`.
+- Focus: `brand.primary`.
+- Radius: 8px.
+- Height: 48px minimum.
+- Placeholder: `text.tertiary`.
+- Search fields include search icon and clear button.
 
 ### Chips & Badges
 
-Use chips for compact state:
+Use chips for:
 
-- Liturgical season
-- Duration
-- Reading type
-- Mass time
-- Offline
-- Last verified
+- Liturgical season.
+- Duration.
+- Reading type.
+- Mass time.
+- Offline.
+- Last verified.
 
-Styling:
+Rules:
 
-- Radius: full pill
-- Height: 28px
-- Background: semantic soft color
-- Text: 13px, weight 600
-- Avoid more than 3 chips in one row on mobile.
+- Pill radius.
+- Height: 28px.
+- Text: 13px, weight 600.
+- Avoid more than three chips per row on mobile.
+
+---
+
+## 7. App Screen Guidance
+
+### Today
+
+User outcome: understand the day and complete one act.
+
+Order:
+
+1. Liturgical context.
+2. Daily action.
+3. Completion state.
+4. Reading references.
+5. Important Mass.
+6. Reflection note.
+
+Design priority:
+
+- Daily action card is visually dominant.
+- Reading references are supportive.
+- Mass is planning-oriented.
+- Notes are private and quiet.
 
 ### Calendar
 
-Calendar is secondary to Today.
+User outcome: see what is coming and prepare.
 
-Month view:
+Required:
 
-- Clear day numbers
-- Liturgical color dot or rail
-- Sunday visually distinct
-- Selected day uses brand outline/fill
-- Feast days use small accent marker
+- Week strip or month view.
+- Liturgical color markers.
+- Upcoming solemnities/Sundays.
+- Action preview for selected day.
 
-Week view:
+Design priority:
 
-- Favor horizontal week strip
-- Show daily action preview below
-- Keep tap targets 44px minimum
+- Scannable before comprehensive.
+- Selected day should connect back to Today/action.
 
-Avoid turning the calendar into a dense reference table.
+### Pray
+
+User outcome: access a small useful prayer library.
+
+Required:
+
+- Daily prayer.
+- Rosary.
+- Confession preparation.
+- Common prayers.
+- Saved prayers.
+
+Design priority:
+
+- Calm reading experience.
+- Large enough text.
+- Minimal controls while reading.
+
+### Church
+
+User outcome: know my parish and next important Mass.
+
+Required:
+
+- My parish.
+- Next Mass.
+- Search.
+- Mass schedule.
+- Suggest correction.
+
+Design priority:
+
+- Time and location clarity beat visual polish.
+- Always show last verified when available.
 
 ### Progress
 
-Progress must feel private and gentle.
+User outcome: reflect on private rhythm.
 
-Use:
+Required:
 
-- Weekly rhythm row
-- Completed action list
-- Reflection notes
-- Soft streak language
+- This week.
+- Completed actions.
+- Notes.
+- Review prompt.
 
-Do not use:
+Design priority:
 
-- Public ranking
-- Red failure states for missed days
-- Aggressive gamification
-- Shame-based empty states
+- Gentle trend, not judgment.
+- Use green for completion, not moral worth.
 
-### Church / Parish Components
+---
 
-Parish rows should emphasize trust and freshness:
-
-- Church name
-- Diocese
-- Next Mass time
-- Last verified
-- Distance only if location permission is granted
-
-Mass time components:
-
-- Time first
-- Context second: Sunday, weekday, solemnity
-- Note third
-
-Stale data gets `status.warning`, not error styling.
-
-### Widgets
+## 8. Widget System
 
 Widget design must be simpler than in-app screens.
 
-Small widget:
+Small:
 
-- Date or weekday
-- Liturgical color marker
-- Short action title
+- Date or weekday.
+- Liturgical color marker.
+- Short action title.
 
-Medium widget:
+Medium:
 
-- Date
-- Celebration
-- Action
-- Gospel reference or Mass time
+- Date.
+- Celebration.
+- Action.
+- Gospel reference or Mass time.
 
-Large widget:
+Large:
 
-- Today context
-- Action
-- Reflection prompt
-- Important Mass
+- Today context.
+- Action.
+- Reflection prompt.
+- Important Mass.
 
-Widget styling:
+Rules:
 
 - Use high contrast.
 - Avoid tiny paragraphs.
 - Prefer one clear action.
-- Use liturgical accent as a small signal.
+- Widget snapshots come from local data.
+- Do not promise live widget updates.
 - Dark seasonal widgets may use `surface.inverse`.
 
 ---
 
-## 5. Layout Principles
+## 9. Landing Page Design System
 
-### Spacing Scale
+### Landing Page Job
 
-Use an 8px base grid:
+The landing page is not a brochure. It has one job:
+
+> Convert a Catholic visitor into a waitlist signup, TestFlight install, App Store download, or parish/content partner lead.
+
+Primary audience:
+
+- Vietnamese Catholics who want a daily rhythm.
+- Busy Catholics who need reminders and structure.
+- Parish-connected users who care about Mass and feast context.
+
+Secondary audience:
+
+- Priests, parish volunteers, Catholic creators, and early supporters.
+
+### Positioning
+
+Headline options:
+
+- "Một việc nhỏ để sống đức tin hôm nay."
+- "Sống Đạo: one clear Catholic action for today."
+- "Your daily Catholic rhythm, right on your home screen."
+
+Do not lead with:
+
+- "Catholic calendar app."
+- "Bible app."
+- "Prayer app."
+- "All-in-one Catholic platform."
+
+### Landing Page Structure
+
+Recommended launch page:
+
+1. Hero.
+2. App loop section.
+3. Screenshot strip.
+4. Why it is different.
+5. Privacy / local-first proof.
+6. Widget and reminders.
+7. Parish / Mass module.
+8. Waitlist or download CTA.
+9. FAQ.
+10. Footer.
+
+### Hero
+
+Purpose: explain the promise in five seconds.
+
+Layout:
+
+- Left/top: headline, short supporting copy, primary CTA.
+- Right/below: real app screenshot or phone mockup showing Today screen.
+- Include one compact trust line only when true.
+
+Hero copy:
+
+```txt
+Một việc nhỏ để sống đức tin hôm nay.
+
+Sống Đạo turns the Catholic calendar into one clear daily action, with readings, parish Mass context, reminders, private tracking, and a home-screen widget.
+```
+
+CTA hierarchy:
+
+- Primary: "Join the beta" or "Download on the App Store".
+- Secondary: "See how it works".
+
+Rules:
+
+- Use product screenshots, not abstract religious art.
+- Do not put the hero text inside a card.
+- Avoid giant decorative gradients.
+- Keep a hint of the next section visible on desktop and mobile.
+
+### App Loop Section
+
+Show three steps:
+
+1. See today's context.
+2. Do one small action.
+3. Build a private rhythm.
+
+Each step should use a screenshot crop or compact UI illustration from the actual app.
+
+### Screenshot Strip
+
+Use 3-5 phone screenshots:
+
+- Today.
+- Widget.
+- Calendar.
+- Church / Mass.
+- Progress.
+
+Rules:
+
+- Screenshots should be legible.
+- Use real UI states, not empty placeholders.
+- Keep phone frames simple.
+- Do not use dark blurred backgrounds behind phones.
+
+### Difference Section
+
+Compare by category, not by attacking competitors.
+
+Suggested copy:
+
+| Other apps help you... | Sống Đạo helps you... |
+|---|---|
+| Read more Catholic content | Choose one concrete action today |
+| Check feast days and readings | Turn the day into practice |
+| Track public or generic habits | Build a private Catholic rhythm |
+| Depend on cloud accounts | Keep the core loop local-first |
+
+### Privacy / Local-First Section
+
+This is a conversion asset, not just a technical note.
+
+Message:
+
+> Your practice history and notes stay on your device unless you choose backup.
+
+Show:
+
+- No account required for MVP.
+- Notes local by default.
+- Offline Today screen.
+- Location only when using nearby church search.
+- Analytics opt-in only.
+
+### Widget Section
+
+Purpose: sell retention visually.
+
+Message:
+
+> The home screen becomes a gentle reminder to live today's faith.
+
+Show:
+
+- Small, medium, and large widget mockups.
+- One clear daily action.
+- Liturgical accent.
+
+### Parish / Mass Section
+
+Purpose: win Vietnamese parish-connected users.
+
+Message:
+
+> Choose your parish and see the next important Mass in context.
+
+Show:
+
+- My parish card.
+- Next Sunday or solemnity Mass.
+- Last verified state.
+
+### Social Proof
+
+Use only truthful proof.
+
+Pre-launch proof options:
+
+- "Built for Vietnamese Catholic daily practice."
+- "Local-first by design."
+- "Beta opening soon."
+- Quotes from beta users after we have them.
+
+Do not invent:
+
+- Ratings.
+- Download counts.
+- Parish endorsements.
+- Clergy endorsement.
+
+### FAQ
+
+Minimum questions:
+
+- Is this a Bible app?
+- Does it work offline?
+- Do I need an account?
+- Are my notes private?
+- Is it only for Vietnamese Catholics?
+- Will it include Mass times?
+- Is it free?
+
+### Landing Page Visual Tokens
+
+Use the same color system as the app.
+
+Add landing-specific roles:
+
+| Token | Value | Role |
+|---|---:|---|
+| `landing.heroBackground` | `#FAF8F3` | First viewport |
+| `landing.bandSoft` | `#F3F0E8` | Alternating sections |
+| `landing.proofAccent` | `#B8892E` | Small trust markers |
+| `landing.footer` | `#18221E` | Footer |
+
+### Landing Page Layout
+
+Mobile:
+
+- Single column.
+- Hero screenshot below copy.
+- CTA visible above fold.
+- 16px horizontal padding.
+- Screenshots swipe horizontally only if necessary.
+
+Tablet:
+
+- Centered max-width content.
+- Hero can use two columns.
+- Screenshot strip remains readable.
+
+Desktop:
+
+- Max content width: 1120px.
+- Hero uses 52/48 text-to-product split.
+- Sections use full-width bands with constrained inner content.
+- Avoid floating card stacks.
+
+### Landing Page Metrics
+
+Design should support:
+
+- Waitlist conversion.
+- TestFlight/App Store click-through.
+- Scroll depth to screenshot strip.
+- FAQ engagement.
+- Parish/content partner inquiry.
+
+Do not add analytics until privacy copy and opt-in policy are clear.
+
+---
+
+## 10. Layout & Spacing
+
+Use an 8px base grid.
 
 | Token | Value |
 |---|---:|
@@ -442,136 +834,95 @@ Use an 8px base grid:
 | `space.8` | 32 |
 | `space.10` | 40 |
 | `space.12` | 48 |
+| `space.16` | 64 |
+| `space.20` | 80 |
 
-### Screen Padding
+App screen padding:
 
-- Mobile horizontal padding: 16px
-- Dense utility screens: 12px allowed
-- Tablet max content width: 720px
-- Desktop/web max content width: 960px
+- Mobile: 16px.
+- Dense utility screens: 12px allowed.
+- Tablet max content width: 720px.
+- Desktop/web app max content width: 960px.
 
-### Information Hierarchy
+Landing page padding:
 
-Today screen order:
+- Mobile: 16px.
+- Tablet: 32px.
+- Desktop: 48px.
+- Max content width: 1120px.
 
-1. Liturgical context
-2. Daily action
-3. Completion state
-4. Reading references
-5. Important Mass
-6. Reflection note
+Density:
 
-If a screen cannot be understood in 10 seconds, reduce content.
-
-### Density
-
-Use compact, scannable cards. This is a daily utility app, not a marketing page.
-
-Avoid:
-
-- Oversized hero sections
-- Decorative full-screen gradients
-- Floating card stacks
-- Large background illustrations
-- Excess religious ornament
-
-### Empty States
-
-Empty states should create the next action:
-
-- No parish: "Choose your parish for Mass reminders"
-- No content pack: "Open once online to prepare this year’s calendar"
-- No completed actions: "Start with one small action today"
-- Offline: "Offline mode. Today’s data is saved on this device."
+- App: compact, scannable, utility-first.
+- Landing page: more breathing room, but still product-led.
 
 ---
 
-## 6. Depth & Elevation
-
-Keep the UI mostly flat.
-
-| Level | Treatment | Use |
-|---|---|---|
-| 0 | No shadow | Page background |
-| 1 | 1px border | Cards, inputs, list rows |
-| 2 | Very soft shadow | Bottom sheets, sticky bars |
-| 3 | Modal shadow | Dialogs only |
-
-Shadow values:
-
-```txt
-level2: 0 6px 18px rgba(31, 37, 34, 0.08)
-level3: 0 16px 40px rgba(31, 37, 34, 0.16)
-```
-
-Do not use glow effects, bokeh, decorative orbs, or heavy glassmorphism.
-
----
-
-## 7. Motion & Interaction
+## 11. Motion & Interaction
 
 Motion should be subtle and respectful.
 
 Use:
 
-- 120-180ms button press transitions
-- 180-240ms sheet transitions
-- Gentle completion check animation
-- Calendar selection transition
-- Widget-free static surfaces
+- 120-180ms button press transitions.
+- 180-240ms sheet transitions.
+- Gentle completion check animation.
+- Calendar selection transition.
+- Landing page screenshot fade/slide only if it does not slow page load.
 
 Avoid:
 
-- Confetti for religious practice
-- Over-celebrating streaks
-- Constant pulsing
-- Decorative animations on prayer screens
+- Confetti for religious practice.
+- Over-celebrating streaks.
+- Constant pulsing.
+- Decorative page animations.
+- Heavy parallax.
 
 Completion feedback:
 
-- Button changes to completed state
-- Small check icon appears
-- Optional note prompt slides in
-- Weekly rhythm updates quietly
+- Button changes to completed state.
+- Small check icon appears.
+- Optional note prompt slides in.
+- Weekly rhythm updates quietly.
 
 ---
 
-## 8. Accessibility & States
+## 12. Accessibility & States
 
 ### Touch Targets
 
-- Minimum: 44px
-- Preferred primary button height: 48px
-- Calendar day cells: 44px minimum on mobile
+- Minimum: 44px.
+- Preferred primary button: 48px.
+- Calendar day cells: 44px minimum on mobile.
 
 ### Contrast
 
 All text must meet WCAG AA:
 
-- `text.primary` on `surface.canvas`
-- White text on `brand.primary`
-- `text.secondary` on white
-- Liturgical color badges with appropriate text contrast
+- `text.primary` on `surface.canvas`.
+- White text on `brand.primary`.
+- `text.secondary` on white.
+- Liturgical color badges with appropriate text contrast.
 
 ### Focus
 
-Keyboard and switch-control focus:
-
-- 2px `border.focus`
-- 2px offset when possible
-- Never rely only on color
+- 2px `border.focus`.
+- 2px offset when possible.
+- Never rely only on color.
 
 ### Offline States
 
-Offline is a normal mode, not an error.
+Offline is normal, not an error.
 
 Use:
 
-- Small offline chip
-- Neutral copy
-- Cached content
+- Small offline chip.
+- Neutral copy.
+- Cached content.
 
-Do not block Today screen because network is unavailable.
+Copy:
+
+> Offline mode. Today's data is saved on this device.
 
 ### Error States
 
@@ -581,131 +932,104 @@ Use human, specific copy:
 - "Mass times may be outdated."
 - "Widget data will refresh after opening the app."
 
-Avoid generic "Something went wrong" unless there is no recoverable detail.
+Avoid generic "Something went wrong" unless no recoverable detail exists.
 
 ---
 
-## 9. Responsive Behavior
-
-### Breakpoints
+## 13. Responsive Behavior
 
 | Name | Width | Behavior |
 |---|---:|---|
 | Small mobile | `<360` | Single column, compact cards, shorter labels |
-| Mobile | `360-599` | Primary target |
+| Mobile | `360-599` | Primary app target |
 | Tablet | `600-899` | Centered content, optional two-column sections |
-| Large tablet/web | `900+` | Max-width layout, Today content can use side panel |
+| Large tablet/web | `900+` | Max-width layout, Today can use side panel |
 
-### Mobile Rules
+Mobile rules:
 
 - Primary actions stay above the fold when possible.
 - Long feast names wrap to two lines.
 - Bottom navigation labels remain visible unless space is extremely tight.
-- Avoid horizontal scrolling except week calendar strips.
+- Avoid horizontal scrolling except week strips and landing screenshot strips.
 
-### Tablet/Web Rules
+Tablet/web app rules:
 
-Use a two-column Today layout:
-
-- Left: daily action and completion
-- Right: readings, Mass, rhythm
-
-Do not turn the app into a desktop dashboard unless the platform actually needs it.
+- Today layout may split into two columns:
+  - Left: daily action and completion.
+  - Right: readings, Mass, rhythm.
+- Do not turn the app into a desktop dashboard unless the platform requires it.
 
 ---
 
-## 10. Screen-Specific Guidance
+## 14. Flutter Token Mapping
 
-### Today Screen
+Use the small token layer in `songdao/lib/app/theme.dart`.
 
-User outcome: know today’s context and complete one act.
+Core color mapping:
 
-Required sections:
+```dart
+class AppColors {
+  static const canvas = Color(0xFFFAF8F3);
+  static const surface = Color(0xFFFFFFFF);
+  static const surfaceSecondary = Color(0xFFF3F0E8);
+  static const surfaceContainer = Color(0xFFF0EEE8);
+  static const surfaceVariant = Color(0xFFE5E2DC);
+  static const inverse = Color(0xFF18221E);
 
-- Date and liturgical context
-- One daily action
-- Completion button
-- Reading references
-- Important Mass
-- Optional note
+  static const textPrimary = Color(0xFF1F2522);
+  static const textSecondary = Color(0xFF5F6761);
+  static const textTertiary = Color(0xFF8A938D);
+  static const textInverse = Color(0xFFF8F5ED);
+  static const textLink = Color(0xFF1B6E5A);
 
-Design priority:
+  static const brand = Color(0xFF1F7A64);
+  static const brandPressed = Color(0xFF155744);
+  static const brandSoft = Color(0xFFE2F1EA);
+  static const brandDeep = Color(0xFF123C32);
 
-- Daily action card is visually dominant.
-- Reading references are supportive.
-- Mass is planning-oriented.
-- Notes are private and quiet.
+  static const gold = Color(0xFFB8892E);
+  static const burgundy = Color(0xFF8F2F3D);
+  static const marianBlue = Color(0xFF2F5F8F);
 
-### Calendar Screen
+  static const borderSubtle = Color(0xFFE2DDD1);
+  static const borderStrong = Color(0xFFCFC7B7);
+  static const borderFocus = Color(0xFF1F7A64);
+}
+```
 
-User outcome: see what is coming and prepare.
+Liturgical color helper:
 
-Required sections:
+```dart
+Color liturgicalColor(String value) {
+  switch (value) {
+    case 'green':
+      return LiturgicalColors.green;
+    case 'white':
+      return LiturgicalColors.white;
+    case 'gold':
+      return LiturgicalColors.gold;
+    case 'red':
+      return LiturgicalColors.red;
+    case 'purple':
+      return LiturgicalColors.purple;
+    case 'rose':
+      return LiturgicalColors.rose;
+    case 'black':
+      return LiturgicalColors.black;
+    default:
+      return AppColors.brand;
+  }
+}
+```
 
-- Week strip or month view
-- Liturgical color markers
-- Upcoming solemnities/Sundays
-- Action preview for selected day
+Implementation rule:
 
-Design priority:
-
-- Scannable before comprehensive.
-- The selected day should feel connected to Today/action.
-
-### Pray Screen
-
-User outcome: access a small useful prayer library.
-
-Required sections:
-
-- Daily prayer
-- Rosary
-- Confession preparation
-- Common prayers
-- Saved prayers
-
-Design priority:
-
-- Calm reading experience
-- Large enough text
-- Minimal controls while reading
-
-### Church Screen
-
-User outcome: know my parish and next important Mass.
-
-Required sections:
-
-- My parish
-- Next Mass
-- Search
-- Mass schedule
-- Suggest correction
-
-Design priority:
-
-- Time and location clarity beat visual polish.
-- Always show last verified when available.
-
-### Progress Screen
-
-User outcome: reflect on private rhythm.
-
-Required sections:
-
-- This week
-- Completed actions
-- Notes
-- Review prompt
-
-Design priority:
-
-- Gentle trend, not judgment.
-- Use green for completion, not morality.
+- Prefer native Material components with light theming.
+- Add custom widgets only when they directly serve Today, widget, Mass, prayer, or progress flows.
 
 ---
 
-## 11. Do's and Don'ts
+## 15. Do's And Don'ts
 
 ### Do
 
@@ -718,6 +1042,7 @@ Design priority:
 - Use icons for navigation and compact actions.
 - Keep cards flat, bordered, and purposeful.
 - Make widgets highly scannable.
+- Let the landing page sell the daily loop with real screenshots.
 
 ### Don't
 
@@ -725,98 +1050,31 @@ Design priority:
 - Turn the app into a full Bible reader in MVP.
 - Use public virtue scoring.
 - Add decorative religious clutter.
-- Use giant landing-page hero layouts inside the app.
+- Use giant marketing hero layouts inside the app.
 - Use purple or gold as dominant app-wide themes.
 - Hide stale parish/Mass data.
 - Use shame copy for missed practice.
 - Promise live widget updates.
-- Use dynamic app icons for daily information.
+- Invent social proof before launch.
+- Make landing page visuals that do not show the real product.
 
 ---
 
-## 12. Flutter Token Mapping
+## 16. Agent Prompt Guide
 
-Use a small token layer in `lib/app/theme.dart`.
+When generating app UI:
 
-```dart
-class AppColors {
-  static const canvas = Color(0xFFFAF8F3);
-  static const surface = Color(0xFFFFFFFF);
-  static const surfaceSecondary = Color(0xFFF3F0E8);
-  static const inverse = Color(0xFF18221E);
+> Build a calm, local-first Catholic daily practice UI. Warm off-white canvas `#FAF8F3`, white cards, ink text `#1F2522`, chapel green primary `#1F7A64`, restrained liturgical accents. Use flat 8px-radius cards with subtle borders. Make Today/action the visual center. Vietnamese text must wrap cleanly. No decorative clutter, no public scoring, no giant marketing hero inside the app.
 
-  static const textPrimary = Color(0xFF1F2522);
-  static const textSecondary = Color(0xFF5F6761);
-  static const textTertiary = Color(0xFF8A938D);
+When generating landing page UI:
 
-  static const brand = Color(0xFF1F7A64);
-  static const brandPressed = Color(0xFF155744);
-  static const brandSoft = Color(0xFFE2F1EA);
-
-  static const gold = Color(0xFFB8892E);
-  static const burgundy = Color(0xFF8F2F3D);
-  static const marianBlue = Color(0xFF2F5F8F);
-
-  static const borderSubtle = Color(0xFFE2DDD1);
-  static const borderStrong = Color(0xFFCFC7B7);
-}
-```
-
-Liturgical color helper:
-
-```dart
-Color liturgicalColor(String value) {
-  switch (value) {
-    case 'green':
-      return const Color(0xFF2F7D4F);
-    case 'white':
-      return const Color(0xFFF7F3E8);
-    case 'gold':
-      return const Color(0xFFC69A3D);
-    case 'red':
-      return const Color(0xFFB33A3A);
-    case 'purple':
-      return const Color(0xFF6B4A7A);
-    case 'rose':
-      return const Color(0xFFC9788D);
-    case 'black':
-      return const Color(0xFF242424);
-    default:
-      return AppColors.brand;
-  }
-}
-```
-
----
-
-## 13. Agent Prompt Guide
-
-When generating UI for this project, follow this shorthand:
-
-> Build a calm, local-first Catholic daily practice UI. Warm off-white canvas `#FAF8F3`, white cards, ink text `#1F2522`, chapel green primary `#1F7A64`, restrained liturgical accents. Use flat 8px-radius cards with subtle borders. Make Today/action the visual center. Vietnamese text must wrap cleanly. No decorative clutter, no public scoring, no giant marketing hero.
-
-### Quick Color Reference
-
-- Canvas: `#FAF8F3`
-- Card: `#FFFFFF`
-- Secondary surface: `#F3F0E8`
-- Text: `#1F2522`
-- Secondary text: `#5F6761`
-- Primary: `#1F7A64`
-- Primary soft: `#E2F1EA`
-- Gold accent: `#B8892E`
-- Burgundy accent: `#8F2F3D`
-- Border: `#E2DDD1`
-
-### Example Component Prompt
-
-> Create the Today screen for Sống Đạo. At top, show the date and liturgical context in a flat white card with a 4px liturgical color rail. Below it, create a dominant daily action card with title, duration chip, reflection prompt, and a 48px green "I did this" button. Add smaller cards for readings and next important Mass. Use warm canvas, white cards, 8px radius, subtle borders, Vietnamese-ready wrapping, and no decorative imagery.
+> Build a product-led landing page for Sống Đạo, a local-first Catholic daily practice app. Lead with "Một việc nhỏ để sống đức tin hôm nay", show a real Today screen phone mockup above the fold, explain the loop in three steps, then show widget, privacy, parish Mass, screenshots, CTA, and FAQ. Use the app color tokens, restrained Catholic warmth, no decorative gradients, no fake social proof, and no content-library positioning.
 
 ### Iteration Rules
 
-1. If a new screen does not advance daily action, private rhythm, parish planning, or prayer access, challenge the feature.
-2. Keep UI density high enough for daily utility.
-3. Liturgical colors should mark meaning, not dominate the palette.
-4. Use local/offline states everywhere content appears.
-5. Prefer native Flutter Material components lightly themed over custom visual systems.
-6. Use simple shippable layouts first; polish after the MVP loop works.
+1. If a new screen does not advance daily action, private rhythm, parish planning, prayer access, activation, retention, or revenue, challenge it.
+2. Keep app UI dense enough for daily utility.
+3. Let landing page UI breathe enough to convert.
+4. Liturgical colors should mark meaning, not dominate the palette.
+5. Use local/offline states everywhere content appears.
+6. Prefer simple shippable layouts first; polish after the MVP loop works.

@@ -3,15 +3,25 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:songdao/data/content/content_pack_provider.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
+import 'package:songdao/data/local/mass_service.dart';
+import 'package:songdao/data/local/user_settings_repository.dart';
+import 'package:songdao/data/local/widget_snapshot_bridge.dart';
 import 'package:songdao/data/local/widget_snapshot_service.dart';
+import 'package:songdao/features/today/today_controller.dart';
+import 'package:songdao/notifications/local_notification_service.dart';
 
 AppDatabase _openTestDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('DailyActionEngine', () {
     late AppDatabase db;
     late DailyActionEngine engine;
@@ -126,6 +136,39 @@ void main() {
       expect(action.type, 'reflection');
     });
 
+    test('selects feast action before seasonal action', () async {
+      await _insertCalendarDay(db, '2026-05-14', season: 'easter');
+      await _insertCelebration(db, '2026-05-14', rank: 'feast');
+      await _insertRule(
+        db,
+        id: 'feast_witness_vi',
+        priority: 15,
+        when: {'is_feast': true},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+        },
+      );
+      await _insertRule(
+        db,
+        id: 'easter_weekday_gospel_note_vi',
+        priority: 50,
+        when: {'season': 'easter', 'is_sunday': false},
+        action: {
+          'type': 'reflection',
+          'prompt': 'Viết một câu về Tin Mừng hôm nay.',
+        },
+      );
+
+      final action = await engine.getOrCreateActionForDate('2026-05-14');
+
+      expect(action.sourceRule, 'feast_witness_vi');
+      expect(
+        action.prompt,
+        'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+      );
+    });
+
     test('selects seasonal action before generic Friday action', () async {
       await _insertCalendarDay(db, '2026-05-01', season: 'easter');
       await _insertRule(
@@ -205,6 +248,41 @@ void main() {
       )..where((t) => t.date.equals('2026-07-01'))).getSingle();
       expect(calendarDay.season, 'unknown');
     });
+
+    test(
+      'replaces fallback action after real calendar content arrives',
+      () async {
+        final fallback = await engine.getOrCreateActionForDate('2026-05-14');
+        expect(fallback.sourceRule, DailyActionEngine.fallbackSourceRule);
+
+        await (db.update(
+          db.calendarDays,
+        )..where((t) => t.date.equals('2026-05-14'))).write(
+          const CalendarDaysCompanion(
+            season: Value('easter'),
+            liturgicalWeek: Value(6),
+            color: Value('red'),
+            cycleYear: Value('A'),
+          ),
+        );
+        await _insertCelebration(db, '2026-05-14', rank: 'feast');
+        await _insertRule(
+          db,
+          id: 'feast_witness_vi',
+          priority: 15,
+          when: {'is_feast': true},
+          action: {
+            'type': 'reflection',
+            'prompt': 'Chọn một cách nhỏ để làm chứng cho đức tin hôm nay.',
+          },
+        );
+
+        final refreshed = await engine.getOrCreateActionForDate('2026-05-14');
+
+        expect(refreshed.id, fallback.id);
+        expect(refreshed.sourceRule, 'feast_witness_vi');
+      },
+    );
   });
 
   group('ActionLogs', () {
@@ -662,6 +740,66 @@ void main() {
     );
   });
 
+  group('WidgetSnapshotBridge', () {
+    const channel = MethodChannel('test.songdao/widget_snapshot');
+    late List<MethodCall> calls;
+
+    setUp(() {
+      calls = [];
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            return true;
+          });
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+    });
+
+    test('writes latest snapshot over the iOS channel', () async {
+      const bridge = WidgetSnapshotBridge(channel: channel);
+
+      final result = await bridge.writeLatestSnapshot(
+        date: '2026-04-27',
+        payload: '{"date":"2026-04-27"}',
+      );
+
+      expect(result.wrote, isTrue);
+      expect(result.failed, isFalse);
+      expect(calls, hasLength(1));
+      expect(calls.single.method, 'writeLatestSnapshot');
+      expect(calls.single.arguments, {
+        'appGroupId': WidgetSnapshotBridge.appGroupId,
+        'date': '2026-04-27',
+        'payload': '{"date":"2026-04-27"}',
+      });
+    });
+
+    test('returns failure instead of throwing on channel errors', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            throw PlatformException(
+              code: 'app_group_unavailable',
+              message: 'No App Group',
+            );
+          });
+      const bridge = WidgetSnapshotBridge(channel: channel);
+
+      final result = await bridge.writeLatestSnapshot(
+        date: '2026-04-27',
+        payload: '{}',
+      );
+
+      expect(result.wrote, isFalse);
+      expect(result.failed, isTrue);
+      expect(result.code, 'app_group_unavailable');
+    });
+  });
+
   group('UserSettings', () {
     late AppDatabase db;
 
@@ -720,6 +858,200 @@ void main() {
       expect(all.where((s) => s.key == 'theme'), hasLength(1));
       expect(all.firstWhere((s) => s.key == 'theme').value, 'dark');
     });
+
+    test('repository defaults lunar display to Vietnamese only', () async {
+      final repo = UserSettingsRepository(db);
+
+      expect(await repo.locale(), 'vi');
+      expect(await repo.showLunarDate(), isTrue);
+
+      await repo.setShowLunarDate(false);
+      expect(await repo.showLunarDate(), isFalse);
+
+      await repo.set(UserSettingsKeys.locale, 'en');
+      await repo.setShowLunarDate(true);
+      expect(await repo.showLunarDate(), isFalse);
+    });
+
+    test('repository stores daily reminder settings locally', () async {
+      final repo = UserSettingsRepository(db);
+
+      var reminder = await repo.dailyReminder();
+      expect(reminder.enabled, isFalse);
+      expect(reminder.hour, 7);
+      expect(reminder.minute, 0);
+
+      await repo.setDailyReminderTime(hour: 20, minute: 30);
+      await repo.setDailyReminderEnabled(true);
+
+      reminder = await repo.dailyReminder();
+      expect(reminder.enabled, isTrue);
+      expect(reminder.hour, 20);
+      expect(reminder.minute, 30);
+    });
+
+    test('repository ignores invalid daily reminder time values', () async {
+      final repo = UserSettingsRepository(db);
+
+      await repo.set(UserSettingsKeys.dailyReminderHour, '99');
+      await repo.set(UserSettingsKeys.dailyReminderMinute, 'bad');
+
+      final reminder = await repo.dailyReminder();
+      expect(reminder.hour, 7);
+      expect(reminder.minute, 0);
+    });
+  });
+
+  group('NotificationRoutes', () {
+    test('maps notification payloads to Today route', () {
+      expect(NotificationRoutes.routeFromPayload(null), '/today');
+      expect(NotificationRoutes.routeFromPayload(''), '/today');
+      expect(
+        NotificationRoutes.routeFromPayload(NotificationRoutes.todayUri),
+        '/today',
+      );
+      expect(NotificationRoutes.routeFromPayload('/today'), '/today');
+      expect(NotificationRoutes.routeFromPayload('not a route'), '/today');
+    });
+  });
+
+  group('MassService', () {
+    late AppDatabase db;
+
+    setUp(() => db = _openTestDb());
+    tearDown(() => db.close());
+
+    test('returns selected parish Sunday Mass as important Mass', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-mass',
+        churchId: 'church-1',
+        weekday: 'monday',
+        context: 'weekday',
+        time: '05:30',
+        important: false,
+      );
+      await _insertMassTime(
+        db,
+        id: 'sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNotNull);
+      expect(mass!.church.name, 'Giáo xứ thử nghiệm');
+      expect(mass.massTime.id, 'sunday-mass');
+      expect(mass.label, 'Thánh lễ Chúa nhật');
+    });
+
+    test('returns null when no parish is selected', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
+
+    test('returns weekday Mass on a Monday when no special day', () async {
+      // 2026-04-27 is a Monday, ordinary season
+      await _insertCalendarDay(db, '2026-04-27', season: 'ordinary');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-monday-0530',
+        churchId: 'church-1',
+        weekday: 'monday',
+        context: 'weekday',
+        time: '05:30',
+        important: true,
+      );
+      await _insertMassTime(
+        db,
+        id: 'sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-04-27');
+
+      expect(mass, isNotNull);
+      expect(mass!.massTime.id, 'weekday-monday-0530');
+    });
+
+    test('returns solemnity Mass on a solemnity day', () async {
+      // 2026-06-11 is a Thursday in ordinary time, but we mark it as solemnity
+      await _insertCalendarDay(db, '2026-06-11', season: 'ordinary');
+      await _insertCelebration(db, '2026-06-11', rank: 'solemnity');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'weekday-mass',
+        churchId: 'church-1',
+        weekday: 'thursday',
+        context: 'weekday',
+        time: '05:30',
+        important: false,
+      );
+      await _insertMassTime(
+        db,
+        id: 'solemnity-mass',
+        churchId: 'church-1',
+        weekday: 'thursday',
+        context: 'solemnity',
+        time: '18:00',
+        important: true,
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-06-11');
+
+      expect(mass, isNotNull);
+      expect(mass!.massTime.id, 'solemnity-mass');
+      expect(mass.label, 'Thánh lễ trọng');
+    });
+
+    test('returns null when church has no Mass times', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
+
+    test('returns null when only Mass time is expired', () async {
+      await _insertCalendarDay(db, '2026-05-03', season: 'easter');
+      await _insertChurch(db, 'church-1');
+      await _insertMassTime(
+        db,
+        id: 'expired-sunday-mass',
+        churchId: 'church-1',
+        weekday: 'sunday',
+        context: 'sunday',
+        time: '07:30',
+        important: true,
+        validTo: DateTime(2025, 12, 31),
+      );
+      await UserSettingsRepository(db).setSelectedChurchId('church-1');
+
+      final mass = await MassService(db).nextImportantMassForDate('2026-05-03');
+
+      expect(mass, isNull);
+    });
   });
 
   group('ContentPackImporter', () {
@@ -746,18 +1078,187 @@ void main() {
         expect(await db.select(db.celebrations).get(), hasLength(14));
         expect(await db.select(db.readings).get(), hasLength(31));
         expect(await db.select(db.actionRules).get(), hasLength(5));
+        expect(await db.select(db.prayers).get(), hasLength(3));
+        expect(await db.select(db.churches).get(), isEmpty);
+        expect(await db.select(db.massTimes).get(), isEmpty);
 
         final readings = await db.select(db.readings).get();
         expect(
           readings.every((reading) => reading.textContent == null),
           isTrue,
         );
+        final calendarDay = await (db.select(
+          db.calendarDays,
+        )..where((t) => t.date.equals('2026-04-28'))).getSingle();
+        expect(calendarDay.lunarDate, '12 tháng 3, Bính Ngọ');
 
         final manifest =
             await (db.select(db.userSettings)
                   ..where((t) => t.key.equals('active_content_pack_manifest')))
                 .getSingle();
         expect(manifest.value, contains('calendar-vn-demo-2026'));
+      },
+    );
+
+    test(
+      'imports the parish beta seed pack with 3 churches and varied Mass times',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-parishes-vn-beta-2026-0.1.0.json',
+        ).readAsString();
+        final importer = ContentPackImporter(db);
+
+        final result = await importer.importPackJson(source);
+
+        expect(result.packId, 'parishes-vn-beta-2026');
+        expect(result.imported, isTrue);
+        expect(
+          (await db.select(db.churches).get()).length,
+          greaterThanOrEqualTo(3),
+        );
+
+        final massTimes = await db.select(db.massTimes).get();
+        // At least Sunday, weekday, and vigil entries
+        expect(massTimes.length, greaterThanOrEqualTo(10));
+        expect(massTimes.any((m) => m.context == 'sunday'), isTrue);
+        expect(massTimes.any((m) => m.context == 'weekday'), isTrue);
+        expect(massTimes.any((m) => m.context == 'saturday_vigil'), isTrue);
+        // Stale entry (valid_to in 2025) is imported but can be filtered
+        expect(massTimes.any((m) => m.validTo != null), isTrue);
+        // Bilingual: at least one English Mass
+        expect(massTimes.any((m) => m.language == 'en'), isTrue);
+      },
+    );
+
+    test(
+      'imports post-demo pack and keeps Today useful after demo horizon',
+      () async {
+        final importer = ContentPackImporter(db);
+        final demoSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final postDemoSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-post-demo-2026-0.1.0.json',
+        ).readAsString();
+
+        await importer.importPackJson(demoSource);
+        final result = await importer.importPackJson(postDemoSource);
+
+        expect(result.packId, 'calendar-vn-post-demo-2026');
+
+        final controller = TodayController(
+          db: db,
+          settings: UserSettingsRepository(db),
+          engine: DailyActionEngine(db),
+        );
+        final data = await controller.load(date: '2026-05-14');
+
+        expect(data.calendarDay.season, 'easter');
+        expect(data.celebrations.single.name, 'Thánh Matthia, Tông đồ');
+        expect(
+          data.readings.any((reading) => reading.type == 'gospel'),
+          isTrue,
+        );
+        expect(
+          data.readings.every((reading) => reading.textContent == null),
+          isTrue,
+        );
+        expect(data.action.sourceRule, 'feast_witness_vi');
+
+        await controller.completeAction(data, note: 'Một việc nhỏ đã làm.');
+        final snapshot = await db.todayDao.getWidgetSnapshot('2026-05-14');
+        final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+        final action = payload['action']! as Map<String, Object?>;
+        expect(action['completed'], isTrue);
+      },
+    );
+
+    test('imports full 2026 Vietnam calendar pack with safe content', () async {
+      final source = await File(
+        '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
+      ).readAsString();
+      final importer = ContentPackImporter(db);
+
+      final result = await importer.importPackJson(source);
+
+      expect(result.packId, 'calendar-vn-2026');
+      expect(await db.select(db.calendarDays).get(), hasLength(365));
+      expect((await db.select(db.celebrations).get()).length, greaterThan(365));
+      expect(await db.select(db.readings).get(), hasLength(365));
+      expect(await db.select(db.dailyReflections).get(), hasLength(365));
+
+      for (final date in ['2026-01-01', '2026-05-14', '2026-12-31']) {
+        final day =
+            await (db.select(db.calendarDays)
+                  ..where((t) => t.date.equals(date) & t.locale.equals('vi')))
+                .getSingle();
+        expect(day.season, isNot('unknown'));
+        expect(day.lunarDate, isNotNull);
+        expect(
+          await (db.select(db.dailyReflections)
+                ..where((t) => t.date.equals(date) & t.locale.equals('vi')))
+              .getSingleOrNull(),
+          isNotNull,
+        );
+      }
+
+      final unsafeReadings =
+          await (db.select(db.readings)..where(
+                (t) =>
+                    t.license.equals('reference-only') &
+                    t.textContent.isNotNull(),
+              ))
+              .get();
+      expect(unsafeReadings, isEmpty);
+    });
+
+    test('Today loads real 2026 calendar data and reflection', () async {
+      final importer = ContentPackImporter(db);
+      final source = await File(
+        '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
+      ).readAsString();
+      await importer.importPackJson(source);
+
+      final controller = TodayController(
+        db: db,
+        settings: UserSettingsRepository(db),
+        engine: DailyActionEngine(db),
+      );
+      final data = await controller.load(date: '2026-06-15');
+
+      expect(data.calendarDay.season, isNot('unknown'));
+      expect(data.readings, isNotEmpty);
+      expect(data.reflection, isNotNull);
+      expect(
+        data.action.sourceRule,
+        isNot(DailyActionEngine.fallbackSourceRule),
+      );
+    });
+
+    test(
+      'default bundled packs include calendar 2026 and parish data',
+      () async {
+        final importer = ContentPackImporter(db);
+
+        for (final asset in defaultContentPackAssets) {
+          final filePath = asset.replaceFirst('../', '../');
+          await importer.importPackJson(await File(filePath).readAsString());
+        }
+
+        final juneDay =
+            await (db.select(db.calendarDays)..where(
+                  (t) => t.date.equals('2026-06-15') & t.locale.equals('vi'),
+                ))
+                .getSingleOrNull();
+        expect(juneDay, isNotNull);
+        expect(
+          (await db.select(db.churches).get()).length,
+          greaterThanOrEqualTo(3),
+        );
+        expect(
+          (await db.select(db.massTimes).get()).length,
+          greaterThanOrEqualTo(10),
+        );
       },
     );
   });
@@ -796,6 +1297,49 @@ Future<void> _insertCelebration(
           name: 'Lễ thử nghiệm',
           rank: rank,
           locale: 'vi',
+        ),
+      );
+}
+
+Future<void> _insertChurch(AppDatabase db, String id) {
+  return db
+      .into(db.churches)
+      .insert(
+        ChurchesCompanion.insert(
+          id: id,
+          locale: 'vi',
+          name: 'Giáo xứ thử nghiệm',
+          diocese: 'Giáo phận thử nghiệm',
+          address: '123 Đường thử nghiệm',
+          source: '{}',
+        ),
+      );
+}
+
+Future<void> _insertMassTime(
+  AppDatabase db, {
+  required String id,
+  required String churchId,
+  required String weekday,
+  required String context,
+  required String time,
+  required bool important,
+  DateTime? validTo,
+}) {
+  return db
+      .into(db.massTimes)
+      .insert(
+        MassTimesCompanion.insert(
+          id: id,
+          churchId: churchId,
+          weekday: weekday,
+          context: context,
+          time: time,
+          language: 'vi',
+          validFrom: DateTime(2026, 4, 27),
+          validTo: Value(validTo),
+          isImportantDefault: Value(important),
+          source: '{}',
         ),
       );
 }
