@@ -237,19 +237,22 @@ class _LiturgicalContextCard extends StatelessWidget {
     final quote = _dailyQuoteFor(data.date);
     final saintOfDay = _saintOfDayLabel(data, celebration);
 
-    return AppBentoCard(
-      padding: EdgeInsets.zero,
-      accentColor: accentColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final cardHeight = (screenHeight * 0.58).clamp(430.0, 560.0);
+
+    return SizedBox(
+      height: cardHeight,
+      child: AppBentoCard(
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+        accentColor: accentColor,
+        accentPlacement: AppAccentPlacement.top,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 80,
+            Expanded(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Container(
                   decoration: BoxDecoration(
                     color: AppColors.surfaceSecondary,
                     borderRadius: BorderRadius.circular(8),
@@ -259,7 +262,10 @@ class _LiturgicalContextCard extends StatelessWidget {
                     children: [
                       Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 9,
+                        ),
                         decoration: BoxDecoration(
                           color: accentColor,
                           borderRadius: const BorderRadius.vertical(
@@ -267,82 +273,85 @@ class _LiturgicalContextCard extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          'Th. ${parsed.month}',
+                          'Tháng ${parsed.month.toString().padLeft(2, '0')} - ${parsed.year}',
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
                                 color: AppColors.textInverse,
                                 fontWeight: FontWeight.w800,
                               ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: Text(
-                          parsed.day.toString().padLeft(2, '0'),
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displaySmall
-                              ?.copyWith(
-                                color: accentColor,
-                                fontWeight: FontWeight.w800,
-                                height: 1,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                parsed.day.toString().padLeft(2, '0'),
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.copyWith(
+                                      fontSize: 130,
+                                      height: 0.9,
+                                      color: accentColor,
+                                      fontWeight: FontWeight.w800,
+                                    ),
                               ),
-                        ),
-                      ),
-                      if (showLunar)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: _LunarDateText(
-                            label: data.calendarDay.lunarDate!,
+                              const SizedBox(height: AppSpacing.x2),
+                              if (showLunar) ...[
+                                _LunarDateText(
+                                  label: data.calendarDay.lunarDate!,
+                                ),
+                                const SizedBox(height: AppSpacing.x1),
+                              ],
+                              Text(
+                                celebration,
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                      fontSize: 12,
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.2,
+                                    ),
+                              ),
+                              const SizedBox(height: AppSpacing.x2),
+                              _DailyQuoteBlock(quote: quote),
+                              if (saintOfDay != null) ...[
+                                const SizedBox(height: AppSpacing.x1),
+                                _SaintOfDayBlock(label: saintOfDay),
+                              ],
+                            ],
                           ),
                         ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        celebration,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                              height: 1.2,
-                            ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          AppSignalChip(
-                            label: _seasonLabel(data.calendarDay.season),
-                            color: accentColor,
-                            icon: Icons.eco_outlined,
-                          ),
-                          AppSignalChip(label: _colorLabel(data.calendarDay.color)),
-                          if (data.calendarDay.liturgicalWeek > 0)
-                            AppSignalChip(
-                              label: 'Tuần ${data.calendarDay.liturgicalWeek}',
-                            ),
-                        ],
                       ),
                     ],
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.x2),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                AppSignalChip(
+                  label: _seasonLabel(data.calendarDay.season),
+                  color: accentColor,
+                  icon: Icons.eco_outlined,
+                ),
+                AppSignalChip(label: _colorLabel(data.calendarDay.color)),
+                if (data.calendarDay.liturgicalWeek > 0)
+                  AppSignalChip(
+                    label: 'Tuần ${data.calendarDay.liturgicalWeek}',
+                  ),
               ],
             ),
-            const SizedBox(height: 16),
-            _DailyQuoteBlock(quote: quote),
-            if (saintOfDay != null) ...[
-              const SizedBox(height: 8),
-              _SaintOfDayBlock(label: saintOfDay),
-            ],
           ],
         ),
       ),

@@ -111,12 +111,15 @@ class AppSectionCard extends StatelessWidget {
   }
 }
 
+enum AppAccentPlacement { left, top }
+
 class AppBentoCard extends StatelessWidget {
   const AppBentoCard({
     super.key,
     required this.child,
     this.padding = AppSpacing.cardPadding,
     this.accentColor,
+    this.accentPlacement = AppAccentPlacement.left,
     this.gradient,
     this.onTap,
   });
@@ -124,6 +127,7 @@ class AppBentoCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color? accentColor;
+  final AppAccentPlacement accentPlacement;
   final Gradient? gradient;
   final VoidCallback? onTap;
 
@@ -155,8 +159,10 @@ class AppBentoCard extends StatelessWidget {
                   Positioned(
                     top: 0,
                     left: 0,
-                    bottom: 0,
-                    width: 4,
+                    right: accentPlacement == AppAccentPlacement.top ? 0 : null,
+                    bottom: accentPlacement == AppAccentPlacement.left ? 0 : null,
+                    width: accentPlacement == AppAccentPlacement.left ? 4 : null,
+                    height: accentPlacement == AppAccentPlacement.top ? 4 : null,
                     child: Container(color: accentColor),
                   ),
                 Padding(
