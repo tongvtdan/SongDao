@@ -24,6 +24,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabProgress => 'Progress';
 
   @override
+  String get settingsParishTitle => 'My parish';
+
+  @override
+  String get settingsParishUnset =>
+      'Optional for beta. Choose a parish manually only if it appears in the local seed pack.';
+
+  @override
+  String get settingsParishSelected =>
+      'Your parish is saved on this device. You can change it anytime.';
+
+  @override
+  String get settingsParishButton => 'My parish';
+
+  @override
   String get prayerTagDaily => 'Daily';
 
   @override

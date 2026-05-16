@@ -17,7 +17,6 @@ final shellNavigatorCalendarKey = GlobalKey<NavigatorState>(
   debugLabel: 'calendar',
 );
 final shellNavigatorPrayKey = GlobalKey<NavigatorState>(debugLabel: 'pray');
-final shellNavigatorChurchKey = GlobalKey<NavigatorState>(debugLabel: 'church');
 final shellNavigatorProgressKey = GlobalKey<NavigatorState>(
   debugLabel: 'progress',
 );
@@ -40,6 +39,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/church',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ChurchSearchScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -70,15 +74,6 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/pray',
                 builder: (context, state) => const PrayerLibraryScreen(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            navigatorKey: shellNavigatorChurchKey,
-            routes: [
-              GoRoute(
-                path: '/church',
-                builder: (context, state) => const ChurchSearchScreen(),
               ),
             ],
           ),

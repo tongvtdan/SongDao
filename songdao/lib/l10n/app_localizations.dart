@@ -128,6 +128,30 @@ abstract class AppLocalizations {
   /// **'Tiến trình'**
   String get tabProgress;
 
+  /// No description provided for @settingsParishTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giáo xứ của tôi'**
+  String get settingsParishTitle;
+
+  /// No description provided for @settingsParishUnset.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuỳ chọn cho beta. Chỉ chọn thủ công khi giáo xứ có trong gói dữ liệu cục bộ.'**
+  String get settingsParishUnset;
+
+  /// No description provided for @settingsParishSelected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Giáo xứ của bạn được lưu trên thiết bị. Bạn có thể đổi bất cứ lúc nào.'**
+  String get settingsParishSelected;
+
+  /// No description provided for @settingsParishButton.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn giáo xứ'**
+  String get settingsParishButton;
+
   /// No description provided for @prayerTagDaily.
   ///
   /// In vi, this message translates to:

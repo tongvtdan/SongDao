@@ -72,7 +72,7 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nhà thờ')),
+      appBar: AppBar(title: const Text('Chọn giáo xứ')),
       body: FutureBuilder<_ChurchViewData>(
         future: _future,
         builder: (context, snapshot) {
@@ -97,7 +97,7 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
                 onChanged: (value) => setState(() => _query = value),
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.search),
-                  hintText: 'Tìm nhà thờ hoặc giáo xứ',
+                  hintText: 'Tìm giáo xứ trong gói beta',
                 ),
               ),
               const SizedBox(height: 14),
@@ -107,7 +107,7 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
               ),
               const SizedBox(height: 14),
               Text(
-                'Danh sách giáo xứ',
+                'Giáo xứ trong gói beta',
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -157,9 +157,9 @@ class _SelectedChurchCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Chọn thủ công một giáo xứ để Today có thể hiển thị Thánh lễ quan trọng. Không cần quyền vị trí.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),

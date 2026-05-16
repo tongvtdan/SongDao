@@ -28,10 +28,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
             label: l10n.tabPray,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.church),
-            label: l10n.tabChurch,
-          ),
-          NavigationDestination(
             icon: const Icon(Icons.trending_up),
             label: l10n.tabProgress,
           ),
