@@ -551,6 +551,17 @@ class _LiturgicalContextCard extends StatelessWidget {
                                       fontWeight: FontWeight.w800,
                                     ),
                               ),
+                              const SizedBox(height: AppSpacing.x1),
+                              Text(
+                                _vietnameseWeekdayLabel(parsed.weekday),
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w800,
+                                      height: 1.1,
+                                    ),
+                              ),
                               const SizedBox(height: AppSpacing.x2),
                               if (showLunar) ...[
                                 _LunarDateText(
@@ -1020,10 +1031,20 @@ class _TodayError extends StatelessWidget {
 String _formatVietnameseDate(String date) {
   final parsed = DateTime.parse(date);
   final formattedDate = DateFormat('dd/MM/yyyy').format(parsed);
-  if (parsed.weekday == DateTime.sunday) {
-    return 'Chúa nhật, $formattedDate';
-  }
-  return 'Thứ ${parsed.weekday + 1}, $formattedDate';
+  return '${_vietnameseWeekdayLabel(parsed.weekday)}, $formattedDate';
+}
+
+String _vietnameseWeekdayLabel(int weekday) {
+  return switch (weekday) {
+    DateTime.monday => 'Thứ Hai',
+    DateTime.tuesday => 'Thứ Ba',
+    DateTime.wednesday => 'Thứ Tư',
+    DateTime.thursday => 'Thứ Năm',
+    DateTime.friday => 'Thứ Sáu',
+    DateTime.saturday => 'Thứ Bảy',
+    DateTime.sunday => 'Chúa Nhật',
+    _ => '',
+  };
 }
 
 String _dateKeyForCardPage(int page, String todayDateKey) {
