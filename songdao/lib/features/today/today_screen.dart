@@ -18,19 +18,27 @@ class TodayScreen extends ConsumerStatefulWidget {
 }
 
 class _TodayScreenState extends ConsumerState<TodayScreen> {
+  static const _initialCardPage = 10000;
+
   late Future<TodayViewData> _todayFuture;
+  late final PageController _cardPageController;
   final _noteController = TextEditingController();
+  final Map<String, Future<TodayViewData>> _previewFutures = {};
+  int _cardPage = _initialCardPage;
+  String? _cardDateKey;
   bool _isCompleting = false;
   bool _isSavingNote = false;
 
   @override
   void initState() {
     super.initState();
+    _cardPageController = PageController(initialPage: _initialCardPage);
     _todayFuture = _loadToday();
   }
 
   @override
   void dispose() {
+    _cardPageController.dispose();
     _noteController.dispose();
     super.dispose();
   }
@@ -50,6 +58,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       debugPrint('Today load failed: $error\n$stackTrace');
       rethrow;
     }
+  }
+
+  Future<TodayViewData> _loadPreviewDate(String dateKey) async {
+    await ref.read(seedContentBootstrapProvider.future);
+    return _controller.load(date: dateKey);
   }
 
   Future<void> _completeAction(TodayViewData data) async {
@@ -119,6 +132,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
           }
 
           final data = snapshot.data!;
+          _cardDateKey ??= data.date;
           return RefreshIndicator(
             onRefresh: _refresh,
             child: ListView(
@@ -131,7 +145,16 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        _LiturgicalContextCard(data: data),
+                        _SwipeableLiturgicalContextCard(
+                          todayData: data,
+                          cardPageController: _cardPageController,
+                          cardDateKey: _cardDateKey ?? data.date,
+                          previewForDate: _previewForDate,
+                          onPageChanged: _changeCardPage,
+                          onPrevious: () => _animateCardToPage(_cardPage - 1),
+                          onNext: () => _animateCardToPage(_cardPage + 1),
+                          onToday: _animateCardToToday,
+                        ),
                         const SizedBox(height: AppSpacing.x4),
                         _DailyActionCard(
                           data: data,
@@ -180,8 +203,111 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
 
   Future<void> _refresh() async {
     ref.invalidate(seedContentBootstrapProvider);
+    _previewFutures.clear();
     setState(() => _todayFuture = _loadToday());
     await _todayFuture;
+  }
+
+  Future<TodayViewData> _previewForDate(String dateKey) {
+    return _previewFutures.putIfAbsent(
+      dateKey,
+      () => _loadPreviewDate(dateKey),
+    );
+  }
+
+  void _changeCardPage(int page, TodayViewData todayData) {
+    setState(() {
+      _cardPage = page;
+      _cardDateKey = _dateKeyForCardPage(page, todayData.date);
+    });
+  }
+
+  Future<void> _animateCardToPage(int page) {
+    return _cardPageController.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
+  Future<void> _animateCardToToday() {
+    return _animateCardToPage(_initialCardPage);
+  }
+}
+
+class _SwipeableLiturgicalContextCard extends StatelessWidget {
+  const _SwipeableLiturgicalContextCard({
+    required this.todayData,
+    required this.cardPageController,
+    required this.cardDateKey,
+    required this.previewForDate,
+    required this.onPageChanged,
+    required this.onPrevious,
+    required this.onNext,
+    required this.onToday,
+  });
+
+  final TodayViewData todayData;
+  final PageController cardPageController;
+  final String cardDateKey;
+  final Future<TodayViewData> Function(String dateKey) previewForDate;
+  final void Function(int page, TodayViewData todayData) onPageChanged;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+  final VoidCallback onToday;
+
+  @override
+  Widget build(BuildContext context) {
+    final isPreviewingAnotherDate = cardDateKey != todayData.date;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: _liturgicalCardHeight(context),
+          child: PageView.builder(
+            controller: cardPageController,
+            onPageChanged: (page) => onPageChanged(page, todayData),
+            itemBuilder: (context, index) {
+              final dateKey = _dateKeyForCardPage(index, todayData.date);
+              if (dateKey == todayData.date) {
+                return _LiturgicalContextCard(data: todayData);
+              }
+
+              return FutureBuilder<TodayViewData>(
+                future: previewForDate(dateKey),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return _LiturgicalContextLoadingCard(dateKey: dateKey);
+                  }
+                  if (snapshot.hasError || !snapshot.hasData) {
+                    return _LiturgicalContextPreviewErrorCard(dateKey: dateKey);
+                  }
+                  return _LiturgicalContextCard(data: snapshot.data!);
+                },
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: AppSpacing.x2),
+        _CardDateControls(
+          isPreviewingAnotherDate: isPreviewingAnotherDate,
+          onPrevious: onPrevious,
+          onNext: onNext,
+          onToday: onToday,
+        ),
+        if (isPreviewingAnotherDate) ...[
+          const SizedBox(height: AppSpacing.x1),
+          Text(
+            'Xem ngày khác. Hành động bên dưới vẫn là hôm nay.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ],
+    );
   }
 }
 
@@ -222,6 +348,131 @@ class _DailyReflectionCard extends StatelessWidget {
   }
 }
 
+class _CardDateControls extends StatelessWidget {
+  const _CardDateControls({
+    required this.isPreviewingAnotherDate,
+    required this.onPrevious,
+    required this.onNext,
+    required this.onToday,
+  });
+
+  final bool isPreviewingAnotherDate;
+  final VoidCallback onPrevious;
+  final VoidCallback onNext;
+  final VoidCallback onToday;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton.filledTonal(
+          tooltip: 'Ngày trước',
+          onPressed: onPrevious,
+          icon: const Icon(Icons.chevron_left),
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          child: isPreviewingAnotherDate
+              ? Padding(
+                  key: const ValueKey('today-button'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.x2,
+                  ),
+                  child: TextButton.icon(
+                    onPressed: onToday,
+                    icon: const Icon(Icons.today_outlined, size: 18),
+                    label: const Text('Hôm nay'),
+                  ),
+                )
+              : const SizedBox(key: ValueKey('today-spacer'), width: 104),
+        ),
+        IconButton.filledTonal(
+          tooltip: 'Ngày sau',
+          onPressed: onNext,
+          icon: const Icon(Icons.chevron_right),
+        ),
+      ],
+    );
+  }
+}
+
+class _LiturgicalContextLoadingCard extends StatelessWidget {
+  const _LiturgicalContextLoadingCard({required this.dateKey});
+
+  final String dateKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _liturgicalCardHeight(context),
+      child: AppBentoCard(
+        padding: const EdgeInsets.all(AppSpacing.x6),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: AppSpacing.x4),
+              Text(
+                _formatVietnameseDate(dateKey),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LiturgicalContextPreviewErrorCard extends StatelessWidget {
+  const _LiturgicalContextPreviewErrorCard({required this.dateKey});
+
+  final String dateKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: _liturgicalCardHeight(context),
+      child: AppBentoCard(
+        padding: const EdgeInsets.all(AppSpacing.x6),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.event_busy_outlined,
+                color: AppColors.textSecondary,
+              ),
+              const SizedBox(height: AppSpacing.x3),
+              Text(
+                'Chưa mở được ngày này',
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: AppSpacing.x1),
+              Text(
+                _formatVietnameseDate(dateKey),
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _LiturgicalContextCard extends StatelessWidget {
   const _LiturgicalContextCard({required this.data});
 
@@ -241,11 +492,8 @@ class _LiturgicalContextCard extends StatelessWidget {
     final quote = _dailyQuoteFor(data.date);
     final saintOfDay = _saintOfDayLabel(data, celebration);
 
-    final screenHeight = MediaQuery.sizeOf(context).height;
-    final cardHeight = (screenHeight * 0.58).clamp(430.0, 560.0);
-
     return SizedBox(
-      height: cardHeight,
+      height: _liturgicalCardHeight(context),
       child: AppBentoCard(
         padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
         accentColor: accentColor,
@@ -776,6 +1024,19 @@ String _formatVietnameseDate(String date) {
     return 'Chúa nhật, $formattedDate';
   }
   return 'Thứ ${parsed.weekday + 1}, $formattedDate';
+}
+
+String _dateKeyForCardPage(int page, String todayDateKey) {
+  final today = DateTime.parse(todayDateKey);
+  final previewDate = today.add(
+    Duration(days: page - _TodayScreenState._initialCardPage),
+  );
+  return DateFormat('yyyy-MM-dd').format(previewDate);
+}
+
+double _liturgicalCardHeight(BuildContext context) {
+  final screenHeight = MediaQuery.sizeOf(context).height;
+  return (screenHeight * 0.58).clamp(430.0, 560.0);
 }
 
 String _seasonLabel(String season) {
