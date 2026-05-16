@@ -6,6 +6,8 @@ import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
 
+const _privacyPolicyUrl = 'https://songdao.dantino.com/privacy';
+
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
@@ -186,8 +188,27 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SizedBox(height: 12),
               _SettingsCard(
                 title: 'Quyền riêng tư',
-                child: const Text(
-                  'Lịch sử thực hành và ghi chú suy niệm mặc định chỉ lưu trên thiết bị. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.',
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Lịch sử thực hành của bạn được lưu trên thiết bị này, trừ khi bạn chọn sao lưu.',
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Sống Đạo hoạt động ngoại tuyến cho việc hôm nay, lịch sử hoàn thành, ghi chú và dữ liệu widget. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.',
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Chính sách quyền riêng tư',
+                      style: TextStyle(
+                        color: AppColors.brand,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    SelectableText(_privacyPolicyUrl),
+                  ],
                 ),
               ),
               const SizedBox(height: 12),

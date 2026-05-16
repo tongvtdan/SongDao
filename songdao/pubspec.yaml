@@ -1,7 +1,7 @@
 name: songdao
-description: "A new Flutter project."
+description: "Sống Đạo is a local-first Catholic daily practice app for one clear action, liturgical context, reminders, and private rhythm."
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.0+2
 
 environment:
   sdk: ^3.11.3
