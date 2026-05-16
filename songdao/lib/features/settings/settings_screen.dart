@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
-import '../../l10n/app_localizations.dart';
 
 const _privacyPolicyUrl = 'https://songdao.dantino.com/privacy';
 
@@ -32,12 +30,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final repo = ref.read(userSettingsRepositoryProvider);
     final locale = await repo.locale();
     final showLunarDate = await repo.showLunarDate();
-    final selectedChurchId = await repo.selectedChurchId();
     final dailyReminder = await repo.dailyReminder();
     return _SettingsViewData(
       locale: locale,
       showLunarDate: showLunarDate,
-      selectedChurchId: selectedChurchId,
       dailyReminder: dailyReminder,
     );
   }
@@ -126,17 +122,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _openParishSelection() async {
-    await context.push('/church');
-    if (mounted) {
-      setState(() => _future = _load());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Cài đặt')),
       body: FutureBuilder<_SettingsViewData>(
@@ -222,26 +209,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-              _SettingsCard(
-                title: l10n.settingsParishTitle,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data.selectedChurchId == null
-                          ? l10n.settingsParishUnset
-                          : l10n.settingsParishSelected,
-                    ),
-                    const SizedBox(height: 10),
-                    OutlinedButton.icon(
-                      onPressed: _openParishSelection,
-                      icon: const Icon(Icons.church_outlined),
-                      label: Text(l10n.settingsParishButton),
-                    ),
-                  ],
-                ),
-              ),
             ],
           );
         },
@@ -296,12 +263,10 @@ class _SettingsViewData {
   const _SettingsViewData({
     required this.locale,
     required this.showLunarDate,
-    required this.selectedChurchId,
     required this.dailyReminder,
   });
 
   final String locale;
   final bool showLunarDate;
-  final String? selectedChurchId;
   final DailyReminderSettings dailyReminder;
 }

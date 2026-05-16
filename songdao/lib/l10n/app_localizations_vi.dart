@@ -24,20 +24,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get tabProgress => 'Tiến trình';
 
   @override
-  String get settingsParishTitle => 'Giáo xứ của tôi';
-
-  @override
-  String get settingsParishUnset =>
-      'Tuỳ chọn cho beta. Chỉ chọn thủ công khi giáo xứ có trong gói dữ liệu cục bộ.';
-
-  @override
-  String get settingsParishSelected =>
-      'Giáo xứ của bạn được lưu trên thiết bị. Bạn có thể đổi bất cứ lúc nào.';
-
-  @override
-  String get settingsParishButton => 'Chọn giáo xứ';
-
-  @override
   String get prayerTagDaily => 'Hằng ngày';
 
   @override

@@ -29,9 +29,7 @@ void main() {
     expect(find.text('Nhà thờ'), findsNothing);
   });
 
-  testWidgets('settings opens the optional parish selection route', (
-    tester,
-  ) async {
+  testWidgets('settings hides beta parish selection', (tester) async {
     final db = _openTestDb();
     addTearDown(db.close);
     await _seedToday(db);
@@ -45,14 +43,8 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, -500));
     await tester.pumpAndSettle();
 
-    expect(find.text('Giáo xứ của tôi'), findsOneWidget);
-    expect(find.text('Chọn giáo xứ'), findsOneWidget);
-
-    await tester.tap(find.text('Chọn giáo xứ'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Chọn giáo xứ'), findsOneWidget);
-    expect(find.text('Giáo xứ trong gói beta'), findsOneWidget);
+    expect(find.text('Giáo xứ của tôi'), findsNothing);
+    expect(find.text('Chọn giáo xứ'), findsNothing);
   });
 }
 
