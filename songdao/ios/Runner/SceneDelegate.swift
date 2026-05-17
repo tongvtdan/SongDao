@@ -10,6 +10,7 @@ class SceneDelegate: FlutterSceneDelegate {
     super.scene(scene, willConnectTo: session, options: connectionOptions)
     if let controller = window?.rootViewController as? FlutterViewController {
       WidgetSnapshotChannel.register(with: controller.binaryMessenger)
+      IconChannel.register(with: controller.binaryMessenger)
     }
   }
 }
