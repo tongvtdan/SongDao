@@ -18,6 +18,7 @@ class WidgetSnapshotService {
   Future<WidgetSnapshot?> regenerateForDate(
     String date, {
     String locale = 'vi',
+    bool publishLatest = true,
   }) async {
     final calendarDay =
         await (db.select(db.calendarDays)
@@ -98,7 +99,7 @@ class WidgetSnapshotService {
       ),
     );
     final snapshot = await db.todayDao.getWidgetSnapshot(date);
-    if (snapshot != null) {
+    if (snapshot != null && publishLatest && date == _dateKey(DateTime.now())) {
       await _bridge.writeLatestSnapshot(date: date, payload: snapshot.payload);
     }
     return snapshot;
@@ -111,7 +112,11 @@ class WidgetSnapshotService {
   }) async {
     for (var offset = 0; offset < days; offset += 1) {
       final date = _dateKey(startDate.add(Duration(days: offset)));
-      await regenerateForDate(date, locale: locale);
+      await regenerateForDate(
+        date,
+        locale: locale,
+        publishLatest: date == _dateKey(DateTime.now()),
+      );
     }
   }
 

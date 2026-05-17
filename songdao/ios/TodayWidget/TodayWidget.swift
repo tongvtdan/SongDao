@@ -157,7 +157,20 @@ struct SongDaoTodayProvider: TimelineProvider {
     else {
       return nil
     }
-    return try? JSONDecoder().decode(SongDaoWidgetSnapshot.self, from: data)
+
+    guard let snapshot = try? JSONDecoder().decode(SongDaoWidgetSnapshot.self, from: data) else {
+      return nil
+    }
+
+    return snapshot.date == Self.todayDateKey ? snapshot : nil
+  }
+
+  private static var todayDateKey: String {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd"
+    return formatter.string(from: Date())
   }
 }
 
