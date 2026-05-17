@@ -52,6 +52,24 @@ struct SongDaoTodayEntry: TimelineEntry {
   let date: Date
   let snapshot: SongDaoWidgetSnapshot?
 
+  var displayDate: Date {
+    guard
+      let dateKey = snapshot?.date,
+      let parsed = Self.dateFormatter.date(from: dateKey)
+    else {
+      return date
+    }
+    return parsed
+  }
+
+  var dayNumber: String {
+    Self.dayFormatter.string(from: displayDate)
+  }
+
+  var dateLabel: String {
+    Self.dateLabelFormatter.string(from: displayDate)
+  }
+
   var celebration: String {
     snapshot?.liturgicalContext?.celebration
       ?? snapshot?.liturgicalContext?.season
@@ -88,6 +106,28 @@ struct SongDaoTodayEntry: TimelineEntry {
   var isCompleted: Bool {
     snapshot?.action?.completed == true || snapshot?.action?.status == "completed"
   }
+
+  private static let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd"
+    return formatter
+  }()
+
+  private static let dayFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "d"
+    return formatter
+  }()
+
+  private static let dateLabelFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "EEE, d MMM"
+    return formatter
+  }()
 }
 
 struct SongDaoTodayProvider: TimelineProvider {
@@ -140,14 +180,27 @@ struct SongDaoTodayWidgetView: View {
   }
 
   private var smallLayout: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      contextHeader
+    VStack(alignment: .leading, spacing: 9) {
+      HStack(alignment: .top, spacing: 10) {
+        dateTile
+
+        VStack(alignment: .leading, spacing: 4) {
+          Text(entry.dateLabel)
+            .font(.caption2.weight(.semibold))
+            .foregroundColor(secondaryInk)
+            .textCase(.uppercase)
+            .lineLimit(1)
+
+          contextHeader
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+      }
 
       Text(entry.actionPrompt)
-        .font(.headline)
+        .font(.system(.headline, design: .default).weight(.semibold))
         .foregroundColor(ink)
-        .lineLimit(4)
-        .minimumScaleFactor(0.78)
+        .lineLimit(3)
+        .minimumScaleFactor(0.76)
 
       if let gospelCitation = entry.gospelCitation {
         Text("Tin Mừng: \(gospelCitation)")
@@ -160,6 +213,8 @@ struct SongDaoTodayWidgetView: View {
 
   private var mediumLayout: some View {
     HStack(alignment: .top, spacing: 14) {
+      dateTile
+
       VStack(alignment: .leading, spacing: 8) {
         contextHeader
 
@@ -219,14 +274,36 @@ struct SongDaoTodayWidgetView: View {
 
   private var contextHeader: some View {
     HStack(spacing: 6) {
-      Circle()
+      RoundedRectangle(cornerRadius: 2)
         .fill(entry.isCompleted ? green : liturgicalAccent)
-        .frame(width: 8, height: 8)
+        .frame(width: 4, height: 28)
       Text(entry.celebration)
         .font(.system(.caption, design: .default).weight(.semibold))
         .foregroundColor(ink)
         .lineLimit(2)
     }
+  }
+
+  private var dateTile: some View {
+    VStack(spacing: 0) {
+      Rectangle()
+        .fill(entry.isCompleted ? green : liturgicalAccent)
+        .frame(height: 7)
+
+      Text(entry.dayNumber)
+        .font(.system(size: 32, weight: .bold, design: .rounded))
+        .foregroundColor(ink)
+        .minimumScaleFactor(0.75)
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    .frame(width: 52, height: 58)
+    .background(Color.white)
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    .overlay(
+      RoundedRectangle(cornerRadius: 8, style: .continuous)
+        .stroke(border, lineWidth: 1)
+    )
   }
 
   private var ink: Color {

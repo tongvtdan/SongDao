@@ -11,6 +11,8 @@ class UserSettingsKeys {
   static const dailyReminderEnabled = 'daily_reminder_enabled';
   static const dailyReminderHour = 'daily_reminder_hour';
   static const dailyReminderMinute = 'daily_reminder_minute';
+  static const seasonalIconEnabled = 'seasonal_icon_enabled';
+  static const selectedAppIconVariant = 'selected_app_icon_variant';
 }
 
 class DailyReminderSettings {
@@ -78,6 +80,24 @@ class UserSettingsRepository {
   }) async {
     await set(UserSettingsKeys.dailyReminderHour, hour.toString());
     await set(UserSettingsKeys.dailyReminderMinute, minute.toString());
+  }
+
+  Future<bool> seasonalIconEnabled() async {
+    final setting = await _get(UserSettingsKeys.seasonalIconEnabled);
+    return setting?.value == 'true';
+  }
+
+  Future<void> setSeasonalIconEnabled(bool value) {
+    return set(UserSettingsKeys.seasonalIconEnabled, value ? 'true' : 'false');
+  }
+
+  Future<String> selectedAppIconVariant() async {
+    final setting = await _get(UserSettingsKeys.selectedAppIconVariant);
+    return setting?.value ?? 'primary';
+  }
+
+  Future<void> setSelectedAppIconVariant(String value) {
+    return set(UserSettingsKeys.selectedAppIconVariant, value);
   }
 
   Future<void> set(String key, String value) {

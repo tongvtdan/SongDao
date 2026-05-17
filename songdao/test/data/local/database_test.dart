@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_provider.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
+import 'package:songdao/data/local/app_icon_service.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
 import 'package:songdao/data/local/mass_service.dart';
 import 'package:songdao/data/local/user_settings_repository.dart';
@@ -890,6 +891,97 @@ void main() {
       expect(result.wrote, isFalse);
       expect(result.failed, isTrue);
       expect(result.code, 'app_group_unavailable');
+    });
+  });
+
+  group('AppIconService', () {
+    const channel = MethodChannel('test.songdao/icon');
+    late AppDatabase db;
+    late List<MethodCall> calls;
+
+    setUp(() {
+      db = _openTestDb();
+      calls = [];
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            if (call.method == 'supportsAlternateIcons') {
+              return true;
+            }
+            return null;
+          });
+    });
+
+    tearDown(() async {
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+      await db.close();
+    });
+
+    test('maps liturgical context to predefined icon variants', () {
+      expect(recommendedIconVariant(season: 'advent'), AppIconVariant.advent);
+      expect(recommendedIconVariant(season: 'lent'), AppIconVariant.lent);
+      expect(
+        recommendedIconVariant(
+          season: 'ordinary',
+          celebrations: ['Đức Mẹ Mân Côi'],
+        ),
+        AppIconVariant.marian,
+      );
+      expect(recommendedIconVariant(season: 'unknown'), AppIconVariant.primary);
+    });
+
+    test('sets supported iOS alternate icon and persists variant', () async {
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.setIcon(AppIconVariant.easter);
+
+      expect(wrote, isTrue);
+      expect(calls.single.method, 'setIcon');
+      expect(calls.single.arguments, {'iconName': 'easter'});
+      expect(
+        await UserSettingsRepository(db).selectedAppIconVariant(),
+        'easter',
+      );
+    });
+
+    test('does not apply seasonal icon when setting is disabled', () async {
+      await _insertCalendarDay(db, '2026-12-25', season: 'christmas');
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.applySeasonalIconForDate('2026-12-25');
+
+      expect(wrote, isFalse);
+      expect(calls, isEmpty);
+    });
+
+    test('applies recommended icon when seasonal setting is enabled', () async {
+      await _insertCalendarDay(db, '2026-12-25', season: 'christmas');
+      await UserSettingsRepository(db).setSeasonalIconEnabled(true);
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.applySeasonalIconForDate('2026-12-25');
+
+      expect(wrote, isTrue);
+      expect(calls.map((call) => call.method), [
+        'supportsAlternateIcons',
+        'setIcon',
+      ]);
+      expect(calls.last.arguments, {'iconName': 'christmas'});
     });
   });
 

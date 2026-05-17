@@ -8,6 +8,61 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Sống Đạo</string>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundleAlternateIcons</key>
+		<dict>
+			<key>advent</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>advent</string>
+				</array>
+			</dict>
+			<key>christmas</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>christmas</string>
+				</array>
+			</dict>
+			<key>easter</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>easter</string>
+				</array>
+			</dict>
+			<key>lent</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>lent</string>
+				</array>
+			</dict>
+			<key>marian</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>marian</string>
+				</array>
+			</dict>
+			<key>ordinary</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>ordinary</string>
+				</array>
+			</dict>
+		</dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>AppIcon</string>
+			</array>
+		</dict>
+	</dict>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
