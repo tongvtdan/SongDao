@@ -271,6 +271,7 @@
 				8A1240092EC4000000000001 /* Embed App Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				9D3BE92A3CB683C1FC7FB8A0 /* [CP] Embed Pods Frameworks */,
+				8A1240202EC4000000000001 /* Strip and Sign Native Assets */,
 			);
 			buildRules = (
 			);
@@ -423,6 +424,21 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8A1240202EC4000000000001 /* Strip and Sign Native Assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Strip and Sign Native Assets";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"${SRCROOT}/Flutter/strip_and_sign_native_assets.sh\"\n";
 		};
 		E20798399A143FECA9D7E81B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -644,7 +660,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TodayWidget/TodayWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4QNWF9XX55;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TodayWidget/Info.plist;
@@ -671,7 +687,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TodayWidget/TodayWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4QNWF9XX55;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TodayWidget/Info.plist;
@@ -697,7 +713,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = TodayWidget/TodayWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4QNWF9XX55;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TodayWidget/Info.plist;
