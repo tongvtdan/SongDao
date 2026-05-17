@@ -175,7 +175,7 @@ struct SongDaoTodayWidgetView: View {
       }
     }
     .padding(14)
-    .background(canvas)
+    .songDaoWidgetBackground(canvas)
     .widgetURL(todayDeepLink)
   }
 
@@ -344,6 +344,17 @@ struct SongDaoTodayWidgetView: View {
       return ink
     default:
       return green
+    }
+  }
+}
+
+private extension View {
+  @ViewBuilder
+  func songDaoWidgetBackground(_ color: Color) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      containerBackground(color, for: .widget)
+    } else {
+      background(color)
     }
   }
 }
