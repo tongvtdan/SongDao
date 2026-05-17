@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/design_system.dart';
 import '../../app/theme.dart';
+import '../../data/local/app_info_service.dart';
 import '../../data/local/app_icon_service.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
@@ -37,12 +38,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final seasonalIconSupported = await ref
         .read(appIconServiceProvider)
         .supportsAlternateIcons();
+    final appVersion = await ref.read(appInfoServiceProvider).versionInfo();
     return _SettingsViewData(
       locale: locale,
       showLunarDate: showLunarDate,
       dailyReminder: dailyReminder,
       seasonalIconEnabled: seasonalIconEnabled,
       seasonalIconSupported: seasonalIconSupported,
+      appVersion: appVersion,
     );
   }
 
@@ -264,6 +267,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
+              _SettingsCard(
+                title: 'Ứng dụng',
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('Phiên bản')),
+                    Text(
+                      data.appVersion.displayValue,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           );
         },
@@ -321,6 +340,7 @@ class _SettingsViewData {
     required this.dailyReminder,
     required this.seasonalIconEnabled,
     required this.seasonalIconSupported,
+    required this.appVersion,
   });
 
   final String locale;
@@ -328,4 +348,5 @@ class _SettingsViewData {
   final DailyReminderSettings dailyReminder;
   final bool seasonalIconEnabled;
   final bool seasonalIconSupported;
+  final AppVersionInfo appVersion;
 }

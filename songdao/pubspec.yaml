@@ -1,7 +1,7 @@
 name: songdao
 description: "Sống Đạo is a local-first Catholic daily practice app for one clear action, liturgical context, reminders, and private rhythm."
-publish_to: 'none'
-version: 0.1.0+2
+publish_to: "none"
+version: 0.1.0+3
 
 environment:
   sdk: ^3.11.3

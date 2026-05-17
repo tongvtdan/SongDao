@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/app/router.dart';
 import 'package:songdao/data/content/content_pack_provider.dart';
+import 'package:songdao/data/local/app_info_service.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/database_provider.dart';
 import 'package:songdao/features/today/today_controller.dart';
@@ -58,6 +59,7 @@ class _TestApp extends StatelessWidget {
     return ProviderScope(
       overrides: [
         databaseProvider.overrideWithValue(db),
+        appInfoServiceProvider.overrideWithValue(const _FakeAppInfoService()),
         seedContentBootstrapProvider.overrideWith((ref) async => []),
       ],
       child: Consumer(
@@ -71,6 +73,15 @@ class _TestApp extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class _FakeAppInfoService extends AppInfoService {
+  const _FakeAppInfoService();
+
+  @override
+  Future<AppVersionInfo> versionInfo() async {
+    return const AppVersionInfo(version: '0.1.0', buildNumber: '3');
   }
 }
 
