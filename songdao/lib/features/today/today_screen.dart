@@ -898,12 +898,11 @@ class _ReadingReferencesCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.x2),
-                  Text(
-                    gospel.citation,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: AppColors.textPrimary,
-                      height: 1.35,
-                    ),
+                  _ReadingSourceLink(
+                    reading: gospel,
+                    textStyle: Theme.of(context).textTheme.headlineMedium
+                        ?.copyWith(color: AppColors.textPrimary, height: 1.35),
+                    iconSize: 22,
                   ),
                   const SizedBox(height: AppSpacing.x3),
                 ],
@@ -927,9 +926,10 @@ class _ReadingReferencesCard extends StatelessWidget {
                           ),
                         ),
                         Expanded(
-                          child: Text(
-                            reading.citation,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          child: _ReadingSourceLink(
+                            reading: reading,
+                            textStyle: Theme.of(context).textTheme.bodyMedium,
+                            iconSize: 16,
                           ),
                         ),
                       ],
@@ -940,6 +940,60 @@ class _ReadingReferencesCard extends StatelessWidget {
             ),
     );
   }
+}
+
+class _ReadingSourceLink extends StatelessWidget {
+  const _ReadingSourceLink({
+    required this.reading,
+    required this.textStyle,
+    required this.iconSize,
+  });
+
+  final Reading reading;
+  final TextStyle? textStyle;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveStyle = textStyle ?? Theme.of(context).textTheme.bodyMedium;
+    final title = reading.type == 'gospel'
+        ? 'Tin Mừng hôm nay'
+        : reading.displayLabel ?? _readingLabel(reading.type);
+
+    return Semantics(
+      link: true,
+      button: true,
+      label: '$title ${reading.citation}',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: () => _openReadingInApp(context, title),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(child: Text(reading.citation, style: effectiveStyle)),
+              const SizedBox(width: AppSpacing.x2),
+              Icon(Icons.open_in_new, size: iconSize, color: AppColors.brand),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+void _openReadingInApp(BuildContext context, String title) {
+  context.push(
+    Uri(
+      path: '/readings/web',
+      queryParameters: {
+        'url': 'https://ktcgkpv.org/readings/mass-reading',
+        'title': title,
+      },
+    ).toString(),
+  );
 }
 
 class _ReflectionNoteCard extends StatelessWidget {
