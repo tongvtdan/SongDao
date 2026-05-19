@@ -1369,7 +1369,9 @@ void main() {
       expect(result.packId, 'calendar-vn-2026');
       expect(await db.select(db.calendarDays).get(), hasLength(365));
       expect((await db.select(db.celebrations).get()).length, greaterThan(365));
-      expect(await db.select(db.readings).get(), hasLength(365));
+      final readings = await db.select(db.readings).get();
+      expect(readings.length, greaterThan(365));
+      expect(readings.map((reading) => reading.date).toSet(), hasLength(365));
       expect(await db.select(db.dailyReflections).get(), hasLength(365));
 
       for (final date in ['2026-01-01', '2026-05-14', '2026-12-31']) {
@@ -1395,6 +1397,16 @@ void main() {
               ))
               .get();
       expect(unsafeReadings, isEmpty);
+
+      final may19Readings =
+          await (db.select(db.readings)..where(
+                (t) => t.date.equals('2026-05-19') & t.locale.equals('vi'),
+              ))
+              .get();
+      expect(
+        may19Readings.map((reading) => reading.citation),
+        containsAll(['Cv 20,17-27', 'Tv 68,10-11.20-21', 'Ga 17,1-11a']),
+      );
     });
 
     test('Today loads real 2026 calendar data and reflection', () async {
