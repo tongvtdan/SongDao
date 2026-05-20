@@ -50,6 +50,10 @@ class WidgetSnapshotService {
       db.actionLogs,
     )..where((t) => t.actionId.equals(action.id))).getSingleOrNull();
     final importantMass = await MassService(db).nextImportantMassForDate(date);
+    final dailyQuote = _dailyQuoteFor(date);
+    final primaryCelebration = celebrations.isEmpty
+        ? null
+        : celebrations.first.name;
 
     final now = DateTime.now().toUtc();
     final payload = _canonicalJson({
@@ -63,8 +67,13 @@ class WidgetSnapshotService {
         'liturgical_week': calendarDay.liturgicalWeek,
         'cycle_year': calendarDay.cycleYear,
         'lunar_date': locale == 'vi' ? calendarDay.lunarDate : null,
-        'celebration': celebrations.isEmpty ? null : celebrations.first.name,
+        'celebration': primaryCelebration,
       },
+      'daily_quote': {
+        'text': dailyQuote.text,
+        'attribution': dailyQuote.attribution,
+      },
+      'saint_of_day': _saintOfDayLabel(celebrations),
       'action': {
         'id': action.id,
         'type': action.type,
@@ -142,6 +151,29 @@ class WidgetSnapshotService {
     };
   }
 
+  _WidgetDailyQuote _dailyQuoteFor(String date) {
+    final parsed = DateTime.parse(date);
+    final startOfYear = DateTime(parsed.year);
+    final dayOfYear = parsed.difference(startOfYear).inDays + 1;
+    return _dailyQuotes[dayOfYear % _dailyQuotes.length];
+  }
+
+  String? _saintOfDayLabel(List<Celebration> celebrations) {
+    for (final celebration in celebrations) {
+      final rank = celebration.rank;
+      final name = celebration.name;
+      final isSaint =
+          name.startsWith('Thánh ') || name.startsWith('Các Thánh ');
+      final isRankedSaint =
+          rank == 'memorial' || rank == 'optional_memorial' || rank == 'feast';
+
+      if (isSaint && isRankedSaint) {
+        return name;
+      }
+    }
+    return null;
+  }
+
   String _dateKey(DateTime date) {
     final year = date.year.toString().padLeft(4, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -168,3 +200,41 @@ class WidgetSnapshotService {
     return value;
   }
 }
+
+class _WidgetDailyQuote {
+  const _WidgetDailyQuote({required this.text, required this.attribution});
+
+  final String text;
+  final String attribution;
+}
+
+const _dailyQuotes = [
+  _WidgetDailyQuote(
+    text: 'Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Bình an bắt đầu khi con trao cho Chúa điều con không tự giữ nổi.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Đức tin lớn lên trong những lựa chọn rất nhỏ và rất thật.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Hãy bắt đầu lại nhẹ nhàng; lòng thương xót luôn đi trước con.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Yêu thương hôm nay không cần lớn tiếng, chỉ cần cụ thể.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Một phút thinh lặng có thể mở lại cánh cửa của lòng mình.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Chúa thường gặp ta trong bổn phận nhỏ đang ở ngay trước mặt.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+];

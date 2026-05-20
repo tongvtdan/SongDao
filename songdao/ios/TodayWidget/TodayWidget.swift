@@ -31,9 +31,16 @@ struct SongDaoWidgetSnapshot: Decodable {
     let label: String?
   }
 
+  struct DailyQuote: Decodable {
+    let text: String?
+    let attribution: String?
+  }
+
   let date: String?
   let locale: String?
   let liturgicalContext: LiturgicalContext?
+  let dailyQuote: DailyQuote?
+  let saintOfDay: String?
   let action: Action?
   let readings: [Reading]?
   let mass: Mass?
@@ -42,6 +49,8 @@ struct SongDaoWidgetSnapshot: Decodable {
     case date
     case locale
     case liturgicalContext = "liturgical_context"
+    case dailyQuote = "daily_quote"
+    case saintOfDay = "saint_of_day"
     case action
     case readings
     case mass
@@ -76,31 +85,26 @@ struct SongDaoTodayEntry: TimelineEntry {
       ?? "Sống Đạo hôm nay"
   }
 
-  var actionPrompt: String {
-    snapshot?.action?.prompt
-      ?? "Mở Sống Đạo để nhận một việc nhỏ cho hôm nay."
+  var featureEyebrow: String {
+    guard let saint = snapshot?.saintOfDay, !saint.isEmpty else {
+      return "Lời hôm nay"
+    }
+    return "Vị thánh hôm nay"
   }
 
-  var gospelCitation: String? {
-    snapshot?.readings?.first(where: { $0.type == "gospel" })?.citation
+  var featureText: String {
+    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
+      return saint
+    }
+    return snapshot?.dailyQuote?.text
+      ?? "Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày."
   }
 
-  var massSummary: String? {
-    guard let mass = snapshot?.mass, let time = mass.time else {
+  var featureAttribution: String? {
+    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
       return nil
     }
-    let label = mass.label ?? "Thánh lễ"
-    if let church = mass.church, !church.isEmpty {
-      return "\(label): \(time) - \(church)"
-    }
-    return "\(label): \(time)"
-  }
-
-  var massLanguage: String? {
-    guard let language = snapshot?.mass?.language, !language.isEmpty else {
-      return nil
-    }
-    return language
+    return snapshot?.dailyQuote?.attribution
   }
 
   var isCompleted: Bool {
@@ -193,107 +197,85 @@ struct SongDaoTodayWidgetView: View {
   }
 
   private var smallLayout: some View {
-    VStack(alignment: .leading, spacing: 9) {
-      HStack(alignment: .top, spacing: 10) {
+    VStack(alignment: .leading, spacing: 10) {
+      HStack(alignment: .top, spacing: 12) {
         dateTile
-
-        VStack(alignment: .leading, spacing: 4) {
-          Text(entry.dateLabel)
-            .font(.caption2.weight(.semibold))
-            .foregroundColor(secondaryInk)
-            .textCase(.uppercase)
-            .lineLimit(1)
-
-          contextHeader
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-      }
-
-      Text(entry.actionPrompt)
-        .font(.system(.headline, design: .default).weight(.semibold))
-        .foregroundColor(ink)
-        .lineLimit(3)
-        .minimumScaleFactor(0.76)
-
-      if let gospelCitation = entry.gospelCitation {
-        Text("Tin Mừng: \(gospelCitation)")
-          .font(.caption2)
-          .foregroundColor(secondaryInk)
-          .lineLimit(1)
-      }
-    }
-  }
-
-  private var mediumLayout: some View {
-    HStack(alignment: .top, spacing: 14) {
-      dateTile
-
-      VStack(alignment: .leading, spacing: 8) {
-        contextHeader
-
-        Text(entry.actionPrompt)
-          .font(.headline)
-          .foregroundColor(ink)
-          .lineLimit(3)
-          .minimumScaleFactor(0.82)
+        featureBlock(maxTextLines: 3)
       }
 
       Divider()
         .background(border)
 
+      contextFooter
+    }
+  }
+
+  private var mediumLayout: some View {
+    HStack(alignment: .top, spacing: 16) {
+      dateTile
+
+      featureBlock(maxTextLines: 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+      Divider()
+        .background(border)
+
       VStack(alignment: .leading, spacing: 8) {
+        contextFooter
+
         if entry.isCompleted {
           Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
             .font(.caption.weight(.semibold))
             .foregroundColor(green)
             .lineLimit(1)
         }
-
-        if let massSummary = entry.massSummary {
-          Label {
-            Text(massSummary)
-              .lineLimit(2)
-              .minimumScaleFactor(0.82)
-          } icon: {
-            Image(systemName: "bell")
-          }
-          .font(.caption.weight(.semibold))
-          .foregroundColor(ink)
-
-          if let language = entry.massLanguage {
-            Text(language)
-              .font(.caption2)
-              .foregroundColor(secondaryInk)
-              .lineLimit(1)
-          }
-        } else if let gospelCitation = entry.gospelCitation {
-          Text("Tin Mừng")
-            .font(.caption.weight(.semibold))
-            .foregroundColor(green)
-          Text(gospelCitation)
-            .font(.caption)
-            .foregroundColor(secondaryInk)
-            .lineLimit(2)
-        } else {
-          Text("Mở Sống Đạo để xem chi tiết hôm nay.")
-            .font(.caption)
-            .foregroundColor(secondaryInk)
-            .lineLimit(3)
-        }
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .frame(width: 118, alignment: .leading)
     }
   }
 
-  private var contextHeader: some View {
-    HStack(spacing: 6) {
+  private func featureBlock(maxTextLines: Int) -> some View {
+    VStack(alignment: .leading, spacing: 5) {
+      Text(entry.featureEyebrow)
+        .font(.caption2.weight(.bold))
+        .foregroundColor(green)
+        .textCase(.uppercase)
+        .lineLimit(1)
+
+      Text(entry.featureText)
+        .font(.system(.headline, design: .default).weight(.semibold))
+        .foregroundColor(ink)
+        .lineLimit(maxTextLines)
+        .minimumScaleFactor(0.72)
+
+      if let attribution = entry.featureAttribution, !attribution.isEmpty {
+        Text(attribution)
+          .font(.caption2.weight(.semibold))
+          .foregroundColor(secondaryInk)
+          .lineLimit(1)
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private var contextFooter: some View {
+    HStack(alignment: .center, spacing: 7) {
       RoundedRectangle(cornerRadius: 2)
         .fill(entry.isCompleted ? green : liturgicalAccent)
-        .frame(width: 4, height: 28)
-      Text(entry.celebration)
-        .font(.system(.caption, design: .default).weight(.semibold))
-        .foregroundColor(ink)
-        .lineLimit(2)
+        .frame(width: 4, height: 22)
+
+      VStack(alignment: .leading, spacing: 1) {
+        Text(entry.dateLabel)
+          .font(.caption2.weight(.semibold))
+          .foregroundColor(secondaryInk)
+          .textCase(.uppercase)
+          .lineLimit(1)
+
+        Text(entry.celebration)
+          .font(.caption.weight(.semibold))
+          .foregroundColor(ink)
+          .lineLimit(2)
+      }
     }
   }
 

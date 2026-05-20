@@ -792,16 +792,53 @@ void main() {
       final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
       final action = payload['action']! as Map<String, Object?>;
       final context = payload['liturgical_context']! as Map<String, Object?>;
+      final dailyQuote = payload['daily_quote']! as Map<String, Object?>;
       final readings = payload['readings']! as List<Object?>;
 
       expect(payload['date'], '2026-04-27');
       expect(payload['schema_version'], 1);
       expect(context['celebration'], 'Lễ thử nghiệm');
+      expect(dailyQuote['text'], isNotEmpty);
+      expect(dailyQuote['attribution'], 'Lời gợi hứng hôm nay');
+      expect(payload['saint_of_day'], isNull);
       expect(action['prompt'], 'Viết một câu về Tin Mừng hôm nay.');
       expect(action['completed'], isFalse);
       expect(readings, hasLength(1));
       expect(snapshot.generatedAt, isNotNull);
     });
+
+    test(
+      'adds saint of day when the local calendar has a saint feast',
+      () async {
+        await _insertCalendarDay(db, '2026-04-28', season: 'easter');
+        await _insertCelebration(
+          db,
+          '2026-04-28',
+          rank: 'feast',
+          name: 'Thánh Phêrô Chanel',
+        );
+        await db
+            .into(db.dailyActions)
+            .insert(
+              DailyActionsCompanion.insert(
+                id: 'daily_action_2026-04-28_vi',
+                date: '2026-04-28',
+                sourceRule: 'saint_feast_vi',
+                prompt: 'Cầu nguyện với vị thánh hôm nay.',
+                type: 'prayer',
+                priority: 40,
+                locale: 'vi',
+              ),
+            );
+
+        final snapshot = await WidgetSnapshotService(
+          db,
+        ).regenerateForDate('2026-04-28');
+        final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+
+        expect(payload['saint_of_day'], 'Thánh Phêrô Chanel');
+      },
+    );
 
     test(
       'refreshes snapshot completion state after action log changes',
@@ -1286,6 +1323,60 @@ void main() {
     );
 
     test(
+      'imports calendar pack and generates daily action timeline and widget snapshots validating schema',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final importer = ContentPackImporter(db);
+
+        final result = await importer.importPackJson(source);
+        expect(result.imported, isTrue);
+
+        // Verify that 14 days of widget snapshots are generated in the database
+        final snapshots = await db.select(db.widgetSnapshots).get();
+        expect(snapshots, hasLength(14));
+
+        // Decode and validate the snapshot payloads conform to Drift widget snapshot schema
+        for (final snapshot in snapshots) {
+          expect(snapshot.date, isNotNull);
+          expect(snapshot.payload, isNotNull);
+          expect(snapshot.generatedAt, isNotNull);
+
+          final payload = jsonDecode(snapshot.payload) as Map<String, Object?>;
+          expect(payload['schema_version'], equals(1));
+          expect(payload['date'], equals(snapshot.date));
+          expect(payload['locale'], equals('vi'));
+          expect(payload['generated_at'], isNotNull);
+
+          final context =
+              payload['liturgical_context']! as Map<String, Object?>;
+          expect(context['season'], isNotNull);
+          expect(context['color'], isNotNull);
+          expect(context['liturgical_week'], isNotNull);
+          expect(context.containsKey('cycle_year'), isTrue);
+          expect(context['lunar_date'], isNotNull);
+
+          final action = payload['action']! as Map<String, Object?>;
+          expect(action['id'], isNotNull);
+          expect(action['type'], isNotNull);
+          expect(action['prompt'], isNotNull);
+          expect(action['completed'], isFalse);
+          expect(action['status'], equals('pending'));
+
+          final readings = payload['readings']! as List<Object?>;
+          expect(readings, isNotEmpty);
+          for (final readingObj in readings) {
+            final reading = readingObj as Map<String, Object?>;
+            expect(reading['type'], isNotNull);
+            expect(reading['label'], isNotNull);
+            expect(reading['citation'], isNotNull);
+          }
+        }
+      },
+    );
+
+    test(
       'imports the parish beta seed pack with 3 churches and varied Mass times',
       () async {
         final source = await File(
@@ -1505,6 +1596,7 @@ Future<void> _insertCelebration(
   AppDatabase db,
   String date, {
   required String rank,
+  String name = 'Lễ thử nghiệm',
 }) {
   return db
       .into(db.celebrations)
@@ -1512,7 +1604,7 @@ Future<void> _insertCelebration(
         CelebrationsCompanion.insert(
           id: 'celebration-$date-$rank',
           date: date,
-          name: 'Lễ thử nghiệm',
+          name: name,
           rank: rank,
           locale: 'vi',
         ),
