@@ -79,6 +79,10 @@ struct SongDaoTodayEntry: TimelineEntry {
     Self.dateLabelFormatter.string(from: displayDate)
   }
 
+  var weekdayLabel: String {
+    Self.weekdayFormatter.string(from: displayDate)
+  }
+
   var celebration: String {
     snapshot?.liturgicalContext?.celebration
       ?? snapshot?.liturgicalContext?.season
@@ -130,6 +134,13 @@ struct SongDaoTodayEntry: TimelineEntry {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "vi_VN")
     formatter.dateFormat = "EEE, d MMM"
+    return formatter
+  }()
+
+  private static let weekdayFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "EEEE"
     return formatter
   }()
 }
@@ -191,114 +202,126 @@ struct SongDaoTodayWidgetView: View {
         smallLayout
       }
     }
-    .padding(14)
+    .padding(family == .systemMedium ? 22 : 20)
     .songDaoWidgetBackground(canvas)
     .widgetURL(todayDeepLink)
   }
 
   private var smallLayout: some View {
-    VStack(alignment: .leading, spacing: 10) {
-      HStack(alignment: .top, spacing: 12) {
-        dateTile
-        featureBlock(maxTextLines: 3)
-      }
+    VStack(alignment: .leading, spacing: 4) {
+      Text(entry.weekdayLabel.uppercased())
+        .font(.system(size: 23, weight: .bold, design: .default))
+        .foregroundColor(liturgicalAccent)
+        .lineLimit(1)
+        .minimumScaleFactor(0.68)
 
-      Divider()
-        .background(border)
+      Text(entry.dayNumber)
+        .font(.system(size: 66, weight: .regular, design: .default))
+        .foregroundColor(.black)
+        .lineLimit(1)
+        .minimumScaleFactor(0.84)
 
-      contextFooter
+      Spacer(minLength: 10)
+
+      Text(entry.featureText)
+        .font(.system(size: 22, weight: .regular, design: .default))
+        .foregroundColor(secondaryInk)
+        .lineLimit(3)
+        .minimumScaleFactor(0.74)
     }
   }
 
   private var mediumLayout: some View {
-    HStack(alignment: .top, spacing: 16) {
-      dateTile
-
-      featureBlock(maxTextLines: 4)
-        .frame(maxWidth: .infinity, alignment: .leading)
+    HStack(alignment: .top, spacing: 18) {
+      mediumDateColumn
+        .frame(width: 116, alignment: .topLeading)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
 
       Divider()
         .background(border)
+        .padding(.vertical, 2)
 
-      VStack(alignment: .leading, spacing: 8) {
-        contextFooter
-
-        if entry.isCompleted {
-          Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
-            .font(.caption.weight(.semibold))
-            .foregroundColor(green)
-            .lineLimit(1)
-        }
-      }
-      .frame(width: 118, alignment: .leading)
-    }
-  }
-
-  private func featureBlock(maxTextLines: Int) -> some View {
-    VStack(alignment: .leading, spacing: 5) {
-      Text(entry.featureEyebrow)
-        .font(.caption2.weight(.bold))
-        .foregroundColor(green)
-        .textCase(.uppercase)
-        .lineLimit(1)
-
-      Text(entry.featureText)
-        .font(.system(.headline, design: .default).weight(.semibold))
-        .foregroundColor(ink)
-        .lineLimit(maxTextLines)
-        .minimumScaleFactor(0.72)
-
-      if let attribution = entry.featureAttribution, !attribution.isEmpty {
-        Text(attribution)
-          .font(.caption2.weight(.semibold))
+      VStack(alignment: .leading, spacing: 12) {
+        Text(entry.dateLabel.uppercased())
+          .font(.system(size: 18, weight: .bold, design: .default))
           .foregroundColor(secondaryInk)
           .lineLimit(1)
+          .minimumScaleFactor(0.78)
+
+        agendaBlock
+
+        completionStatus
       }
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
   }
 
-  private var contextFooter: some View {
-    HStack(alignment: .center, spacing: 7) {
-      RoundedRectangle(cornerRadius: 2)
-        .fill(entry.isCompleted ? green : liturgicalAccent)
-        .frame(width: 4, height: 22)
+  private var mediumDateColumn: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text(entry.weekdayLabel.uppercased())
+        .font(.system(size: 17, weight: .bold, design: .default))
+        .foregroundColor(liturgicalAccent)
+        .lineLimit(1)
+        .minimumScaleFactor(0.72)
 
-      VStack(alignment: .leading, spacing: 1) {
-        Text(entry.dateLabel)
-          .font(.caption2.weight(.semibold))
-          .foregroundColor(secondaryInk)
+      Text(entry.dayNumber)
+        .font(.system(size: 58, weight: .regular, design: .default))
+        .foregroundColor(.black)
+        .lineLimit(1)
+        .minimumScaleFactor(0.86)
+
+      Spacer(minLength: 10)
+
+      Text("Sống Đạo hôm nay")
+        .font(.system(size: 16, weight: .regular, design: .default))
+        .foregroundColor(secondaryInk)
+        .lineLimit(2)
+        .minimumScaleFactor(0.82)
+    }
+  }
+
+  private var agendaBlock: some View {
+    HStack(alignment: .top, spacing: 8) {
+      RoundedRectangle(cornerRadius: 2)
+        .fill(liturgicalAccent)
+        .frame(width: 4, height: 64)
+
+      VStack(alignment: .leading, spacing: 4) {
+        Text(entry.featureEyebrow)
+          .font(.caption2.weight(.bold))
+          .foregroundColor(green)
           .textCase(.uppercase)
           .lineLimit(1)
 
-        Text(entry.celebration)
-          .font(.caption.weight(.semibold))
+        Text(entry.featureText)
+          .font(.system(size: 22, weight: .semibold, design: .default))
           .foregroundColor(ink)
           .lineLimit(2)
+          .minimumScaleFactor(0.74)
+
+        if let attribution = entry.featureAttribution, !attribution.isEmpty {
+          Text(attribution)
+            .font(.caption2.weight(.semibold))
+            .foregroundColor(secondaryInk)
+            .lineLimit(1)
+        }
       }
+      .frame(maxWidth: .infinity, alignment: .leading)
     }
+    .padding(.vertical, 8)
+    .padding(.horizontal, 9)
+    .background(softGreen)
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
   }
 
-  private var dateTile: some View {
-    VStack(spacing: 0) {
-      Rectangle()
-        .fill(entry.isCompleted ? green : liturgicalAccent)
-        .frame(height: 7)
-
-      Text(entry.dayNumber)
-        .font(.system(size: 32, weight: .bold, design: .rounded))
-        .foregroundColor(ink)
-        .minimumScaleFactor(0.75)
+  @ViewBuilder
+  private var completionStatus: some View {
+    if entry.isCompleted {
+      Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
+        .font(.system(size: 17, weight: .bold, design: .default))
+        .foregroundColor(green)
         .lineLimit(1)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .frame(width: 52, height: 58)
-    .background(Color.white)
-    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .stroke(border, lineWidth: 1)
-    )
   }
 
   private var ink: Color {
@@ -311,6 +334,11 @@ struct SongDaoTodayWidgetView: View {
 
   private var green: Color {
     Color(red: 0.12, green: 0.48, blue: 0.39) // #1F7A64
+  }
+
+  private var softGreen: Color {
+    Color(red: 0.89, green: 0.95, blue: 0.92) // #E2F1EA
+      .opacity(0.56)
   }
 
   private var gold: Color {
