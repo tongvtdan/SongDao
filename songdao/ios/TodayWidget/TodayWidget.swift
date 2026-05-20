@@ -89,26 +89,23 @@ struct SongDaoTodayEntry: TimelineEntry {
       ?? "Sống Đạo hôm nay"
   }
 
-  var featureEyebrow: String {
-    guard let saint = snapshot?.saintOfDay, !saint.isEmpty else {
-      return "Lời hôm nay"
+  var saintOrFallback: String {
+    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
+      return saint
     }
-    return "Vị thánh hôm nay"
+    return "Sống Đạo hôm nay"
   }
 
   var featureText: String {
     if let saint = snapshot?.saintOfDay, !saint.isEmpty {
       return saint
     }
-    return snapshot?.dailyQuote?.text
-      ?? "Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày."
+    return quoteText
   }
 
-  var featureAttribution: String? {
-    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
-      return nil
-    }
-    return snapshot?.dailyQuote?.attribution
+  var quoteText: String {
+    return snapshot?.dailyQuote?.text
+      ?? "Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày."
   }
 
   var isCompleted: Bool {
@@ -272,11 +269,11 @@ struct SongDaoTodayWidgetView: View {
 
       Spacer(minLength: 10)
 
-      Text("Sống Đạo hôm nay")
+      Text(entry.saintOrFallback)
         .font(.system(size: 16, weight: .regular, design: .default))
         .foregroundColor(secondaryInk)
-        .lineLimit(2)
-        .minimumScaleFactor(0.82)
+        .lineLimit(3)
+        .minimumScaleFactor(0.76)
     }
   }
 
@@ -284,32 +281,21 @@ struct SongDaoTodayWidgetView: View {
     HStack(alignment: .top, spacing: 8) {
       RoundedRectangle(cornerRadius: 2)
         .fill(liturgicalAccent)
-        .frame(width: 4, height: 64)
+        .frame(width: 4)
+        .frame(maxHeight: .infinity)
 
-      VStack(alignment: .leading, spacing: 4) {
-        Text(entry.featureEyebrow)
-          .font(.caption2.weight(.bold))
-          .foregroundColor(green)
-          .textCase(.uppercase)
-          .lineLimit(1)
-
-        Text(entry.featureText)
-          .font(.system(size: 22, weight: .semibold, design: .default))
+      VStack(alignment: .leading, spacing: 0) {
+        Text(entry.quoteText)
+          .font(.system(size: 18, weight: .semibold, design: .default))
           .foregroundColor(ink)
-          .lineLimit(2)
-          .minimumScaleFactor(0.74)
-
-        if let attribution = entry.featureAttribution, !attribution.isEmpty {
-          Text(attribution)
-            .font(.caption2.weight(.semibold))
-            .foregroundColor(secondaryInk)
-            .lineLimit(1)
-        }
+          .lineLimit(4)
+          .minimumScaleFactor(0.78)
+          .fixedSize(horizontal: false, vertical: true)
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
     }
-    .padding(.vertical, 8)
-    .padding(.horizontal, 9)
+    .padding(.vertical, 12)
+    .padding(.horizontal, 11)
     .background(softGreen)
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
   }
