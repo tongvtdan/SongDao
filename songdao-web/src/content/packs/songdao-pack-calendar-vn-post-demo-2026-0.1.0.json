@@ -1,0 +1,208 @@
+{
+  "schema_version": "0.1",
+  "pack_id": "calendar-vn-post-demo-2026",
+  "version": "0.1.0",
+  "locale": "vi",
+  "created_at": "2026-05-10T00:00:00Z",
+  "valid_from": "2026-05-11",
+  "valid_to": "2026-05-17",
+  "source_summary": "Internal Vietnamese post-demo beta pack for validating SongDao Today beyond the first demo horizon.",
+  "license_summary": "Reference-only readings; no copyrighted full-text readings. Original SongDao action prompts and short prayers.",
+  "checksum": "sha256:282b97deee3d45d8f6f3e456544dbf7f779d2c924c58dd384149a80862d28015",
+  "calendar_days": [
+    {
+      "id": "calendar_day_2026_05_11_vi",
+      "date": "2026-05-11",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "25 tháng 3, Bính Ngọ",
+      "weekday": "monday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_12_vi",
+      "date": "2026-05-12",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "26 tháng 3, Bính Ngọ",
+      "weekday": "tuesday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_13_vi",
+      "date": "2026-05-13",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "27 tháng 3, Bính Ngọ",
+      "weekday": "wednesday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_14_vi",
+      "date": "2026-05-14",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "red",
+      "cycle_year": "A",
+      "lunar_date": "28 tháng 3, Bính Ngọ",
+      "weekday": "thursday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_15_vi",
+      "date": "2026-05-15",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "29 tháng 3, Bính Ngọ",
+      "weekday": "friday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_16_vi",
+      "date": "2026-05-16",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VI Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "30 tháng 3, Bính Ngọ",
+      "weekday": "saturday",
+      "is_sunday": false,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    },
+    {
+      "id": "calendar_day_2026_05_17_vi",
+      "date": "2026-05-17",
+      "locale": "vi",
+      "season": "easter",
+      "liturgical_week": "Tuần VII Phục Sinh",
+      "liturgical_color": "white",
+      "cycle_year": "A",
+      "lunar_date": "1 tháng 4, Bính Ngọ",
+      "weekday": "sunday",
+      "is_sunday": true,
+      "source": {"name": "SongDao beta calendar", "url": null, "license": "internal-beta", "retrieved_at": "2026-05-10"}
+    }
+  ],
+  "celebrations": [
+    {"id": "celebration_2026_05_11_vi", "date": "2026-05-11", "locale": "vi", "title": "Thứ Hai tuần VI Phục Sinh", "rank": "weekday", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_12_vi", "date": "2026-05-12", "locale": "vi", "title": "Thứ Ba tuần VI Phục Sinh", "rank": "weekday", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_13_vi", "date": "2026-05-13", "locale": "vi", "title": "Thứ Tư tuần VI Phục Sinh", "rank": "weekday", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_14_vi", "date": "2026-05-14", "locale": "vi", "title": "Thánh Matthia, Tông đồ", "rank": "feast", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_15_vi", "date": "2026-05-15", "locale": "vi", "title": "Thứ Sáu tuần VI Phục Sinh", "rank": "weekday", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_16_vi", "date": "2026-05-16", "locale": "vi", "title": "Thứ Bảy tuần VI Phục Sinh", "rank": "weekday", "is_solemnity": false, "is_holy_day": false, "is_sunday": false, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}},
+    {"id": "celebration_2026_05_17_vi", "date": "2026-05-17", "locale": "vi", "title": "Chúa Nhật VII Phục Sinh", "rank": "sunday", "is_solemnity": false, "is_holy_day": false, "is_sunday": true, "source": {"name": "SongDao beta calendar", "license": "internal-beta"}}
+  ],
+  "readings": [
+    {"id": "reading_2026_05_11_first_vi", "date": "2026-05-11", "locale": "vi", "type": "first_reading", "citation": "Cv 16,11-15", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051126.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_11_psalm_vi", "date": "2026-05-11", "locale": "vi", "type": "psalm", "citation": "Tv 149,1b-2.3-4.5-6a và 9b", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051126.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_11_gospel_vi", "date": "2026-05-11", "locale": "vi", "type": "gospel", "citation": "Ga 15,26-16,4a", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051126.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_12_first_vi", "date": "2026-05-12", "locale": "vi", "type": "first_reading", "citation": "Cv 16,22-34", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051226.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_12_psalm_vi", "date": "2026-05-12", "locale": "vi", "type": "psalm", "citation": "Tv 138,1-2ab.2cde-3.7c-8", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051226.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_12_gospel_vi", "date": "2026-05-12", "locale": "vi", "type": "gospel", "citation": "Ga 16,5-11", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051226.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_13_first_vi", "date": "2026-05-13", "locale": "vi", "type": "first_reading", "citation": "Cv 17,15.22-18,1", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051326.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_13_psalm_vi", "date": "2026-05-13", "locale": "vi", "type": "psalm", "citation": "Tv 148,1-2.11-12.13.14", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051326.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_13_gospel_vi", "date": "2026-05-13", "locale": "vi", "type": "gospel", "citation": "Ga 16,12-15", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051326.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_14_first_vi", "date": "2026-05-14", "locale": "vi", "type": "first_reading", "citation": "Cv 1,15-17.20-26", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051426.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_14_psalm_vi", "date": "2026-05-14", "locale": "vi", "type": "psalm", "citation": "Tv 113,1-2.3-4.5-6.7-8", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051426.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_14_gospel_vi", "date": "2026-05-14", "locale": "vi", "type": "gospel", "citation": "Ga 15,9-17", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051426.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_15_first_vi", "date": "2026-05-15", "locale": "vi", "type": "first_reading", "citation": "Cv 18,9-18", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051526.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_15_psalm_vi", "date": "2026-05-15", "locale": "vi", "type": "psalm", "citation": "Tv 47,2-3.4-5.6-7", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051526.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_15_gospel_vi", "date": "2026-05-15", "locale": "vi", "type": "gospel", "citation": "Ga 16,20-23", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051526.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_16_first_vi", "date": "2026-05-16", "locale": "vi", "type": "first_reading", "citation": "Cv 18,23-28", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051626.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_16_psalm_vi", "date": "2026-05-16", "locale": "vi", "type": "psalm", "citation": "Tv 47,2-3.8-9.10", "display_label": "Đáp ca", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051626.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_16_gospel_vi", "date": "2026-05-16", "locale": "vi", "type": "gospel", "citation": "Ga 16,23b-28", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051626.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_17_first_vi", "date": "2026-05-17", "locale": "vi", "type": "first_reading", "citation": "Cv 1,12-14", "display_label": "Bài đọc I", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051726.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_17_second_vi", "date": "2026-05-17", "locale": "vi", "type": "second_reading", "citation": "1 Pr 4,13-16", "display_label": "Bài đọc II", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051726.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}},
+    {"id": "reading_2026_05_17_gospel_vi", "date": "2026-05-17", "locale": "vi", "type": "gospel", "citation": "Ga 17,1-11a", "display_label": "Tin Mừng", "text": null, "source_url": "https://bible.usccb.org/bible/readings/051726.cfm", "license": "reference-only", "source": {"name": "USCCB daily readings citation reference", "license": "reference-only"}}
+  ],
+  "action_rules": [
+    {
+      "id": "feast_witness_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 15,
+      "when": {"is_feast": true},
+      "action": {"type": "reflection", "title": "Sống chứng tá của ngày lễ", "short_title": "Một chứng tá nhỏ", "duration_minutes": 5, "prompt": "Chọn một cách rất nhỏ để làm chứng cho đức tin hôm nay: một lời tử tế, một việc phục vụ, hoặc một lời cầu cho người cần nâng đỡ.", "proof_type": "self_check"},
+      "source": {"name": "SongDao core actions", "license": "internal"}
+    },
+    {
+      "id": "easter_weekday_spirit_note_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 45,
+      "when": {"season": "easter", "is_sunday": false},
+      "action": {"type": "reflection", "title": "Lắng nghe Chúa Thánh Thần", "short_title": "Một câu lắng nghe", "duration_minutes": 5, "prompt": "Đọc tham chiếu Tin Mừng hôm nay, rồi viết một câu: Chúa đang mời tôi sống điều gì cụ thể trong ngày này?", "proof_type": "private_note"},
+      "source": {"name": "SongDao core actions", "license": "internal"}
+    },
+    {
+      "id": "post_demo_friday_service_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 35,
+      "when": {"weekday": "friday", "is_sunday": false},
+      "action": {"type": "sacrifice", "title": "Hy sinh bằng một việc phục vụ", "short_title": "Một việc phục vụ", "duration_minutes": 5, "prompt": "Chọn một điều nhỏ để nhường, tiết chế, hoặc phục vụ âm thầm trong hôm nay.", "proof_type": "self_check"},
+      "source": {"name": "SongDao core actions", "license": "internal"}
+    },
+    {
+      "id": "post_demo_sunday_mass_intention_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 20,
+      "when": {"weekday": "sunday", "is_sunday": true},
+      "action": {"type": "mass_preparation", "title": "Chuẩn bị một ý lễ", "short_title": "Ý lễ hôm nay", "duration_minutes": 3, "prompt": "Trước Thánh lễ hoặc giờ cầu nguyện Chúa nhật, hãy chọn một người hay một việc để dâng lên Chúa.", "proof_type": "self_check"},
+      "source": {"name": "SongDao core actions", "license": "internal"}
+    },
+    {
+      "id": "post_demo_default_weekday_prayer_vi",
+      "locale": "vi",
+      "enabled": true,
+      "priority": 100,
+      "when": {"is_sunday": false, "is_solemnity": false},
+      "action": {"type": "prayer", "title": "Một phút dâng ngày", "short_title": "Dâng ngày", "duration_minutes": 1, "prompt": "Dừng lại một phút, làm dấu Thánh Giá, và dâng một việc cụ thể của hôm nay cho Chúa.", "proof_type": "self_check"},
+      "source": {"name": "SongDao core actions", "license": "internal"}
+    }
+  ],
+  "prayers": [
+    {
+      "id": "loi_nguyen_truoc_cong_viec_vi",
+      "locale": "vi",
+      "title": "Lời nguyện trước công việc",
+      "body": "Lạy Chúa, xin ở với con trong việc nhỏ này. Xin cho con làm với lòng ngay thẳng, bình an và yêu thương.",
+      "source_url": null,
+      "license": "internal-original",
+      "tags": ["core", "daily", "work"],
+      "source": {"name": "SongDao original beta prayer", "license": "internal-original"}
+    },
+    {
+      "id": "loi_nguyen_xin_binh_an_vi",
+      "locale": "vi",
+      "title": "Lời nguyện xin bình an",
+      "body": "Lạy Chúa, xin cho lòng con được bình an đủ để lắng nghe, đủ chậm để yêu thương, và đủ can đảm để làm một điều tốt hôm nay.",
+      "source_url": null,
+      "license": "internal-original",
+      "tags": ["core", "daily", "peace"],
+      "source": {"name": "SongDao original beta prayer", "license": "internal-original"}
+    }
+  ],
+  "churches": [],
+  "mass_times": []
+}

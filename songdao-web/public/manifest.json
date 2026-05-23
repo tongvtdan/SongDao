@@ -1,0 +1,24 @@
+{
+  "name": "Sống Đạo",
+  "short_name": "Sống Đạo",
+  "description": "Sống Đạo giúp người Công giáo sống đức tin mỗi ngày thông qua một hành động cụ thể.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F3",
+  "theme_color": "#1F7A64",
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/globe.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
