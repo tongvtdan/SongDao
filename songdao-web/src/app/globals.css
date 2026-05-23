@@ -7,22 +7,22 @@
   --color-surface-container: #F0EEE8;
   --color-surface-variant: #E5E2DC;
   --color-surface-inverse: #18221E;
-  
+
   --color-text-primary: #1F2522;
   --color-text-secondary: #5F6761;
   --color-text-tertiary: #8A938D;
   --color-text-inverse: #F8F5ED;
   --color-text-link: #1B6E5A;
-  
+
   --color-brand-primary: #1F7A64;
   --color-brand-primary-pressed: #155744;
   --color-brand-soft: #E2F1EA;
   --color-brand-deep: #123C32;
-  
+
   --color-accent-gold: #B8892E;
   --color-accent-burgundy: #8F2F3D;
   --color-accent-blue: #2F5F8F;
-  
+
   --color-liturgical-green: #2F7D4F;
   --color-liturgical-white: #F7F3E8;
   --color-liturgical-gold: #C69A3D;
@@ -30,22 +30,35 @@
   --color-liturgical-purple: #6B4A7A;
   --color-liturgical-rose: #C9788D;
   --color-liturgical-black: #242424;
-  
+
   --color-status-complete: #2F7D4F;
   --color-status-warning: #B8892E;
   --color-status-error: #B33A3A;
   --color-status-offline: #5F6761;
-  
+
   --color-border-subtle: #E2DDD1;
   --color-border-strong: #CFC7B7;
   --color-border-focus: #1F7A64;
-  
-  --font-sans: var(--font-inter), sans-serif;
-  --font-serif: var(--font-noto-serif), serif;
+
+  --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif", "Noto Serif Fallback", ui-serif, Georgia, serif;
+}
+
+html,
+body {
+  min-height: 100%;
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
 }
 
 body {
-  background-color: var(--color-canvas);
-  color: var(--color-text-primary);
   font-family: var(--font-sans);
+}
+
+button,
+a,
+input,
+textarea,
+summary {
+  -webkit-tap-highlight-color: transparent;
 }

@@ -1,103 +1,105 @@
-import { ActionLog } from "./types";
+import { ActionLog, UserSettings } from "./types";
 
 const LOG_KEY_PREFIX = "sd_log_";
 const SETTINGS_KEY = "sd_settings_v1";
 
-export interface UserSettings {
-  locale: string;
-  selectedChurchId: string | null;
-  showLunarDate: boolean;
-}
-
-const DEFAULT_SETTINGS: UserSettings = {
+export const DEFAULT_SETTINGS: UserSettings = {
   locale: "vi",
-  selectedChurchId: null,
   showLunarDate: true,
+  dailyReminderEnabled: false,
+  dailyReminderHour: 7,
+  dailyReminderMinute: 0,
 };
 
 function isClient(): boolean {
   return typeof window !== "undefined";
 }
 
-export function getActionLog(actionId: string): ActionLog | null {
-  if (!isClient()) return null;
+function logKey(actionId: string): string {
+  return `${LOG_KEY_PREFIX}${actionId}`;
+}
+
+function parseLog(raw: string | null): ActionLog | null {
+  if (!raw) return null;
   try {
-    const raw = localStorage.getItem(`${LOG_KEY_PREFIX}${actionId}`);
-    if (!raw) return null;
     return JSON.parse(raw) as ActionLog;
-  } catch (e) {
-    console.error("Failed to load action log:", e);
+  } catch {
     return null;
   }
+}
+
+export function getActionLog(actionId: string): ActionLog | null {
+  if (!isClient()) return null;
+  return parseLog(localStorage.getItem(logKey(actionId)));
 }
 
 export function markCompleted(actionId: string, date: string, note?: string): ActionLog {
   const existing = getActionLog(actionId);
   const now = new Date().toISOString();
-  
+  const normalizedNote = normalizeNote(note);
   const log: ActionLog = {
     id: `log_${actionId}`,
     actionId,
     date,
     status: "completed",
     completedAt: existing?.completedAt || now,
-    note: note !== undefined ? note.trim() : existing?.note,
+    note: normalizedNote === undefined ? existing?.note : normalizedNote,
     updatedAt: now,
   };
-  
-  if (isClient()) {
-    try {
-      localStorage.setItem(`${LOG_KEY_PREFIX}${actionId}`, JSON.stringify(log));
-    } catch (e) {
-      console.error("Failed to save action log:", e);
-    }
-  }
+  saveLog(log);
   return log;
 }
 
 export function saveNote(actionId: string, date: string, note: string): ActionLog {
   const existing = getActionLog(actionId);
   const now = new Date().toISOString();
-  
+  const normalizedNote = normalizeNote(note);
   const log: ActionLog = {
     id: `log_${actionId}`,
     actionId,
     date,
-    status: existing?.status || "completed", // If they write a note, we consider it completed
-    completedAt: existing?.completedAt || now,
-    note: note.trim(),
+    status: existing?.status || "pending",
+    completedAt: existing?.completedAt,
+    note: normalizedNote,
     updatedAt: now,
   };
-  
-  if (isClient()) {
-    try {
-      localStorage.setItem(`${LOG_KEY_PREFIX}${actionId}`, JSON.stringify(log));
-    } catch (e) {
-      console.error("Failed to save action log note:", e);
-    }
-  }
+  saveLog(log);
   return log;
+}
+
+export function clearNote(actionId: string, date: string): ActionLog {
+  return saveNote(actionId, date, "");
+}
+
+export function deleteNote(actionId: string): void {
+  if (!isClient()) return;
+  const existing = getActionLog(actionId);
+  if (!existing) return;
+  if (existing.status === "completed") {
+    const updated: ActionLog = {
+      ...existing,
+      note: undefined,
+      updatedAt: new Date().toISOString(),
+    };
+    saveLog(updated);
+    return;
+  }
+  localStorage.removeItem(logKey(actionId));
 }
 
 export function getAllLogs(): ActionLog[] {
   if (!isClient()) return [];
   const logs: ActionLog[] = [];
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith(LOG_KEY_PREFIX)) {
-        const raw = localStorage.getItem(key);
-        if (raw) {
-          logs.push(JSON.parse(raw) as ActionLog);
-        }
-      }
-    }
-    // Sort descending by date
-    logs.sort((a, b) => b.date.localeCompare(a.date));
-  } catch (e) {
-    console.error("Failed to retrieve all logs:", e);
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (!key?.startsWith(LOG_KEY_PREFIX)) continue;
+    const log = parseLog(localStorage.getItem(key));
+    if (log) logs.push(log);
   }
-  return logs;
+  return logs.sort((a, b) => {
+    const byDate = b.date.localeCompare(a.date);
+    return byDate === 0 ? b.updatedAt.localeCompare(a.updatedAt) : byDate;
+  });
 }
 
 export function getUserSettings(): UserSettings {
@@ -106,21 +108,33 @@ export function getUserSettings(): UserSettings {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-  } catch (e) {
-    console.error("Failed to load user settings:", e);
+  } catch {
     return DEFAULT_SETTINGS;
   }
 }
 
 export function saveUserSettings(settings: Partial<UserSettings>): UserSettings {
-  const current = getUserSettings();
-  const updated = { ...current, ...settings };
-  if (isClient()) {
-    try {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
-    } catch (e) {
-      console.error("Failed to save user settings:", e);
-    }
-  }
+  const updated = { ...getUserSettings(), ...settings };
+  if (isClient()) localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
   return updated;
+}
+
+export function getShowLunarDate(): boolean {
+  const settings = getUserSettings();
+  return settings.locale === "vi" && settings.showLunarDate;
+}
+
+export function setShowLunarDate(value: boolean): UserSettings {
+  return saveUserSettings({ showLunarDate: value });
+}
+
+function saveLog(log: ActionLog): void {
+  if (!isClient()) return;
+  localStorage.setItem(logKey(log.actionId), JSON.stringify(log));
+}
+
+function normalizeNote(note?: string): string | undefined {
+  if (note === undefined) return undefined;
+  const trimmed = note.trim();
+  return trimmed.length === 0 ? undefined : trimmed;
 }

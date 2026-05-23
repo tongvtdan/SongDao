@@ -1,88 +1,49 @@
 "use client";
 
-import React from "react";
 import { BookOpen, ExternalLink } from "lucide-react";
-import { Reading } from "../lib/types";
+import { Reading } from "@/lib/types";
+import { AppSectionCard, readingLabel } from "./ui";
 
-interface ReadingReferencesCardProps {
-  readings: Reading[];
-}
+const DEFAULT_READING_URL = "https://ktcgkpv.org/readings/mass-reading";
 
-const typeLabelMap: Record<string, string> = {
-  first: "Bài đọc I",
-  first_reading: "Bài đọc I",
-  psalm: "Đáp ca",
-  second: "Bài đọc II",
-  second_reading: "Bài đọc II",
-  alleluia: "Alleluia",
-  gospel_acclamation: "Alleluia",
-  gospel: "Tin Mừng",
-};
-
-export default function ReadingReferencesCard({ readings }: ReadingReferencesCardProps) {
-  if (readings.length === 0) {
-    return (
-      <div className="bg-surface-primary rounded-lg border border-border-subtle p-5 text-center">
-        <p className="text-sm text-text-secondary">Không tìm thấy tham chiếu bài đọc cho ngày này.</p>
-      </div>
-    );
-  }
+export default function ReadingReferencesCard({ readings }: { readings: Reading[] }) {
+  const gospel = readings.find((reading) => reading.type === "gospel");
+  const supporting = gospel ? readings.filter((reading) => reading.id !== gospel.id) : readings;
 
   return (
-    <div className="bg-surface-primary rounded-lg border border-border-subtle shadow-sm p-5 flex flex-col gap-4">
-      <h3 className="font-serif text-base font-bold text-text-primary flex items-center gap-2 pb-2 border-b border-border-subtle">
-        <BookOpen className="w-4.5 h-4.5 text-brand-primary" />
-        Tham chiếu Lời Chúa hôm nay
-      </h3>
+    <AppSectionCard title="Lời Chúa" icon={<BookOpen className="h-5 w-5 text-brand-primary" />}>
+      {readings.length === 0 ? (
+        <p>Chưa có tham chiếu bài đọc cho ngày này. Bạn vẫn có thể sống một hành động nhỏ hôm nay.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {gospel && <ReadingLink reading={gospel} featured />}
+          {supporting.length > 0 && <div className="h-px bg-border-subtle" />}
+          {supporting.map((reading) => (
+            <ReadingLink key={reading.id} reading={reading} />
+          ))}
+          <p className="border-t border-border-subtle pt-2 text-[10px] text-text-tertiary">
+            Bản beta chỉ hiển thị tham chiếu để tôn trọng bản quyền nội dung Kinh Thánh.
+          </p>
+        </div>
+      )}
+    </AppSectionCard>
+  );
+}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {readings.map((r) => {
-          const typeLabel = typeLabelMap[r.type?.toLowerCase()] || r.displayLabel || "Bài đọc";
-          const isGospel = r.type?.toLowerCase() === "gospel";
-          
-          return (
-            <div
-              key={r.id}
-              className={`p-3 rounded-md border flex items-center justify-between gap-3 transition-colors ${
-                isGospel 
-                  ? "bg-[#FAF8F3] border-[#B8892E]/20" 
-                  : "bg-surface-secondary border-border-subtle"
-              }`}
-            >
-              <div className="flex flex-col gap-0.5">
-                <span className={`text-[10px] uppercase font-bold tracking-wider ${
-                  isGospel ? "text-accent-gold" : "text-text-secondary"
-                }`}>
-                  {typeLabel}
-                </span>
-                <span className="text-sm font-semibold text-text-primary font-serif">
-                  {r.citation}
-                </span>
-              </div>
-              
-              {r.sourceUrl ? (
-                <a
-                  href={r.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1 rounded-full hover:bg-surface-container text-brand-primary hover:text-brand-primary-pressed transition-colors"
-                  title="Đọc toàn văn"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              ) : (
-                <span className="text-[10px] text-text-tertiary select-none">
-                  Reference
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <p className="text-[10px] text-text-tertiary mt-2 border-t border-border-subtle pt-2 text-center">
-        Lưu ý bản quyền: Tham chiếu trực tiếp đến Lời Chúa trong Thánh lễ theo lịch Phụng vụ Việt Nam.
-      </p>
-    </div>
+function ReadingLink({ reading, featured = false }: { reading: Reading; featured?: boolean }) {
+  const title = reading.displayLabel || readingLabel(reading.type);
+  return (
+    <a
+      href={reading.sourceUrl || DEFAULT_READING_URL}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center justify-between gap-3 rounded-lg p-2 transition-colors hover:bg-surface-secondary"
+    >
+      <span className="min-w-0">
+        <span className="block text-[11px] font-extrabold uppercase tracking-wide text-brand-primary">{featured ? "Tin Mừng hôm nay" : title}</span>
+        <span className={featured ? "font-serif text-xl font-semibold text-text-primary" : "text-sm font-semibold text-text-primary"}>{reading.citation}</span>
+      </span>
+      <ExternalLink className="h-4 w-4 shrink-0 text-brand-primary" />
+    </a>
   );
 }

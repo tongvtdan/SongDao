@@ -44,9 +44,19 @@ export interface DailyReflection {
   license: string;
 }
 
-export interface ActionRule {
+export interface Prayer {
   id: string;
   locale: string;
+  title: string;
+  body?: string;
+  sourceUrl?: string;
+  license: string;
+  tags: string[];
+}
+
+export interface ActionRule {
+  id: string;
+  locale: string | null;
   enabled: boolean;
   priority: number;
   type: string;
@@ -83,39 +93,24 @@ export interface DailyAction {
   proofType?: string;
 }
 
+export type ActionLogStatus = "pending" | "completed" | "skipped";
+
 export interface ActionLog {
   id: string;
   actionId: string;
   date: string;
-  status: 'completed' | 'skipped';
+  status: ActionLogStatus;
   completedAt?: string;
   note?: string;
   updatedAt: string;
 }
 
-export interface Church {
-  id: string;
+export interface UserSettings {
   locale: string;
-  name: string;
-  diocese: string;
-  address: string;
-  latitude?: number;
-  longitude?: number;
-  phone?: string;
-  website?: string;
-  verifiedAt?: string;
-}
-
-export interface MassTime {
-  id: string;
-  churchId: string;
-  weekday: string;
-  context: string;
-  time: string;
-  language: string;
-  validFrom: string;
-  validTo?: string;
-  isImportantDefault: boolean;
+  showLunarDate: boolean;
+  dailyReminderEnabled: boolean;
+  dailyReminderHour: number;
+  dailyReminderMinute: number;
 }
 
 export interface TodayViewData {
@@ -128,4 +123,38 @@ export interface TodayViewData {
   action: DailyAction;
   log: ActionLog | null;
   reflection: DailyReflection | null;
+}
+
+export interface CalendarDayDetail {
+  date: string;
+  locale: string;
+  showLunarDate: boolean;
+  calendarDay: CalendarDay | null;
+  celebrations: Celebration[];
+  readings: Reading[];
+  action: DailyAction | null;
+  reflection: DailyReflection | null;
+}
+
+export interface CalendarMonthViewData extends CalendarDayDetail {
+  visibleMonth: string;
+  days: Record<string, CalendarDay>;
+}
+
+export interface CompletedLog {
+  log: ActionLog;
+  action: DailyAction;
+}
+
+export interface ProgressViewData {
+  weekKeys: string[];
+  weekCompleted: Record<string, boolean>;
+  recentLogs: CompletedLog[];
+  completedLogs: CompletedLog[];
+}
+
+export interface JournalEntry {
+  log: ActionLog;
+  action: DailyAction;
+  note: string;
 }
