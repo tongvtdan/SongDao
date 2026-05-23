@@ -4,7 +4,7 @@ import { BookOpen, ExternalLink } from "lucide-react";
 import { Reading } from "@/lib/types";
 import { AppSectionCard, readingLabel } from "./ui";
 
-const DEFAULT_READING_URL = "https://ktcgkpv.org/readings/mass-reading";
+const MASS_READING_URL = "https://ktcgkpv.org/readings/mass-reading";
 
 export default function ReadingReferencesCard({ readings }: { readings: Reading[] }) {
   const gospel = readings.find((reading) => reading.type === "gospel");
@@ -34,7 +34,7 @@ function ReadingLink({ reading, featured = false }: { reading: Reading; featured
   const title = reading.displayLabel || readingLabel(reading.type);
   return (
     <a
-      href={reading.sourceUrl || DEFAULT_READING_URL}
+      href={MASS_READING_URL}
       target="_blank"
       rel="noreferrer"
       className="flex items-center justify-between gap-3 rounded-lg p-2 transition-colors hover:bg-surface-secondary"
