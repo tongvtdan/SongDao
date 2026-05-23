@@ -1,4 +1,4 @@
-const CACHE_NAME = "songdao-cache-v2";
+const CACHE_NAME = "songdao-cache-v3";
 const ASSETS_TO_CACHE = ["/favicon.ico", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -18,8 +18,18 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  const url = new URL(event.request.url);
+
+  if (url.pathname.startsWith("/_next/")) {
+    return;
+  }
+
   if (event.request.mode === "navigate") {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  if (!ASSETS_TO_CACHE.includes(url.pathname)) {
     return;
   }
 
