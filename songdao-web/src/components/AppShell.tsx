@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Settings } from "lucide-react";
+import AppLifecycle from "./AppLifecycle";
 import BottomNav from "./BottomNav";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas text-text-primary">
+      <AppLifecycle />
       <header className="sticky top-0 z-30 border-b border-border-subtle bg-canvas/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between lg:max-w-7xl lg:px-6">
           <Link href="/" className="font-serif text-lg font-bold text-brand-primary">

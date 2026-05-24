@@ -10,18 +10,26 @@ import { AppBentoCard, liturgicalAccent, weekdayShortFromDate } from "./ui";
 interface CalendarGridProps {
   selectedDate: string;
   onSelectDate: (date: string) => void;
+  visibleMonth?: string;
+  onVisibleMonthChange?: (month: string) => void;
 }
 
-export default function CalendarGrid({ selectedDate, onSelectDate }: CalendarGridProps) {
-  const [visibleMonth, setVisibleMonth] = useState(selectedDate.slice(0, 7));
+export default function CalendarGrid({ selectedDate, onSelectDate, visibleMonth, onVisibleMonthChange }: CalendarGridProps) {
+  const [internalVisibleMonth, setInternalVisibleMonth] = useState(selectedDate.slice(0, 7));
+  const activeVisibleMonth = visibleMonth || internalVisibleMonth;
   const hydrated = useHydrated();
-  const data = useMemo(() => getCalendarMonthView(visibleMonth, selectedDate, hydrated), [visibleMonth, selectedDate, hydrated]);
-  const monthDate = createDateFromKey(`${visibleMonth}-01`);
+  const data = useMemo(() => getCalendarMonthView(activeVisibleMonth, selectedDate, hydrated), [activeVisibleMonth, selectedDate, hydrated]);
+  const monthDate = createDateFromKey(`${activeVisibleMonth}-01`);
 
   const changeMonth = (offset: number) => {
     const next = new Date(monthDate);
     next.setMonth(monthDate.getMonth() + offset);
-    setVisibleMonth(formatDateKey(next).slice(0, 7));
+    const nextMonth = formatDateKey(next).slice(0, 7);
+    if (onVisibleMonthChange) {
+      onVisibleMonthChange(nextMonth);
+      return;
+    }
+    setInternalVisibleMonth(nextMonth);
   };
 
   const first = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
@@ -48,7 +56,7 @@ export default function CalendarGrid({ selectedDate, onSelectDate }: CalendarGri
         </button>
       </div>
 
-      <AppBentoCard>
+      <AppBentoCard className="p-3 lg:p-3">
         <div className="mb-2 grid grid-cols-7 text-center text-[10px] font-extrabold text-text-secondary">
           {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label) => <span key={label}>{label}</span>)}
         </div>
@@ -64,7 +72,7 @@ export default function CalendarGrid({ selectedDate, onSelectDate }: CalendarGri
                 key={key}
                 type="button"
                 onClick={() => onSelectDate(key)}
-                className="aspect-square rounded-lg border text-xs font-bold transition-all flex flex-col items-center justify-center py-1 cursor-pointer hover:border-brand-primary/50"
+                className="aspect-square rounded-lg border text-xs font-bold transition-all flex flex-col items-center justify-center py-1 cursor-pointer hover:border-brand-primary/50 lg:aspect-auto lg:h-16 xl:h-[72px]"
                 style={{
                   backgroundColor: selected ? "#1F7A64" : day ? `${accent}12` : "transparent",
                   borderColor: selected ? "#1F7A64" : day ? "#E2DDD1" : "transparent",

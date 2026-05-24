@@ -1,7 +1,9 @@
-import { ActionLog, UserSettings } from "./types";
+import { ActionLog, ImportResult, UserDataBackup, UserSettings } from "./types";
 
 const LOG_KEY_PREFIX = "sd_log_";
 const SETTINGS_KEY = "sd_settings_v1";
+const BACKUP_APP = "songdao-web";
+const BACKUP_VERSION = 1;
 
 export const DEFAULT_SETTINGS: UserSettings = {
   locale: "vi",
@@ -102,6 +104,45 @@ export function getAllLogs(): ActionLog[] {
   });
 }
 
+export function exportUserData(): string {
+  const backup: UserDataBackup = {
+    app: BACKUP_APP,
+    version: BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    logs: getAllLogs(),
+    settings: getUserSettings(),
+  };
+  return JSON.stringify(backup, null, 2);
+}
+
+export function importUserData(json: string): ImportResult {
+  if (!isClient()) {
+    return { ok: false, importedLogs: 0, importedSettings: false, error: "Chỉ có thể nhập dữ liệu trong trình duyệt." };
+  }
+
+  try {
+    const parsed = JSON.parse(json) as Partial<UserDataBackup>;
+    if (parsed.app !== BACKUP_APP || parsed.version !== BACKUP_VERSION) {
+      return { ok: false, importedLogs: 0, importedSettings: false, error: "Tệp sao lưu không đúng định dạng Sống Đạo." };
+    }
+
+    const logs = Array.isArray(parsed.logs) ? parsed.logs.filter(isValidActionLog) : [];
+    for (const log of logs) {
+      saveLog(log);
+    }
+
+    let importedSettings = false;
+    if (parsed.settings && isValidSettings(parsed.settings)) {
+      saveUserSettings(parsed.settings);
+      importedSettings = true;
+    }
+
+    return { ok: true, importedLogs: logs.length, importedSettings };
+  } catch {
+    return { ok: false, importedLogs: 0, importedSettings: false, error: "Không đọc được tệp sao lưu." };
+  }
+}
+
 export function getUserSettings(): UserSettings {
   if (!isClient()) return DEFAULT_SETTINGS;
   try {
@@ -137,4 +178,28 @@ function normalizeNote(note?: string): string | undefined {
   if (note === undefined) return undefined;
   const trimmed = note.trim();
   return trimmed.length === 0 ? undefined : trimmed;
+}
+
+function isValidActionLog(value: unknown): value is ActionLog {
+  if (!value || typeof value !== "object") return false;
+  const log = value as Partial<ActionLog>;
+  return (
+    typeof log.id === "string" &&
+    typeof log.actionId === "string" &&
+    typeof log.date === "string" &&
+    (log.status === "pending" || log.status === "completed" || log.status === "skipped") &&
+    typeof log.updatedAt === "string"
+  );
+}
+
+function isValidSettings(value: unknown): value is UserSettings {
+  if (!value || typeof value !== "object") return false;
+  const settings = value as Partial<UserSettings>;
+  return (
+    typeof settings.locale === "string" &&
+    typeof settings.showLunarDate === "boolean" &&
+    typeof settings.dailyReminderEnabled === "boolean" &&
+    typeof settings.dailyReminderHour === "number" &&
+    typeof settings.dailyReminderMinute === "number"
+  );
 }

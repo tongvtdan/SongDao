@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CalendarDays, ChartNoAxesColumnIncreasing, Church, Library, Settings, Shield } from "lucide-react";
 import ReflectionNoteCard from "./ReflectionNoteCard";
 import ReadingReferencesCard from "./ReadingReferencesCard";
@@ -43,6 +44,7 @@ export default function DesktopDashboard({
   onSelectDate,
   onSettingsChange,
 }: DesktopDashboardProps) {
+  const router = useRouter();
   const accent = liturgicalAccent(data.calendarDay.liturgicalColor);
   const [drawerView, setDrawerView] = useState<DrawerView | null>(null);
   const drawerTitle = drawerView ? drawerLabels[drawerView] : "Bảng phụ";
@@ -77,7 +79,7 @@ export default function DesktopDashboard({
           </div>
 
           <nav className="flex flex-wrap items-center gap-3" aria-label="Today desktop menu">
-            <DrawerButton icon={<CalendarDays className="h-6 w-6" />} label="Lịch" onClick={() => openDrawer("calendar")} />
+            <DrawerButton icon={<CalendarDays className="h-6 w-6" />} label="Lịch" onClick={() => router.push("/calendar")} />
             <DrawerButton icon={<ChartNoAxesColumnIncreasing className="h-6 w-6" />} label="Nhịp sống" onClick={() => openDrawer("progress")} />
             <DrawerButton icon={<Library className="h-6 w-6" />} label="Kinh nguyện" onClick={() => openDrawer("prayers")} />
             <DrawerButton icon={<Settings className="h-6 w-6" />} label="Cài đặt" onClick={() => openDrawer("settings")} />
@@ -96,7 +98,7 @@ export default function DesktopDashboard({
               accentColor={accent}
               onNavigate={onNavigate}
               onGoToToday={onGoToToday}
-              onOpenCalendar={() => openDrawer("calendar")}
+              onOpenCalendar={() => router.push("/calendar")}
             />
             <div className="grid gap-4">
               <RitualActionPanel

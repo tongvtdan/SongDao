@@ -113,6 +113,21 @@ export interface UserSettings {
   dailyReminderMinute: number;
 }
 
+export interface UserDataBackup {
+  app: "songdao-web";
+  version: 1;
+  exportedAt: string;
+  logs: ActionLog[];
+  settings: UserSettings;
+}
+
+export interface ImportResult {
+  ok: boolean;
+  importedLogs: number;
+  importedSettings: boolean;
+  error?: string;
+}
+
 export interface TodayViewData {
   date: string;
   locale: string;
@@ -139,6 +154,15 @@ export interface CalendarDayDetail {
 export interface CalendarMonthViewData extends CalendarDayDetail {
   visibleMonth: string;
   days: Record<string, CalendarDay>;
+}
+
+export interface CalendarAgendaItem {
+  date: string;
+  calendarDay: CalendarDay;
+  celebrations: Celebration[];
+  readings: Reading[];
+  action: DailyAction;
+  reflection: DailyReflection | null;
 }
 
 export interface CompletedLog {
