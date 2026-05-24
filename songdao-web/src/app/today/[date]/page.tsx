@@ -10,6 +10,7 @@ import LiturgicalContextCard from "@/components/LiturgicalContextCard";
 import ReadingReferencesCard from "@/components/ReadingReferencesCard";
 import ReflectionNoteCard from "@/components/ReflectionNoteCard";
 import DesktopDashboard from "@/components/DesktopDashboard";
+import { trackEvent } from "@/lib/analytics";
 import { getDateKey } from "@/lib/engine";
 import { markCompleted, saveNote } from "@/lib/storage";
 import { getTodayView, nextDateKey, previousDateKey } from "@/lib/views";
@@ -37,6 +38,7 @@ export default function TodayPage({ params }: TodayPageProps) {
     setIsCompleting(true);
     window.setTimeout(() => {
       markCompleted(data.action.id, data.date);
+      trackEvent("action_completed");
       setIsCompleting(false);
       setRefreshKey((value) => value + 1);
     }, 220);
@@ -47,6 +49,7 @@ export default function TodayPage({ params }: TodayPageProps) {
     setIsSavingNote(true);
     window.setTimeout(() => {
       saveNote(data.action.id, data.date, note);
+      trackEvent("note_saved");
       setIsSavingNote(false);
       setRefreshKey((value) => value + 1);
     }, 180);

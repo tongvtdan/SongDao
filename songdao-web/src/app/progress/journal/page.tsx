@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import AppShell from "@/components/AppShell";
+import { trackEvent } from "@/lib/analytics";
 import { getDateKey } from "@/lib/engine";
 import { deleteNote, saveNote } from "@/lib/storage";
 import { getJournalEntries, getTodayView } from "@/lib/views";
@@ -39,12 +40,15 @@ export default function JournalPage() {
     if (!note) return;
     const view = getTodayView(draftDate);
     saveNote(view.action.id, draftDate, note);
+    trackEvent("note_saved");
     setDraftNote("");
     setEditing(null);
     setVersion((value) => value + 1);
   };
 
   const remove = (entry: JournalEntry) => {
+    const confirmed = window.confirm("Xóa ghi chú riêng này khỏi thiết bị?");
+    if (!confirmed) return;
     deleteNote(entry.action.id);
     if (editing?.action.id === entry.action.id) startNew();
     setVersion((value) => value + 1);

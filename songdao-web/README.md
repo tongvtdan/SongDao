@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sống Đạo Web
 
-## Getting Started
+Sống Đạo is a Vietnamese Catholic daily practice web MVP. It helps a user open today, understand the liturgical context, complete one clear action, and keep a private note on the device.
 
-First, run the development server:
+This release is a public web beta, not native app parity. Parish selection, important Mass logic, iOS widgets, and stronger reminders are part of the broader SongDao roadmap and must be labeled as coming soon until implemented.
+
+## Run Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run these before sharing a public beta link:
 
-## Learn More
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Manual release checks:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/` resolves to today's date in `Asia/Ho_Chi_Minh`.
+- Completing today's action persists after reload.
+- Private notes persist after reload.
+- Deleting a note requires confirmation.
+- Export creates a valid `songdao-web` JSON backup.
+- Import restores logs, notes, and settings in a fresh browser profile.
+- PWA manifest shows SongDao PNG icons.
+- Offline mode shows a clear saved-content banner or cached Today page.
+- Mobile `390px` and desktop `1440px` layouts have no horizontal overflow.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Privacy
 
-## Deploy on Vercel
+The web beta is local-first:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- No account is required.
+- Practice history and notes stay in browser storage on the device.
+- Backups are user-controlled JSON exports.
+- Analytics are disabled unless `NEXT_PUBLIC_SONGDAO_ANALYTICS_URL` is configured.
+- If analytics are enabled, only aggregate events are sent. Note text, practice details, location, and identity are not sent.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Release Notes
+
+Public beta readiness includes:
+
+- Today loop with Vietnamese liturgical context.
+- Completion tracking and private reflection notes.
+- Local backup export/import.
+- PWA manifest, service worker registration, cached shell assets, and offline messaging.
+- In-app privacy page.
+- Honest roadmap copy for features that are not yet available on web.
