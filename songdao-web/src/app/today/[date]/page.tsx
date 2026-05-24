@@ -89,7 +89,6 @@ export default function TodayPage({ params }: TodayPageProps) {
       <DesktopDashboard
         data={data}
         isToday={isToday}
-        todayKey={todayKey}
         isCompleting={isCompleting}
         isSavingNote={isSavingNote}
         onComplete={complete}

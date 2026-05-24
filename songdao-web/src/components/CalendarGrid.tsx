@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { createDateFromKey, formatDateKey, getDateKey } from "@/lib/engine";
+import { createDateFromKey, formatDateKey } from "@/lib/engine";
 import { getCalendarMonthView } from "@/lib/views";
 import { useHydrated } from "@/lib/useHydrated";
 import { AppBentoCard, liturgicalAccent, weekdayShortFromDate } from "./ui";
@@ -13,7 +13,6 @@ interface CalendarGridProps {
 }
 
 export default function CalendarGrid({ selectedDate, onSelectDate }: CalendarGridProps) {
-  const todayKey = getDateKey();
   const [visibleMonth, setVisibleMonth] = useState(selectedDate.slice(0, 7));
   const hydrated = useHydrated();
   const data = useMemo(() => getCalendarMonthView(visibleMonth, selectedDate, hydrated), [visibleMonth, selectedDate, hydrated]);
