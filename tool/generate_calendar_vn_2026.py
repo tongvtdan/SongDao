@@ -10,6 +10,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ICS_PATH = Path("/tmp/songdao-2026-vi.ics")
 OUT_PATH = ROOT / "content/packs/songdao-pack-calendar-vn-2026-0.2.0.json"
+READING_CITATIONS_PATH = (
+    ROOT / "content/sources/catholic-index-2026-reading-citations.json"
+)
 
 WEEKDAYS = [
     "monday",
@@ -37,6 +40,74 @@ RANK_ORDER = {
     "memorial": 3,
     "optional_memorial": 4,
     "weekday": 5,
+}
+
+BOOK_ABBREVIATIONS = {
+    "Acts": "Cv",
+    "Amos": "Am",
+    "Baruch": "Br",
+    "Colossians": "Cl",
+    "Daniel": "Đn",
+    "Deuteronomy": "Đnl",
+    "Ecclesiastes": "Gv",
+    "Ephesians": "Ep",
+    "Exodus": "Xh",
+    "Ezekiel": "Ed",
+    "Galatians": "Gl",
+    "Genesis": "St",
+    "Habakkuk": "Kb",
+    "Hebrews": "Hr",
+    "Hosea": "Hs",
+    "Isaiah": "Is",
+    "James": "Gc",
+    "Jeremiah": "Gr",
+    "Job": "G",
+    "Joel": "Ge",
+    "John": "Ga",
+    "Jonah": "Gn",
+    "Jude": "Gđ",
+    "Judges": "Tl",
+    "Judith": "Gđt",
+    "Lamentations": "Ac",
+    "Leviticus": "Lv",
+    "Luke": "Lc",
+    "Malachi": "Ml",
+    "Mark": "Mc",
+    "Matthew": "Mt",
+    "Micah": "Mk",
+    "Nahum": "Nk",
+    "Numbers": "Ds",
+    "Phiippians": "Pl",
+    "Philemon": "Plm",
+    "Philippians": "Pl",
+    "Phippians": "Pl",
+    "Proverbs": "Cn",
+    "Psalm": "Tv",
+    "Revelation": "Kh",
+    "Romans": "Rm",
+    "Sirach": "Hc",
+    "Song of Songs": "Dc",
+    "Titus": "Tt",
+    "Wisdom": "Kn",
+    "Zechariah": "Dcr",
+    "Zephaniah": "Xp",
+    "1 Chronicles": "1 Sb",
+    "1 Corinthians": "1 Cr",
+    "1 John": "1 Ga",
+    "1 Kings": "1 V",
+    "1 Peter": "1 Pr",
+    "1 Samuel": "1 Sm",
+    "1 Thessalonians": "1 Tx",
+    "1 Timothy": "1 Tm",
+    "2 Chronicles": "2 Sb",
+    "2 Corinthians": "2 Cr",
+    "2 John": "2 Ga",
+    "2 Kings": "2 V",
+    "2 Peter": "2 Pr",
+    "2 Samuel": "2 Sm",
+    "2 Thessalonians": "2 Tx",
+    "2 Timothy": "2 Tm",
+    "3 John": "3 Ga",
 }
 
 REFLECTIONS = {
@@ -325,7 +396,109 @@ def usccb_url(day):
     return f"https://bible.usccb.org/bible/readings/{day.strftime('%m%d%y')}.cfm"
 
 
-def reading_citations(day, title):
+def load_reading_citation_source():
+    if not READING_CITATIONS_PATH.exists():
+        return {}
+    return json.loads(READING_CITATIONS_PATH.read_text(encoding="utf-8"))
+
+
+def normalize_source_text(text):
+    return (
+        text.replace("Â\xa0", " ")
+        .replace("â\x80\x94", "-")
+        .replace("â\x80\x93", "-")
+        .replace("Ã¦", "ae")
+        .strip()
+    )
+
+
+def reading_type_for(name, order):
+    normalized = normalize_source_text(name).lower()
+    if "gospel" in normalized and "before" not in normalized:
+        return "gospel"
+    if "psalm" in normalized or normalized == "responsorial":
+        return "psalm"
+    if "alleluia" in normalized or "verse before the gospel" in normalized:
+        return "gospel_acclamation"
+    if "reading 2" in normalized or "reading ii" in normalized:
+        return "second_reading"
+    if order == 1 or "reading 1" in normalized or "reading i" in normalized:
+        return "first_reading"
+    return "reading"
+
+
+def reading_label_for(reading_type, name):
+    normalized = normalize_source_text(name).lower()
+    if normalized in {"or", "or:", "or at afternoon or evening mass", "or"}:
+        return "Hoặc"
+    return {
+        "first_reading": "Bài đọc I",
+        "second_reading": "Bài đọc II",
+        "psalm": "Đáp ca",
+        "gospel_acclamation": "Tung hô Tin Mừng",
+        "gospel": "Tin Mừng",
+    }.get(reading_type, "Bài đọc")
+
+
+def translate_citation(citation):
+    text = normalize_source_text(citation)
+    if not text:
+        return ""
+    text = re.sub(r"\s+and\s+", " và ", text)
+    text = re.sub(r"\s+or\s+", " hoặc ", text)
+    for book in sorted(BOOK_ABBREVIATIONS, key=len, reverse=True):
+        text = re.sub(
+            rf"\bSee {re.escape(book)}(?=\s+\d)",
+            f"x. {BOOK_ABBREVIATIONS[book]}",
+            text,
+        )
+        text = re.sub(
+            rf"\b{re.escape(book)}(?=\s+\d)",
+            BOOK_ABBREVIATIONS[book],
+            text,
+        )
+    text = re.sub(r"(\d):(\d)", r"\1,\2", text)
+    text = re.sub(r"(?<=\d),\s+(?=\d)", ".", text)
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+
+
+def reading_citations(day, title, citation_source):
+    source_rows = citation_source.get(date_key(day), [])
+    readings = []
+    for index, source_row in enumerate(source_rows, start=1):
+        citation = translate_citation(source_row.get("citation", ""))
+        if not citation:
+            continue
+        reading_type = reading_type_for(
+            source_row.get("name", ""),
+            int(source_row.get("order", index)),
+        )
+        readings.append(
+            {
+                "id": f"reading_{day.strftime('%Y_%m_%d')}_{index}_{reading_type}_vi",
+                "date": date_key(day),
+                "locale": "vi",
+                "type": reading_type,
+                "citation": citation,
+                "display_label": reading_label_for(
+                    reading_type,
+                    source_row.get("name", ""),
+                ),
+                "text": None,
+                "source_url": source_row.get("citation_url") or usccb_url(day),
+                "license": "reference-only",
+                "source": {
+                    "name": "Catholic Index daily readings citation reference",
+                    "url": f"https://catholicindex.org/daily-readings/{date_key(day)}",
+                    "license": "reference-only",
+                    "retrieved_at": "2026-05-19",
+                },
+            }
+        )
+    if readings:
+        return readings
+
     label = "Lịch bài đọc phụng vụ trong ngày"
     if day.weekday() == 6:
         label = "Bài đọc Chúa Nhật và lễ trọng trong ngày"
@@ -375,6 +548,7 @@ def canonical_json(value):
 
 
 def main():
+    citation_source = load_reading_citation_source()
     by_date = defaultdict(list)
     for event in parse_events():
         raw = event.get("DTSTART")
@@ -443,7 +617,7 @@ def main():
                     },
                 }
             )
-        readings.extend(reading_citations(day, primary["title"]))
+        readings.extend(reading_citations(day, primary["title"], citation_source))
         reflections.append(reflection_for(day, season, primary["title"]))
         day += timedelta(days=1)
 

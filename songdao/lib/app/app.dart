@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:songdao/l10n/app_localizations.dart';
+import 'package:songdao/features/today/today_controller.dart';
 
 import '../data/content/content_pack_provider.dart';
 import '../data/local/database_provider.dart';
@@ -19,6 +20,11 @@ class SongDaoApp extends ConsumerWidget {
       next.whenData((_) {
         unawaited(
           ref.read(dailyReminderServiceProvider).refreshScheduledReminders(),
+        );
+        unawaited(
+          ref
+              .read(appIconServiceProvider)
+              .applySeasonalIconForDate(TodayController.todayDateKey()),
         );
       });
     });

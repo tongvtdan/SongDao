@@ -19,6 +19,7 @@ class DailyActionEngine {
   Future<DailyAction> getOrCreateActionForDate(
     String date, {
     String locale = 'vi',
+    bool publishWidgetSnapshot = true,
   }) async {
     final existing = await _existingAction(date, locale);
     if (existing != null) {
@@ -26,7 +27,11 @@ class DailyActionEngine {
       if (existing.sourceRule != fallbackSourceRule ||
           seededCalendar == null ||
           seededCalendar.season == 'unknown') {
-        await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
+        await WidgetSnapshotService(db).regenerateForDate(
+          date,
+          locale: locale,
+          publishLatest: publishWidgetSnapshot,
+        );
         return existing;
       }
     }
@@ -54,7 +59,11 @@ class DailyActionEngine {
       await db.into(db.dailyActions).insertOnConflictUpdate(companion);
       return (await _existingAction(date, locale))!;
     });
-    await WidgetSnapshotService(db).regenerateForDate(date, locale: locale);
+    await WidgetSnapshotService(db).regenerateForDate(
+      date,
+      locale: locale,
+      publishLatest: publishWidgetSnapshot,
+    );
     return action;
   }
 

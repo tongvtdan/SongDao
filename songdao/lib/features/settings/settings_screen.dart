@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/design_system.dart';
 import '../../app/theme.dart';
+import '../../data/local/app_info_service.dart';
+import '../../data/local/app_icon_service.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
 
@@ -19,6 +21,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   late Future<_SettingsViewData> _future;
   bool _savingLunar = false;
   bool _savingReminder = false;
+  bool _savingSeasonalIcon = false;
 
   @override
   void initState() {
@@ -31,10 +34,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final locale = await repo.locale();
     final showLunarDate = await repo.showLunarDate();
     final dailyReminder = await repo.dailyReminder();
+    final seasonalIconEnabled = await repo.seasonalIconEnabled();
+    final seasonalIconSupported = await ref
+        .read(appIconServiceProvider)
+        .supportsAlternateIcons();
+    final appVersion = await ref.read(appInfoServiceProvider).versionInfo();
     return _SettingsViewData(
       locale: locale,
       showLunarDate: showLunarDate,
       dailyReminder: dailyReminder,
+      seasonalIconEnabled: seasonalIconEnabled,
+      seasonalIconSupported: seasonalIconSupported,
+      appVersion: appVersion,
     );
   }
 
@@ -122,6 +133,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  Future<void> _setSeasonalIconEnabled(
+    bool value,
+    _SettingsViewData data,
+  ) async {
+    if (_savingSeasonalIcon) {
+      return;
+    }
+    setState(() => _savingSeasonalIcon = true);
+    try {
+      final settings = ref.read(userSettingsRepositoryProvider);
+      await settings.setSeasonalIconEnabled(value);
+      final iconService = ref.read(appIconServiceProvider);
+      if (value) {
+        await iconService.applySeasonalIconForDate(
+          DateTime.now().toIso8601String().substring(0, 10),
+          locale: data.locale,
+        );
+      } else {
+        await iconService.setIcon(AppIconVariant.primary);
+      }
+      if (mounted) {
+        setState(() => _future = _load());
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingSeasonalIcon = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,6 +226,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 12),
               _SettingsCard(
+                title: 'Biểu tượng',
+                child: SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: data.seasonalIconSupported && data.seasonalIconEnabled,
+                  onChanged: data.seasonalIconSupported && !_savingSeasonalIcon
+                      ? (value) => _setSeasonalIconEnabled(value, data)
+                      : null,
+                  title: const Text('Biểu tượng theo mùa phụng vụ'),
+                  subtitle: Text(
+                    data.seasonalIconSupported
+                        ? 'Sống Đạo tự chọn biểu tượng đã chuẩn bị sẵn theo mùa phụng vụ hôm nay.'
+                        : 'Thiết bị này không hỗ trợ đổi biểu tượng ứng dụng.',
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _SettingsCard(
                 title: 'Quyền riêng tư',
                 child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,6 +264,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                     SizedBox(height: 4),
                     SelectableText(_privacyPolicyUrl),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _SettingsCard(
+                title: 'Ứng dụng',
+                child: Row(
+                  children: [
+                    const Expanded(child: Text('Phiên bản')),
+                    Text(
+                      data.appVersion.displayValue,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -264,9 +338,15 @@ class _SettingsViewData {
     required this.locale,
     required this.showLunarDate,
     required this.dailyReminder,
+    required this.seasonalIconEnabled,
+    required this.seasonalIconSupported,
+    required this.appVersion,
   });
 
   final String locale;
   final bool showLunarDate;
   final DailyReminderSettings dailyReminder;
+  final bool seasonalIconEnabled;
+  final bool seasonalIconSupported;
+  final AppVersionInfo appVersion;
 }

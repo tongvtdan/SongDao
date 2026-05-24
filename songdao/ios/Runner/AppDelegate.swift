@@ -9,6 +9,7 @@ import UIKit
   ) -> Bool {
     if let controller = window?.rootViewController as? FlutterViewController {
       WidgetSnapshotChannel.register(with: controller.binaryMessenger)
+      IconChannel.register(with: controller.binaryMessenger)
     }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

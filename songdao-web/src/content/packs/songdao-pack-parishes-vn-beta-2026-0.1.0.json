@@ -1,0 +1,309 @@
+{
+  "schema_version": "0.1",
+  "pack_id": "parishes-vn-beta-2026",
+  "version": "0.1.0",
+  "locale": "vi",
+  "created_at": "2026-05-04T00:00:00Z",
+  "valid_from": "2026-04-27",
+  "valid_to": "2026-12-31",
+  "source_summary": "Beta parish directory seed: 3 representative Vietnamese Catholic parishes for beta testing parish selection and important Mass behavior.",
+  "license_summary": "Publicly available Mass schedule information. No copyrighted liturgical texts included.",
+  "checksum": "sha256:507ac09034edb9a91f81432f5aee7662f63e5022c4b2c1a4192410aebf93bdd2",
+  "calendar_days": [],
+  "celebrations": [],
+  "readings": [],
+  "action_rules": [],
+  "prayers": [],
+  "churches": [
+    {
+      "id": "giao_xu_tan_dinh_hcmc",
+      "locale": "vi",
+      "name": "Giáo xứ Tân Định",
+      "diocese": "Tổng Giáo phận Sài Gòn",
+      "address": "289 Hai Bà Trưng, Phường 8, Quận 3, TP. Hồ Chí Minh",
+      "latitude": 10.78908,
+      "longitude": 106.69221,
+      "phone": null,
+      "website": null,
+      "verified_at": "2026-05-04",
+      "source": {
+        "name": "Giáo phận Sài Gòn public directory",
+        "license": "public-info"
+      }
+    },
+    {
+      "id": "giao_xu_duc_ba_hcmc",
+      "locale": "vi",
+      "name": "Nhà thờ Đức Bà Sài Gòn",
+      "diocese": "Tổng Giáo phận Sài Gòn",
+      "address": "01 Công xã Paris, Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+      "latitude": 10.77972,
+      "longitude": 106.69889,
+      "phone": null,
+      "website": null,
+      "verified_at": "2026-05-04",
+      "source": {
+        "name": "Giáo phận Sài Gòn public directory",
+        "license": "public-info"
+      }
+    },
+    {
+      "id": "giao_xu_chinh_toa_ha_noi",
+      "locale": "vi",
+      "name": "Nhà thờ Chính Tòa Hà Nội (Nhà thờ Lớn)",
+      "diocese": "Tổng Giáo phận Hà Nội",
+      "address": "40 Nhà Chung, Hoàn Kiếm, Hà Nội",
+      "latitude": 21.02755,
+      "longitude": 105.8468,
+      "phone": null,
+      "website": null,
+      "verified_at": "2026-05-04",
+      "source": {
+        "name": "Tổng Giáo phận Hà Nội public directory",
+        "license": "public-info"
+      }
+    }
+  ],
+  "mass_times": [
+    {
+      "id": "tan_dinh_weekday_0530_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "05:30",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_weekday_1730_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "17:30",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_sunday_0700_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "07:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_sunday_0900_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "09:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_sunday_1700_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "17:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_sat_vigil_1800_vi",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "saturday",
+      "context": "saturday_vigil",
+      "time": "18:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "tan_dinh_old_morning_0600_vi_stale",
+      "church_id": "giao_xu_tan_dinh_hcmc",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "06:00",
+      "language": "vi",
+      "valid_from": "2025-01-01",
+      "valid_to": "2025-12-31",
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed (stale — for UI testing)",
+        "license": "public-info",
+        "verified_at": "2025-12-01"
+      }
+    },
+    {
+      "id": "duc_ba_weekday_0630_vi",
+      "church_id": "giao_xu_duc_ba_hcmc",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "06:30",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "duc_ba_sunday_0900_en",
+      "church_id": "giao_xu_duc_ba_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "09:00",
+      "language": "en",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "duc_ba_sunday_1030_vi",
+      "church_id": "giao_xu_duc_ba_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "10:30",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "duc_ba_sunday_1700_vi",
+      "church_id": "giao_xu_duc_ba_hcmc",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "17:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "ha_noi_chinh_toa_weekday_0530_vi",
+      "church_id": "giao_xu_chinh_toa_ha_noi",
+      "weekday": "monday",
+      "context": "weekday",
+      "time": "05:30",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "ha_noi_chinh_toa_sunday_0700_vi",
+      "church_id": "giao_xu_chinh_toa_ha_noi",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "07:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "ha_noi_chinh_toa_sunday_0900_vi",
+      "church_id": "giao_xu_chinh_toa_ha_noi",
+      "weekday": "sunday",
+      "context": "sunday",
+      "time": "09:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": false,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    },
+    {
+      "id": "ha_noi_chinh_toa_sat_vigil_1800_vi",
+      "church_id": "giao_xu_chinh_toa_ha_noi",
+      "weekday": "saturday",
+      "context": "saturday_vigil",
+      "time": "18:00",
+      "language": "vi",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "is_important_default": true,
+      "source": {
+        "name": "SongDao beta seed",
+        "license": "public-info",
+        "verified_at": "2026-05-04"
+      }
+    }
+  ]
+}

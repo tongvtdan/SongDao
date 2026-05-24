@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app_info_service.dart';
 import 'app_database.dart';
+import 'app_icon_service.dart';
 import 'daily_reminder_service.dart';
 import 'daily_action_engine.dart';
 import 'mass_service.dart';
@@ -22,6 +24,15 @@ final userSettingsRepositoryProvider = Provider<UserSettingsRepository>((ref) {
 
 final massServiceProvider = Provider<MassService>((ref) {
   return MassService(ref.watch(databaseProvider));
+});
+
+final appIconServiceProvider = Provider<AppIconService>((ref) {
+  final db = ref.watch(databaseProvider);
+  return AppIconService(db: db, settings: UserSettingsRepository(db));
+});
+
+final appInfoServiceProvider = Provider<AppInfoService>((ref) {
+  return const AppInfoService();
 });
 
 final dailyReminderServiceProvider = Provider<DailyReminderService>((ref) {

@@ -18,6 +18,7 @@ class WidgetSnapshotService {
   Future<WidgetSnapshot?> regenerateForDate(
     String date, {
     String locale = 'vi',
+    bool publishLatest = true,
   }) async {
     final calendarDay =
         await (db.select(db.calendarDays)
@@ -49,6 +50,10 @@ class WidgetSnapshotService {
       db.actionLogs,
     )..where((t) => t.actionId.equals(action.id))).getSingleOrNull();
     final importantMass = await MassService(db).nextImportantMassForDate(date);
+    final dailyQuote = _dailyQuoteFor(date);
+    final primaryCelebration = celebrations.isEmpty
+        ? null
+        : celebrations.first.name;
 
     final now = DateTime.now().toUtc();
     final payload = _canonicalJson({
@@ -62,8 +67,13 @@ class WidgetSnapshotService {
         'liturgical_week': calendarDay.liturgicalWeek,
         'cycle_year': calendarDay.cycleYear,
         'lunar_date': locale == 'vi' ? calendarDay.lunarDate : null,
-        'celebration': celebrations.isEmpty ? null : celebrations.first.name,
+        'celebration': primaryCelebration,
       },
+      'daily_quote': {
+        'text': dailyQuote.text,
+        'attribution': dailyQuote.attribution,
+      },
+      'saint_of_day': _saintOfDayLabel(celebrations),
       'action': {
         'id': action.id,
         'type': action.type,
@@ -98,7 +108,7 @@ class WidgetSnapshotService {
       ),
     );
     final snapshot = await db.todayDao.getWidgetSnapshot(date);
-    if (snapshot != null) {
+    if (snapshot != null && publishLatest && date == _dateKey(DateTime.now())) {
       await _bridge.writeLatestSnapshot(date: date, payload: snapshot.payload);
     }
     return snapshot;
@@ -111,7 +121,11 @@ class WidgetSnapshotService {
   }) async {
     for (var offset = 0; offset < days; offset += 1) {
       final date = _dateKey(startDate.add(Duration(days: offset)));
-      await regenerateForDate(date, locale: locale);
+      await regenerateForDate(
+        date,
+        locale: locale,
+        publishLatest: date == _dateKey(DateTime.now()),
+      );
     }
   }
 
@@ -135,6 +149,29 @@ class WidgetSnapshotService {
       'gospel' => 'Tin Mừng',
       _ => 'Bài đọc',
     };
+  }
+
+  _WidgetDailyQuote _dailyQuoteFor(String date) {
+    final parsed = DateTime.parse(date);
+    final startOfYear = DateTime(parsed.year);
+    final dayOfYear = parsed.difference(startOfYear).inDays + 1;
+    return _dailyQuotes[dayOfYear % _dailyQuotes.length];
+  }
+
+  String? _saintOfDayLabel(List<Celebration> celebrations) {
+    for (final celebration in celebrations) {
+      final rank = celebration.rank;
+      final name = celebration.name;
+      final isSaint =
+          name.startsWith('Thánh ') || name.startsWith('Các Thánh ');
+      final isRankedSaint =
+          rank == 'memorial' || rank == 'optional_memorial' || rank == 'feast';
+
+      if (isSaint && isRankedSaint) {
+        return name;
+      }
+    }
+    return null;
   }
 
   String _dateKey(DateTime date) {
@@ -163,3 +200,41 @@ class WidgetSnapshotService {
     return value;
   }
 }
+
+class _WidgetDailyQuote {
+  const _WidgetDailyQuote({required this.text, required this.attribution});
+
+  final String text;
+  final String attribution;
+}
+
+const _dailyQuotes = [
+  _WidgetDailyQuote(
+    text: 'Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Bình an bắt đầu khi con trao cho Chúa điều con không tự giữ nổi.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Đức tin lớn lên trong những lựa chọn rất nhỏ và rất thật.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Hãy bắt đầu lại nhẹ nhàng; lòng thương xót luôn đi trước con.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Yêu thương hôm nay không cần lớn tiếng, chỉ cần cụ thể.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Một phút thinh lặng có thể mở lại cánh cửa của lòng mình.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+  _WidgetDailyQuote(
+    text: 'Chúa thường gặp ta trong bổn phận nhỏ đang ở ngay trước mặt.',
+    attribution: 'Lời gợi hứng hôm nay',
+  ),
+];

@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:songdao/data/content/content_pack_provider.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
+import 'package:songdao/data/local/app_icon_service.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
 import 'package:songdao/data/local/mass_service.dart';
 import 'package:songdao/data/local/user_settings_repository.dart';
@@ -791,16 +792,53 @@ void main() {
       final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
       final action = payload['action']! as Map<String, Object?>;
       final context = payload['liturgical_context']! as Map<String, Object?>;
+      final dailyQuote = payload['daily_quote']! as Map<String, Object?>;
       final readings = payload['readings']! as List<Object?>;
 
       expect(payload['date'], '2026-04-27');
       expect(payload['schema_version'], 1);
       expect(context['celebration'], 'Lễ thử nghiệm');
+      expect(dailyQuote['text'], isNotEmpty);
+      expect(dailyQuote['attribution'], 'Lời gợi hứng hôm nay');
+      expect(payload['saint_of_day'], isNull);
       expect(action['prompt'], 'Viết một câu về Tin Mừng hôm nay.');
       expect(action['completed'], isFalse);
       expect(readings, hasLength(1));
       expect(snapshot.generatedAt, isNotNull);
     });
+
+    test(
+      'adds saint of day when the local calendar has a saint feast',
+      () async {
+        await _insertCalendarDay(db, '2026-04-28', season: 'easter');
+        await _insertCelebration(
+          db,
+          '2026-04-28',
+          rank: 'feast',
+          name: 'Thánh Phêrô Chanel',
+        );
+        await db
+            .into(db.dailyActions)
+            .insert(
+              DailyActionsCompanion.insert(
+                id: 'daily_action_2026-04-28_vi',
+                date: '2026-04-28',
+                sourceRule: 'saint_feast_vi',
+                prompt: 'Cầu nguyện với vị thánh hôm nay.',
+                type: 'prayer',
+                priority: 40,
+                locale: 'vi',
+              ),
+            );
+
+        final snapshot = await WidgetSnapshotService(
+          db,
+        ).regenerateForDate('2026-04-28');
+        final payload = jsonDecode(snapshot!.payload) as Map<String, Object?>;
+
+        expect(payload['saint_of_day'], 'Thánh Phêrô Chanel');
+      },
+    );
 
     test(
       'refreshes snapshot completion state after action log changes',
@@ -890,6 +928,97 @@ void main() {
       expect(result.wrote, isFalse);
       expect(result.failed, isTrue);
       expect(result.code, 'app_group_unavailable');
+    });
+  });
+
+  group('AppIconService', () {
+    const channel = MethodChannel('test.songdao/icon');
+    late AppDatabase db;
+    late List<MethodCall> calls;
+
+    setUp(() {
+      db = _openTestDb();
+      calls = [];
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            calls.add(call);
+            if (call.method == 'supportsAlternateIcons') {
+              return true;
+            }
+            return null;
+          });
+    });
+
+    tearDown(() async {
+      debugDefaultTargetPlatformOverride = null;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
+      await db.close();
+    });
+
+    test('maps liturgical context to predefined icon variants', () {
+      expect(recommendedIconVariant(season: 'advent'), AppIconVariant.advent);
+      expect(recommendedIconVariant(season: 'lent'), AppIconVariant.lent);
+      expect(
+        recommendedIconVariant(
+          season: 'ordinary',
+          celebrations: ['Đức Mẹ Mân Côi'],
+        ),
+        AppIconVariant.marian,
+      );
+      expect(recommendedIconVariant(season: 'unknown'), AppIconVariant.primary);
+    });
+
+    test('sets supported iOS alternate icon and persists variant', () async {
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.setIcon(AppIconVariant.easter);
+
+      expect(wrote, isTrue);
+      expect(calls.single.method, 'setIcon');
+      expect(calls.single.arguments, {'iconName': 'easter'});
+      expect(
+        await UserSettingsRepository(db).selectedAppIconVariant(),
+        'easter',
+      );
+    });
+
+    test('does not apply seasonal icon when setting is disabled', () async {
+      await _insertCalendarDay(db, '2026-12-25', season: 'christmas');
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.applySeasonalIconForDate('2026-12-25');
+
+      expect(wrote, isFalse);
+      expect(calls, isEmpty);
+    });
+
+    test('applies recommended icon when seasonal setting is enabled', () async {
+      await _insertCalendarDay(db, '2026-12-25', season: 'christmas');
+      await UserSettingsRepository(db).setSeasonalIconEnabled(true);
+      final service = AppIconService(
+        db: db,
+        settings: UserSettingsRepository(db),
+        channel: channel,
+      );
+
+      final wrote = await service.applySeasonalIconForDate('2026-12-25');
+
+      expect(wrote, isTrue);
+      expect(calls.map((call) => call.method), [
+        'supportsAlternateIcons',
+        'setIcon',
+      ]);
+      expect(calls.last.arguments, {'iconName': 'christmas'});
     });
   });
 
@@ -1194,6 +1323,60 @@ void main() {
     );
 
     test(
+      'imports calendar pack and generates daily action timeline and widget snapshots validating schema',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final importer = ContentPackImporter(db);
+
+        final result = await importer.importPackJson(source);
+        expect(result.imported, isTrue);
+
+        // Verify that 14 days of widget snapshots are generated in the database
+        final snapshots = await db.select(db.widgetSnapshots).get();
+        expect(snapshots, hasLength(14));
+
+        // Decode and validate the snapshot payloads conform to Drift widget snapshot schema
+        for (final snapshot in snapshots) {
+          expect(snapshot.date, isNotNull);
+          expect(snapshot.payload, isNotNull);
+          expect(snapshot.generatedAt, isNotNull);
+
+          final payload = jsonDecode(snapshot.payload) as Map<String, Object?>;
+          expect(payload['schema_version'], equals(1));
+          expect(payload['date'], equals(snapshot.date));
+          expect(payload['locale'], equals('vi'));
+          expect(payload['generated_at'], isNotNull);
+
+          final context =
+              payload['liturgical_context']! as Map<String, Object?>;
+          expect(context['season'], isNotNull);
+          expect(context['color'], isNotNull);
+          expect(context['liturgical_week'], isNotNull);
+          expect(context.containsKey('cycle_year'), isTrue);
+          expect(context['lunar_date'], isNotNull);
+
+          final action = payload['action']! as Map<String, Object?>;
+          expect(action['id'], isNotNull);
+          expect(action['type'], isNotNull);
+          expect(action['prompt'], isNotNull);
+          expect(action['completed'], isFalse);
+          expect(action['status'], equals('pending'));
+
+          final readings = payload['readings']! as List<Object?>;
+          expect(readings, isNotEmpty);
+          for (final readingObj in readings) {
+            final reading = readingObj as Map<String, Object?>;
+            expect(reading['type'], isNotNull);
+            expect(reading['label'], isNotNull);
+            expect(reading['citation'], isNotNull);
+          }
+        }
+      },
+    );
+
+    test(
       'imports the parish beta seed pack with 3 churches and varied Mass times',
       () async {
         final source = await File(
@@ -1277,7 +1460,9 @@ void main() {
       expect(result.packId, 'calendar-vn-2026');
       expect(await db.select(db.calendarDays).get(), hasLength(365));
       expect((await db.select(db.celebrations).get()).length, greaterThan(365));
-      expect(await db.select(db.readings).get(), hasLength(365));
+      final readings = await db.select(db.readings).get();
+      expect(readings.length, greaterThan(365));
+      expect(readings.map((reading) => reading.date).toSet(), hasLength(365));
       expect(await db.select(db.dailyReflections).get(), hasLength(365));
 
       for (final date in ['2026-01-01', '2026-05-14', '2026-12-31']) {
@@ -1303,6 +1488,16 @@ void main() {
               ))
               .get();
       expect(unsafeReadings, isEmpty);
+
+      final may19Readings =
+          await (db.select(db.readings)..where(
+                (t) => t.date.equals('2026-05-19') & t.locale.equals('vi'),
+              ))
+              .get();
+      expect(
+        may19Readings.map((reading) => reading.citation),
+        containsAll(['Cv 20,17-27', 'Tv 68,10-11.20-21', 'Ga 17,1-11a']),
+      );
     });
 
     test('Today loads real 2026 calendar data and reflection', () async {
@@ -1401,6 +1596,7 @@ Future<void> _insertCelebration(
   AppDatabase db,
   String date, {
   required String rank,
+  String name = 'Lễ thử nghiệm',
 }) {
   return db
       .into(db.celebrations)
@@ -1408,7 +1604,7 @@ Future<void> _insertCelebration(
         CelebrationsCompanion.insert(
           id: 'celebration-$date-$rank',
           date: date,
-          name: 'Lễ thử nghiệm',
+          name: name,
           rank: rank,
           locale: 'vi',
         ),

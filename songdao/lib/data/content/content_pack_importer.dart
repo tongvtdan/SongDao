@@ -111,8 +111,16 @@ class ContentPackImporter {
     final startDate = DateTime.parse(validFrom);
     for (var offset = 0; offset < 14; offset += 1) {
       final date = _dateKey(startDate.add(Duration(days: offset)));
-      final action = await engine.getOrCreateActionForDate(date);
-      await snapshots.regenerateForDate(date, locale: action.locale);
+      final publishLatest = date == _dateKey(DateTime.now());
+      final action = await engine.getOrCreateActionForDate(
+        date,
+        publishWidgetSnapshot: publishLatest,
+      );
+      await snapshots.regenerateForDate(
+        date,
+        locale: action.locale,
+        publishLatest: publishLatest,
+      );
     }
   }
 

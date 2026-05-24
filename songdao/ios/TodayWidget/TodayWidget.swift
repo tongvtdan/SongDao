@@ -31,9 +31,16 @@ struct SongDaoWidgetSnapshot: Decodable {
     let label: String?
   }
 
+  struct DailyQuote: Decodable {
+    let text: String?
+    let attribution: String?
+  }
+
   let date: String?
   let locale: String?
   let liturgicalContext: LiturgicalContext?
+  let dailyQuote: DailyQuote?
+  let saintOfDay: String?
   let action: Action?
   let readings: [Reading]?
   let mass: Mass?
@@ -42,6 +49,8 @@ struct SongDaoWidgetSnapshot: Decodable {
     case date
     case locale
     case liturgicalContext = "liturgical_context"
+    case dailyQuote = "daily_quote"
+    case saintOfDay = "saint_of_day"
     case action
     case readings
     case mass
@@ -52,42 +61,85 @@ struct SongDaoTodayEntry: TimelineEntry {
   let date: Date
   let snapshot: SongDaoWidgetSnapshot?
 
+  var displayDate: Date {
+    guard
+      let dateKey = snapshot?.date,
+      let parsed = Self.dateFormatter.date(from: dateKey)
+    else {
+      return date
+    }
+    return parsed
+  }
+
+  var dayNumber: String {
+    Self.dayFormatter.string(from: displayDate)
+  }
+
+  var dateLabel: String {
+    Self.dateLabelFormatter.string(from: displayDate)
+  }
+
+  var weekdayLabel: String {
+    Self.weekdayFormatter.string(from: displayDate)
+  }
+
   var celebration: String {
     snapshot?.liturgicalContext?.celebration
       ?? snapshot?.liturgicalContext?.season
       ?? "Sống Đạo hôm nay"
   }
 
-  var actionPrompt: String {
-    snapshot?.action?.prompt
-      ?? "Mở Sống Đạo để nhận một việc nhỏ cho hôm nay."
+  var saintOrFallback: String {
+    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
+      return saint
+    }
+    return "Sống Đạo hôm nay"
   }
 
-  var gospelCitation: String? {
-    snapshot?.readings?.first(where: { $0.type == "gospel" })?.citation
+  var featureText: String {
+    if let saint = snapshot?.saintOfDay, !saint.isEmpty {
+      return saint
+    }
+    return quoteText
   }
 
-  var massSummary: String? {
-    guard let mass = snapshot?.mass, let time = mass.time else {
-      return nil
-    }
-    let label = mass.label ?? "Thánh lễ"
-    if let church = mass.church, !church.isEmpty {
-      return "\(label): \(time) - \(church)"
-    }
-    return "\(label): \(time)"
-  }
-
-  var massLanguage: String? {
-    guard let language = snapshot?.mass?.language, !language.isEmpty else {
-      return nil
-    }
-    return language
+  var quoteText: String {
+    return snapshot?.dailyQuote?.text
+      ?? "Một việc nhỏ được làm với lòng yêu mến có thể đổi hướng cả ngày."
   }
 
   var isCompleted: Bool {
     snapshot?.action?.completed == true || snapshot?.action?.status == "completed"
   }
+
+  private static let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd"
+    return formatter
+  }()
+
+  private static let dayFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "d"
+    return formatter
+  }()
+
+  private static let dateLabelFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "EEE, d MMM"
+    return formatter
+  }()
+
+  private static let weekdayFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "vi_VN")
+    formatter.dateFormat = "EEEE"
+    return formatter
+  }()
 }
 
 struct SongDaoTodayProvider: TimelineProvider {
@@ -117,7 +169,20 @@ struct SongDaoTodayProvider: TimelineProvider {
     else {
       return nil
     }
-    return try? JSONDecoder().decode(SongDaoWidgetSnapshot.self, from: data)
+
+    guard let snapshot = try? JSONDecoder().decode(SongDaoWidgetSnapshot.self, from: data) else {
+      return nil
+    }
+
+    return snapshot.date == Self.todayDateKey ? snapshot : nil
+  }
+
+  private static var todayDateKey: String {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .gregorian)
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    formatter.dateFormat = "yyyy-MM-dd"
+    return formatter.string(from: Date())
   }
 }
 
@@ -134,98 +199,114 @@ struct SongDaoTodayWidgetView: View {
         smallLayout
       }
     }
-    .padding(14)
-    .background(canvas)
+    .padding(family == .systemMedium ? 22 : 20)
+    .songDaoWidgetBackground(canvas)
     .widgetURL(todayDeepLink)
   }
 
   private var smallLayout: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      contextHeader
+    VStack(alignment: .leading, spacing: 4) {
+      Text(entry.weekdayLabel.uppercased())
+        .font(.system(size: 23, weight: .bold, design: .default))
+        .foregroundColor(liturgicalAccent)
+        .lineLimit(1)
+        .minimumScaleFactor(0.68)
 
-      Text(entry.actionPrompt)
-        .font(.headline)
-        .foregroundColor(ink)
-        .lineLimit(4)
-        .minimumScaleFactor(0.78)
+      Text(entry.dayNumber)
+        .font(.system(size: 66, weight: .regular, design: .default))
+        .foregroundColor(.black)
+        .lineLimit(1)
+        .minimumScaleFactor(0.84)
 
-      if let gospelCitation = entry.gospelCitation {
-        Text("Tin Mừng: \(gospelCitation)")
-          .font(.caption2)
-          .foregroundColor(secondaryInk)
-          .lineLimit(1)
-      }
+      Spacer(minLength: 10)
+
+      Text(entry.featureText)
+        .font(.system(size: 22, weight: .regular, design: .default))
+        .foregroundColor(secondaryInk)
+        .lineLimit(3)
+        .minimumScaleFactor(0.74)
     }
   }
 
   private var mediumLayout: some View {
-    HStack(alignment: .top, spacing: 14) {
-      VStack(alignment: .leading, spacing: 8) {
-        contextHeader
-
-        Text(entry.actionPrompt)
-          .font(.headline)
-          .foregroundColor(ink)
-          .lineLimit(3)
-          .minimumScaleFactor(0.82)
-      }
+    HStack(alignment: .top, spacing: 18) {
+      mediumDateColumn
+        .frame(width: 116, alignment: .topLeading)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
 
       Divider()
         .background(border)
+        .padding(.vertical, 2)
 
-      VStack(alignment: .leading, spacing: 8) {
-        if entry.isCompleted {
-          Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
-            .font(.caption.weight(.semibold))
-            .foregroundColor(green)
-            .lineLimit(1)
-        }
+      VStack(alignment: .leading, spacing: 12) {
+        Text(entry.dateLabel.uppercased())
+          .font(.system(size: 18, weight: .bold, design: .default))
+          .foregroundColor(secondaryInk)
+          .lineLimit(1)
+          .minimumScaleFactor(0.78)
 
-        if let massSummary = entry.massSummary {
-          Label {
-            Text(massSummary)
-              .lineLimit(2)
-              .minimumScaleFactor(0.82)
-          } icon: {
-            Image(systemName: "bell")
-          }
-          .font(.caption.weight(.semibold))
-          .foregroundColor(ink)
+        agendaBlock
 
-          if let language = entry.massLanguage {
-            Text(language)
-              .font(.caption2)
-              .foregroundColor(secondaryInk)
-              .lineLimit(1)
-          }
-        } else if let gospelCitation = entry.gospelCitation {
-          Text("Tin Mừng")
-            .font(.caption.weight(.semibold))
-            .foregroundColor(green)
-          Text(gospelCitation)
-            .font(.caption)
-            .foregroundColor(secondaryInk)
-            .lineLimit(2)
-        } else {
-          Text("Mở Sống Đạo để xem chi tiết hôm nay.")
-            .font(.caption)
-            .foregroundColor(secondaryInk)
-            .lineLimit(3)
-        }
+        completionStatus
       }
-      .frame(maxWidth: .infinity, alignment: .leading)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
   }
 
-  private var contextHeader: some View {
-    HStack(spacing: 6) {
-      Circle()
-        .fill(entry.isCompleted ? green : liturgicalAccent)
-        .frame(width: 8, height: 8)
-      Text(entry.celebration)
-        .font(.system(.caption, design: .default).weight(.semibold))
-        .foregroundColor(ink)
-        .lineLimit(2)
+  private var mediumDateColumn: some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text(entry.weekdayLabel.uppercased())
+        .font(.system(size: 17, weight: .bold, design: .default))
+        .foregroundColor(liturgicalAccent)
+        .lineLimit(1)
+        .minimumScaleFactor(0.72)
+
+      Text(entry.dayNumber)
+        .font(.system(size: 58, weight: .regular, design: .default))
+        .foregroundColor(.black)
+        .lineLimit(1)
+        .minimumScaleFactor(0.86)
+
+      Spacer(minLength: 10)
+
+      Text(entry.saintOrFallback)
+        .font(.system(size: 16, weight: .regular, design: .default))
+        .foregroundColor(secondaryInk)
+        .lineLimit(3)
+        .minimumScaleFactor(0.76)
+    }
+  }
+
+  private var agendaBlock: some View {
+    HStack(alignment: .top, spacing: 8) {
+      RoundedRectangle(cornerRadius: 2)
+        .fill(liturgicalAccent)
+        .frame(width: 4)
+        .frame(maxHeight: .infinity)
+
+      VStack(alignment: .leading, spacing: 0) {
+        Text(entry.quoteText)
+          .font(.system(size: 18, weight: .semibold, design: .default))
+          .foregroundColor(ink)
+          .lineLimit(4)
+          .minimumScaleFactor(0.78)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+    }
+    .padding(.vertical, 12)
+    .padding(.horizontal, 11)
+    .background(softGreen)
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+  }
+
+  @ViewBuilder
+  private var completionStatus: some View {
+    if entry.isCompleted {
+      Label("Đã ghi nhận", systemImage: "checkmark.circle.fill")
+        .font(.system(size: 17, weight: .bold, design: .default))
+        .foregroundColor(green)
+        .lineLimit(1)
     }
   }
 
@@ -239,6 +320,11 @@ struct SongDaoTodayWidgetView: View {
 
   private var green: Color {
     Color(red: 0.12, green: 0.48, blue: 0.39) // #1F7A64
+  }
+
+  private var softGreen: Color {
+    Color(red: 0.89, green: 0.95, blue: 0.92) // #E2F1EA
+      .opacity(0.56)
   }
 
   private var gold: Color {
@@ -267,6 +353,17 @@ struct SongDaoTodayWidgetView: View {
       return ink
     default:
       return green
+    }
+  }
+}
+
+private extension View {
+  @ViewBuilder
+  func songDaoWidgetBackground(_ color: Color) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      containerBackground(color, for: .widget)
+    } else {
+      background(color)
     }
   }
 }

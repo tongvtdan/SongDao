@@ -1,9 +1,15 @@
 {
 	"folders": [
 		{
+			"name": "songdao-web",
+			"path": "songdao-web"
+		},
+		{
+			"name": "songdao",
 			"path": "songdao"
 		},
 		{
+			"name": "docs",
 			"path": "docs"
 		}
 	],
