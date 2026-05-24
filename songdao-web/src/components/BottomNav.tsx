@@ -13,7 +13,7 @@ const tabs = [
 
 export default function BottomNav({ activePath }: { activePath: string }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-surface-secondary/98 px-3 py-2 shadow-lg backdrop-blur lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-surface-secondary/98 px-3 pt-2 pb-safe-nav shadow-lg backdrop-blur lg:hidden">
       <div className="mx-auto grid max-w-2xl grid-cols-4 gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;

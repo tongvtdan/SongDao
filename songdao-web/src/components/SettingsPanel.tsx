@@ -71,7 +71,7 @@ export default function SettingsPanel({ onSettingsChange }: SettingsPanelProps) 
         <h3 className="font-serif text-sm font-bold text-text-primary">Quyền riêng tư</h3>
         <div className="mt-1.5 text-[10px] leading-relaxed text-text-secondary flex flex-col gap-1">
           <p>Lịch sử thực hành và ghi chú lưu cục bộ trong trình duyệt.</p>
-          <p>Your practice history stays on this device unless you export it.</p>
+          <p>Lịch sử thực hành của bạn sẽ giữ nguyên trên thiết bị này trừ khi bạn xuất ra.</p>
           <a href={privacyPolicyUrl} className="font-bold text-brand-primary hover:underline mt-1 inline-block">
             Chính sách quyền riêng tư
           </a>

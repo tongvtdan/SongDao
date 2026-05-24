@@ -79,10 +79,10 @@ export default function DesktopDashboard({
           </div>
 
           <nav className="flex flex-wrap items-center gap-3" aria-label="Today desktop menu">
-            <DrawerButton icon={<CalendarDays className="h-6 w-6" />} label="Lịch" onClick={() => router.push("/calendar")} />
-            <DrawerButton icon={<ChartNoAxesColumnIncreasing className="h-6 w-6" />} label="Nhịp sống" onClick={() => openDrawer("progress")} />
-            <DrawerButton icon={<Library className="h-6 w-6" />} label="Kinh nguyện" onClick={() => openDrawer("prayers")} />
-            <DrawerButton icon={<Settings className="h-6 w-6" />} label="Cài đặt" onClick={() => openDrawer("settings")} />
+            <DrawerButton icon={<CalendarDays className="h-5 w-5" />} label="Lịch" onClick={() => router.push("/calendar")} />
+            <DrawerButton icon={<ChartNoAxesColumnIncreasing className="h-5 w-5" />} label="Nhịp sống" onClick={() => openDrawer("progress")} />
+            <DrawerButton icon={<Library className="h-5 w-5" />} label="Kinh nguyện" onClick={() => openDrawer("prayers")} />
+            <DrawerButton icon={<Settings className="h-5 w-5" />} label="Cài đặt" onClick={() => openDrawer("settings")} />
           </nav>
         </header>
 
@@ -170,7 +170,7 @@ function DrawerButton({ icon, label, onClick }: { icon: React.ReactNode; label: 
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex min-h-16 items-center gap-3 rounded-lg border border-border-subtle bg-surface-primary px-5 py-3 text-lg font-extrabold text-text-secondary shadow-sm transition hover:-translate-y-0.5 hover:border-brand-primary/40 hover:bg-brand-soft/35 hover:text-brand-primary"
+      className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border-subtle bg-surface-primary px-3 py-2 text-sm font-bold text-text-secondary shadow-sm transition hover:-translate-y-0.5 hover:border-brand-primary/40 hover:bg-brand-soft/35 hover:text-brand-primary"
     >
       {icon}
       {label}

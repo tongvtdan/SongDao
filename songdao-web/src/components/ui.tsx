@@ -35,7 +35,7 @@ export function AppBentoCard({
 
   if (!onClick) return content;
   return (
-    <button type="button" onClick={onClick} className="block w-full text-left">
+    <button type="button" onClick={onClick} className="block w-full rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1">
       {content}
     </button>
   );
@@ -83,7 +83,7 @@ export function AppSectionCard({
 
 export const liturgicalHex: Record<string, string> = {
   green: "#2F7D4F",
-  white: "#B8892E",
+  white: "#F7F3E8",
   gold: "#C69A3D",
   red: "#B33A3A",
   purple: "#6B4A7A",

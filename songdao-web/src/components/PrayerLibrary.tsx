@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Clock } from "lucide-react";
+import { BookOpen, ChevronDown, Clock } from "lucide-react";
 import { getPrayerLibrary } from "@/lib/views";
 import { AppBentoCard, AppSignalChip } from "./ui";
 
@@ -37,6 +37,7 @@ export default function PrayerLibrary({ maxHeight }: PrayerLibraryProps) {
                       <span className="block text-sm font-semibold text-text-primary group-hover:text-brand-primary transition-colors">{prayer.title}</span>
                       <span className="mt-0.5 block text-[10px] text-text-secondary">{displayTags(prayer.tags)}</span>
                     </span>
+                    <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-text-tertiary transition-transform duration-200 group-open:rotate-180" />
                   </summary>
                   <p className="mt-2.5 whitespace-pre-line border-t border-border-subtle pt-2.5 text-xs leading-relaxed text-text-secondary">
                     {prayer.body || "Nội dung kinh đang chờ rà soát bản quyền. Bản beta chỉ lưu tiêu đề và nguồn để tránh dùng nội dung chưa được phép."}

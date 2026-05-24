@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Lock, Save } from "lucide-react";
-import { AppSectionCard } from "./ui";
+import { AppSectionCard, cn } from "./ui";
 
 interface Props {
   initialNote: string;
@@ -12,7 +12,7 @@ interface Props {
 
 export default function ReflectionNoteCard({ initialNote, onSave, isSaving }: Props) {
   const [note, setNote] = useState(initialNote);
-
+  const isDirty = note.trim() !== initialNote.trim();
 
   return (
     <AppSectionCard title="Ghi chú riêng" icon={<Lock className="h-5 w-5 text-brand-primary" />}>
@@ -24,10 +24,15 @@ export default function ReflectionNoteCard({ initialNote, onSave, isSaving }: Pr
         }}
         rows={4}
         placeholder="Viết một câu bạn muốn giữ lại cho hôm nay."
-        className="min-h-28 w-full resize-y rounded-lg border border-border-subtle bg-canvas p-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-tertiary focus:border-border-focus"
+        className={cn(
+          "min-h-28 w-full resize-y rounded-lg border bg-canvas p-3 text-sm text-text-primary outline-none transition-colors placeholder:text-text-tertiary",
+          isDirty ? "border-accent-gold" : "border-border-subtle focus:border-border-focus"
+        )}
       />
       <div className="mt-2 flex items-center justify-between gap-3">
-        <p className="text-xs text-text-secondary">Lưu trên thiết bị của bạn.</p>
+        <p className="text-xs text-text-secondary">
+          {isDirty ? <span className="font-semibold text-accent-gold">Chưa lưu</span> : "Lưu trên thiết bị của bạn."}
+        </p>
         <button
           type="button"
           onClick={() => onSave(note)}

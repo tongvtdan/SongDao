@@ -59,6 +59,7 @@ export default function ProgressTracker({ compact = false }: ProgressTrackerProp
         </p>
       </AppBentoCard>
 
+      <div className="relative">
       <AppBentoCard className="max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
         <h3 className="font-serif text-base font-bold text-text-primary">{selectedDate ? "Việc ngày này" : "Đã hoàn thành"}</h3>
         {selectedDate && <p className="mt-0.5 text-[10px] font-bold text-text-tertiary">{selectedDate}</p>}
@@ -76,6 +77,8 @@ export default function ProgressTracker({ compact = false }: ProgressTrackerProp
           )}
         </div>
       </AppBentoCard>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-lg bg-gradient-to-t from-surface-primary to-transparent" />
+      </div>
     </div>
   );
 }

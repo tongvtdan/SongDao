@@ -78,6 +78,14 @@ summary {
   background-color: var(--color-border-strong);
 }
 
+@utility pb-safe-nav {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+@utility pb-nav-offset {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+}
+
 .ritual-enter {
   animation: ritual-enter 360ms ease both;
 }

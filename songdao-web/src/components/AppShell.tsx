@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
       </header>
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-4 pb-24 lg:max-w-7xl lg:px-6 lg:pb-12">{children}</main>
+      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-4 pb-nav-offset lg:max-w-7xl lg:px-6 lg:pb-12">{children}</main>
       <BottomNav activePath={pathname} />
     </div>
   );
