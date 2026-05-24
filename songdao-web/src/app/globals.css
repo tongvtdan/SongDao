@@ -62,3 +62,18 @@ textarea,
 summary {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Custom premium scrollbar for desktop dashboard panels */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-subtle);
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+}
