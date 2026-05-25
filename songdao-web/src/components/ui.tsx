@@ -91,8 +91,13 @@ export const liturgicalHex: Record<string, string> = {
   black: "#242424",
 };
 
+const liturgicalDisplayHex: Record<string, string> = {
+  ...liturgicalHex,
+  white: "#B8892E",
+};
+
 export function liturgicalAccent(color?: string): string {
-  return liturgicalHex[color || "green"] || "#1F7A64";
+  return liturgicalDisplayHex[color || "green"] || "#1F7A64";
 }
 
 export function seasonLabel(season: string): string {
