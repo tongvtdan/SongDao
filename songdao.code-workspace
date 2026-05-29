@@ -1,6 +1,10 @@
 {
 	"folders": [
 		{
+			"name": "song-dao-hien-tai",
+			"path": "songdao-dialyfaith/song-dao-hien-tai"
+		},
+		{
 			"name": "songdao-web",
 			"path": "songdao-web"
 		},
