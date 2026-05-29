@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sống Đạo · Việc hôm nay</title>
+  <link rel="stylesheet" href="songdao.css" />
+</head>
+<body>
+  <header class="topbar" data-od-id="topnav">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sống Đạo</a>
+      <nav class="navlinks" aria-label="Chính">
+        <a href="today.html">Hôm nay</a>
+        <a href="calendar.html">Lịch</a>
+        <a href="parish.html">Giáo xứ</a>
+      </nav>
+      <a class="btn" href="today.html">Quay lại hôm nay</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container app-grid" data-od-id="practice-screen">
+      <aside class="sidebar" aria-label="Màn hình">
+        <a class="side-link" href="today.html">Hôm nay <span>01</span></a>
+        <a class="side-link" aria-current="page" href="practice.html">Việc hôm nay <span>02</span></a>
+        <a class="side-link" href="calendar.html">Lịch <span>03</span></a>
+        <a class="side-link" href="parish.html">Giáo xứ <span>04</span></a>
+        <a class="side-link" href="progress.html">Nhịp sống đạo <span>05</span></a>
+      </aside>
+
+      <section class="stack-lg" data-od-id="practice-main">
+        <div>
+          <p class="eyebrow">Daily Action Engine</p>
+          <h1>Gợi ý một việc, theo đúng bối cảnh phụng vụ.</h1>
+          <p class="lead">MVP không cần nhiều nội dung. Cần một luật đủ tốt để người dùng mở app và biết điều nên làm hôm nay, ở một mình hoặc trong gia đình.</p>
+        </div>
+
+        <article class="card stack">
+          <label class="meta" for="season">Bối cảnh hôm nay</label>
+          <select class="select" id="season" data-season-select>
+            <option value="ordinary">Mùa Thường Niên</option>
+            <option value="lent">Mùa Chay</option>
+            <option value="easter">Mùa Phục Sinh</option>
+            <option value="advent">Mùa Vọng</option>
+          </select>
+          <div class="list" data-practice-output></div>
+        </article>
+
+        <div class="grid-3">
+          <article class="panel stack">
+            <span class="pill"><span class="dot-muted"></span>Ưu tiên 1</span>
+            <h3>Lễ trọng</h3>
+            <p class="muted">Nếu là lễ trọng hoặc ngày buộc, hành động ưu tiên tham dự Thánh lễ hoặc chuẩn bị một ý nguyện cụ thể.</p>
+          </article>
+          <article class="panel stack">
+            <span class="pill"><span class="dot-muted"></span>Ưu tiên 2</span>
+            <h3>Chúa Nhật</h3>
+            <p class="muted">Nhắc người dùng hoặc cả nhà chọn một ý nguyện trước lễ, không chỉ xem giờ lễ.</p>
+          </article>
+          <article class="panel stack">
+            <span class="pill"><span class="dot-muted"></span>Ưu tiên 3</span>
+            <h3>Mùa phụng vụ</h3>
+            <p class="muted">Mùa Chay nghiêng về hy sinh, Phục Sinh nghiêng về biết ơn và niềm vui cụ thể.</p>
+          </article>
+        </div>
+      </section>
+
+      <aside class="right-rail stack-lg" data-od-id="practice-rail">
+        <article class="panel stack">
+          <span class="meta">Luật mẫu</span>
+          <h3>Thứ Sáu Thường Niên</h3>
+          <p class="muted">Chọn một điều nhỏ để tiết chế hoặc phục vụ âm thầm.</p>
+        </article>
+        <article class="panel stack">
+          <span class="meta">Product decision</span>
+          <h3>Không biến thành thư viện.</h3>
+          <p class="muted">Nội dung là input. Retention đến từ vòng lặp hành động hằng ngày.</p>
+        </article>
+      </aside>
+    </div>
+  </main>
+  <script src="songdao.js"></script>
+</body>
+</html>
