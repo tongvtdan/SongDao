@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "graphics-design/Song-Dao-Open-Design"
+		},
+		{
+			"path": "songdao"
 		}
 	],
 	"settings": {}
