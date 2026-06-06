@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/design_system.dart';
+import '../../../app/sentence_capitalization_formatter.dart';
 import '../../../app/theme.dart';
 
 class ReflectionNoteCard extends StatelessWidget {
@@ -40,7 +41,9 @@ class ReflectionNoteCard extends StatelessWidget {
             controller: controller,
             minLines: 3,
             maxLines: 6,
+            textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.newline,
+            inputFormatters: const [SentenceCapitalizationFormatter()],
             decoration: const InputDecoration(
               hintText: 'Viết một câu bạn muốn giữ lại cho hôm nay.',
             ),

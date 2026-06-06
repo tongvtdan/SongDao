@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/design_system.dart';
+import '../../app/sentence_capitalization_formatter.dart';
 import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/daos/action_log_dao.dart';
@@ -147,7 +148,11 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                       minLines: 4,
                       maxLines: 8,
                       autofocus: true,
+                      textCapitalization: TextCapitalization.sentences,
                       textInputAction: TextInputAction.newline,
+                      inputFormatters: const [
+                        SentenceCapitalizationFormatter(),
+                      ],
                       onChanged: (_) => setDialogState(() {}),
                       decoration: const InputDecoration(
                         hintText: 'Viết một câu bạn muốn giữ lại.',
