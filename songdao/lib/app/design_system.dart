@@ -50,7 +50,7 @@ class AppSignalChip extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: AppColors.brandDeep,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -160,15 +160,18 @@ class AppBentoCard extends StatelessWidget {
                     top: 0,
                     left: 0,
                     right: accentPlacement == AppAccentPlacement.top ? 0 : null,
-                    bottom: accentPlacement == AppAccentPlacement.left ? 0 : null,
-                    width: accentPlacement == AppAccentPlacement.left ? 4 : null,
-                    height: accentPlacement == AppAccentPlacement.top ? 4 : null,
+                    bottom: accentPlacement == AppAccentPlacement.left
+                        ? 0
+                        : null,
+                    width: accentPlacement == AppAccentPlacement.left
+                        ? 4
+                        : null,
+                    height: accentPlacement == AppAccentPlacement.top
+                        ? 4
+                        : null,
                     child: Container(color: accentColor),
                   ),
-                Padding(
-                  padding: padding,
-                  child: child,
-                ),
+                Padding(padding: padding, child: child),
               ],
             ),
           ),

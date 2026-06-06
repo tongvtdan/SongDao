@@ -26,39 +26,45 @@ void main() {
       todayKey = TodayController.todayDateKey();
 
       // Insert common testing data
-      await db.into(db.calendarDays).insert(
-        CalendarDaysCompanion.insert(
-          date: todayKey,
-          season: 'ordinary',
-          liturgicalWeek: 1,
-          color: 'green',
-          cycleYear: 'C',
-          locale: 'vi',
-          lunarDate: const Value('Mồng 5 tháng Tư'),
-        ),
-      );
+      await db
+          .into(db.calendarDays)
+          .insert(
+            CalendarDaysCompanion.insert(
+              date: todayKey,
+              season: 'ordinary',
+              liturgicalWeek: 1,
+              color: 'green',
+              cycleYear: 'C',
+              locale: 'vi',
+              lunarDate: const Value('Mồng 5 tháng Tư'),
+            ),
+          );
 
-      await db.into(db.celebrations).insert(
-        CelebrationsCompanion.insert(
-          id: 'celebration-$todayKey',
-          date: todayKey,
-          name: 'Thánh Lễ Thử Nghiệm',
-          rank: 'memorial',
-          locale: 'vi',
-        ),
-      );
+      await db
+          .into(db.celebrations)
+          .insert(
+            CelebrationsCompanion.insert(
+              id: 'celebration-$todayKey',
+              date: todayKey,
+              name: 'Thánh Lễ Thử Nghiệm',
+              rank: 'memorial',
+              locale: 'vi',
+            ),
+          );
 
-      await db.into(db.dailyActions).insert(
-        DailyActionsCompanion.insert(
-          id: 'action-$todayKey',
-          date: todayKey,
-          sourceRule: 'test_rule',
-          prompt: 'Làm một việc lành nhỏ hôm nay',
-          type: 'kindness',
-          priority: 1,
-          locale: 'vi',
-        ),
-      );
+      await db
+          .into(db.dailyActions)
+          .insert(
+            DailyActionsCompanion.insert(
+              id: 'action-$todayKey',
+              date: todayKey,
+              sourceRule: 'test_rule',
+              prompt: 'Làm một việc lành nhỏ hôm nay',
+              type: 'kindness',
+              priority: 1,
+              locale: 'vi',
+            ),
+          );
     });
 
     tearDown(() async {
@@ -80,7 +86,10 @@ void main() {
       // Verify Swipeable Liturgical Context Card details are rendered
       expect(find.byType(SwipeableLiturgicalContextCard), findsOneWidget);
       expect(find.text('Thánh Lễ Thử Nghiệm'), findsOneWidget);
-      expect(find.text('Mồng 5 tháng Tư'), findsOneWidget); // Lunar calendar date
+      expect(
+        find.text('Mồng 5 tháng Tư'),
+        findsOneWidget,
+      ); // Lunar calendar date
       expect(find.text('Thường niên'), findsOneWidget); // Localized season
       expect(find.text('Xanh'), findsOneWidget); // Localized color
 
@@ -125,17 +134,20 @@ void main() {
 
       // The reflection note card should now be displayed
       expect(find.byType(ReflectionNoteCard), findsOneWidget);
+      expect(find.text('Chưa lưu'), findsOneWidget);
 
       // Enter a reflection note
       final textField = find.byType(TextField);
       expect(textField, findsOneWidget);
       await tester.enterText(textField, 'Tôi đã đọc Kinh Thánh hôm nay.');
       await tester.pumpAndSettle();
+      expect(find.text('Chưa lưu'), findsOneWidget);
 
       // Save the note
       await tester.ensureVisible(find.text('Lưu'));
       await tester.tap(find.text('Lưu'));
       await tester.pumpAndSettle();
+      expect(find.text('Đã lưu trên thiết bị'), findsOneWidget);
 
       // Verify the note is saved inside the Drift DB
       final log = await (db.select(db.actionLogs)..limit(1)).getSingleOrNull();
@@ -194,7 +206,9 @@ void main() {
         ProviderScope(
           overrides: [
             databaseProvider.overrideWithValue(db),
-            dailyActionEngineProvider.overrideWithValue(MockDailyActionEngine(db)),
+            dailyActionEngineProvider.overrideWithValue(
+              MockDailyActionEngine(db),
+            ),
             seedContentBootstrapProvider.overrideWith((ref) async => []),
           ],
           child: const MaterialApp(home: TodayScreen()),
