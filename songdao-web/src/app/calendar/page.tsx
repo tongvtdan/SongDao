@@ -2,86 +2,156 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { BookOpen, CalendarDays, List } from "lucide-react";
 import AppShell from "@/components/AppShell";
+import CalendarGrid from "@/components/CalendarGrid";
 import DailyReflectionCard from "@/components/DailyReflectionCard";
 import ReadingReferencesCard from "@/components/ReadingReferencesCard";
-import { createDateFromKey, formatDateKey, getDateKey } from "@/lib/engine";
-import { getCalendarMonthView } from "@/lib/views";
+import { getDateKey } from "@/lib/engine";
+import { getCalendarDayDetail, getCalendarMonthAgenda } from "@/lib/views";
 import { useHydrated } from "@/lib/useHydrated";
-import { AppBentoCard, AppSignalChip, colorLabel, formatVietnameseDate, liturgicalAccent, seasonLabel, weekdayShortFromDate } from "@/components/ui";
+import { CalendarAgendaItem, CalendarDayDetail } from "@/lib/types";
+import { AppBentoCard, AppSignalChip, cn, colorLabel, formatVietnameseDate, liturgicalAccent, readingLabel, seasonLabel } from "@/components/ui";
+
+type CalendarMode = "month" | "agenda";
 
 export default function CalendarPage() {
   const todayKey = getDateKey();
   const [selectedDate, setSelectedDate] = useState(todayKey);
   const [visibleMonth, setVisibleMonth] = useState(todayKey.slice(0, 7));
+  const [mode, setMode] = useState<CalendarMode>("month");
   const hydrated = useHydrated();
-  const data = useMemo(() => getCalendarMonthView(visibleMonth, selectedDate, hydrated), [visibleMonth, selectedDate, hydrated]);
-  const monthDate = createDateFromKey(`${visibleMonth}-01`);
+  const data = useMemo(() => getCalendarDayDetail(selectedDate, hydrated), [selectedDate, hydrated]);
+  const agenda = useMemo(() => getCalendarMonthAgenda(visibleMonth), [visibleMonth]);
 
-  const changeMonth = (offset: number) => {
-    const next = new Date(monthDate);
-    next.setMonth(monthDate.getMonth() + offset);
-    setVisibleMonth(formatDateKey(next).slice(0, 7));
+  const selectDate = (date: string) => {
+    setSelectedDate(date);
+    if (date.slice(0, 7) !== visibleMonth) {
+      setVisibleMonth(date.slice(0, 7));
+    }
   };
 
   return (
     <AppShell>
-      <div className="flex items-center justify-between gap-3">
-        <button type="button" onClick={() => changeMonth(-1)} className="rounded-lg p-2 hover:bg-surface-secondary" aria-label="Tháng trước">
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <div className="text-center">
-          <h1 className="font-serif text-2xl font-bold">Tháng {monthDate.getMonth() + 1}, {monthDate.getFullYear()}</h1>
-          <p className="text-xs font-semibold text-text-secondary">Dữ liệu phụng vụ trên thiết bị</p>
+      <div className="flex flex-col gap-4 lg:gap-5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h1 className="font-serif text-2xl font-bold text-text-primary lg:text-3xl">Lịch phụng vụ</h1>
+            <p className="mt-1 max-w-2xl text-sm text-text-secondary">
+              Chọn một ngày để xem bối cảnh phụng vụ, bài đọc và suy niệm ngay dưới lịch tháng.
+            </p>
+          </div>
+          <CalendarModeSwitch mode={mode} onChange={setMode} />
         </div>
-        <button type="button" onClick={() => changeMonth(1)} className="rounded-lg p-2 hover:bg-surface-secondary" aria-label="Tháng sau">
-          <ChevronRight className="h-5 w-5" />
-        </button>
+
+        {mode === "month" ? (
+          <CalendarGrid
+            selectedDate={selectedDate}
+            onSelectDate={selectDate}
+            visibleMonth={visibleMonth}
+            onVisibleMonthChange={setVisibleMonth}
+          />
+        ) : (
+          <MonthAgenda items={agenda} selectedDate={selectedDate} onSelectDate={selectDate} />
+        )}
+
+        <SelectedDay key={data.date} data={data} />
       </div>
-      <MonthGrid visibleMonth={monthDate} days={data.days} selectedDate={selectedDate} onSelect={setSelectedDate} />
-      <SelectedDay data={data} />
     </AppShell>
   );
 }
 
-function MonthGrid({ visibleMonth, days, selectedDate, onSelect }: { visibleMonth: Date; days: ReturnType<typeof getCalendarMonthView>["days"]; selectedDate: string; onSelect: (date: string) => void }) {
-  const first = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
-  const gridStart = new Date(first);
-  gridStart.setDate(first.getDate() - first.getDay());
-  const cells = Array.from({ length: 42 }, (_, index) => {
-    const date = new Date(gridStart);
-    date.setDate(gridStart.getDate() + index);
-    return date;
-  });
+function CalendarModeSwitch({ mode, onChange }: { mode: CalendarMode; onChange: (mode: CalendarMode) => void }) {
+  return (
+    <div className="grid grid-cols-2 gap-1 rounded-lg border border-border-subtle bg-surface-secondary p-1 lg:w-[320px]" aria-label="Kiểu xem lịch">
+      <ModeButton
+        active={mode === "month"}
+        icon={<CalendarDays className="h-4 w-4" />}
+        label="Lịch tháng"
+        onClick={() => onChange("month")}
+      />
+      <ModeButton
+        active={mode === "agenda"}
+        icon={<List className="h-4 w-4" />}
+        label="Danh sách"
+        onClick={() => onChange("agenda")}
+      />
+    </div>
+  );
+}
+
+function ModeButton({ active, icon, label, onClick }: { active: boolean; icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "inline-flex min-h-10 items-center justify-center gap-2 rounded-md px-3 text-xs font-extrabold transition-colors",
+        active ? "bg-surface-primary text-brand-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function MonthAgenda({
+  items,
+  selectedDate,
+  onSelectDate,
+}: {
+  items: CalendarAgendaItem[];
+  selectedDate: string;
+  onSelectDate: (date: string) => void;
+}) {
+  if (items.length === 0) {
+    return <AppBentoCard>Chưa có dữ liệu phụng vụ cho tháng này trong gói nội dung trên thiết bị.</AppBentoCard>;
+  }
 
   return (
-    <AppBentoCard>
-      <div className="mb-2 grid grid-cols-7 text-center text-[11px] font-extrabold text-text-secondary">
-        {["CN", "T2", "T3", "T4", "T5", "T6", "T7"].map((label) => <span key={label}>{label}</span>)}
-      </div>
-      <div className="grid grid-cols-7 gap-1.5">
-        {cells.map((date) => {
-          const key = formatDateKey(date);
-          const day = days[key];
-          const selected = key === selectedDate;
-          const inMonth = date.getMonth() === visibleMonth.getMonth();
-          const accent = liturgicalAccent(day?.liturgicalColor);
+    <AppBentoCard className="p-0">
+      <div className="divide-y divide-border-subtle">
+        {items.map((item) => {
+          const selected = item.date === selectedDate;
+          const accent = liturgicalAccent(item.calendarDay.liturgicalColor);
+          const gospel = item.readings.find((reading) => reading.type === "gospel");
           return (
             <button
-              key={key}
+              key={item.date}
               type="button"
-              onClick={() => onSelect(key)}
-              className="aspect-square rounded-lg border text-sm font-bold transition-colors"
-              style={{
-                backgroundColor: selected ? "#1F7A64" : day ? `${accent}1f` : "transparent",
-                borderColor: selected ? "#1F7A64" : day ? "#E2DDD1" : "transparent",
-                color: selected ? "white" : inMonth ? "#1F2522" : "#8A938D",
-              }}
-              aria-label={`${weekdayShortFromDate(date)} ${key}`}
+              onClick={() => onSelectDate(item.date)}
+              className={cn(
+                "grid w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-brand-soft/35 md:grid-cols-[88px_minmax(0,1fr)_minmax(210px,0.55fr)] md:items-center",
+                selected && "bg-brand-soft/70"
+              )}
             >
-              <span>{date.getDate()}</span>
-              <span className="mx-auto mt-1 block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: selected ? "white" : day ? accent : "transparent" }} />
+              <div className="flex items-center gap-3 md:block">
+                <span className="font-serif text-2xl font-black leading-none" style={{ color: selected ? "#1F7A64" : accent }}>
+                  {item.date.slice(-2)}
+                </span>
+                <span className="text-xs font-bold text-text-secondary md:mt-1 md:block">
+                  {formatVietnameseDate(item.date, item.calendarDay).split(",")[0]}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <p className="truncate font-serif text-sm font-extrabold text-text-primary">
+                  {item.celebrations[0]?.title || item.calendarDay.liturgicalWeek || "Ngày phụng vụ"}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <AppSignalChip label={seasonLabel(item.calendarDay.season)} color={accent} />
+                  <AppSignalChip label={colorLabel(item.calendarDay.liturgicalColor)} />
+                </div>
+              </div>
+              <div className="min-w-0 text-xs leading-relaxed text-text-secondary">
+                <p className="line-clamp-2 font-semibold text-text-primary">{item.action.prompt}</p>
+                {gospel && (
+                  <p className="mt-1 flex items-center gap-1 font-bold text-brand-primary">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    {readingLabel(gospel.type)}: {gospel.citation}
+                  </p>
+                )}
+              </div>
             </button>
           );
         })}
@@ -90,33 +160,49 @@ function MonthGrid({ visibleMonth, days, selectedDate, onSelect }: { visibleMont
   );
 }
 
-function SelectedDay({ data }: { data: ReturnType<typeof getCalendarMonthView> }) {
+function SelectedDay({ data }: { data: CalendarDayDetail }) {
   const day = data.calendarDay;
   if (!day) {
     return <AppBentoCard>Chưa có dữ liệu phụng vụ cho ngày này trong gói nội dung trên thiết bị.</AppBentoCard>;
   }
   const accent = liturgicalAccent(day.liturgicalColor);
+  const title = data.celebrations[0]?.title || formatVietnameseDate(data.date, day);
+  const gospel = data.readings.find((reading) => reading.type === "gospel");
+
   return (
-    <>
-      <AppBentoCard accentColor={accent}>
-        <h2 className="font-serif text-xl font-bold text-text-primary">{data.celebrations[0]?.title || formatVietnameseDate(data.date, day)}</h2>
-        <div className="mt-3 flex flex-wrap gap-2">
+    <section className="grid gap-4 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,1.08fr)]" aria-label="Chi tiết ngày đã chọn">
+      <AppBentoCard accentColor={accent} accentPlacement="top" className="p-5">
+        <p className="text-xs font-extrabold uppercase text-brand-primary">Ngày đã chọn</p>
+        <h2 className="mt-2 font-serif text-2xl font-black leading-tight text-text-primary lg:text-3xl">{title}</h2>
+        <p className="mt-2 text-sm font-semibold text-text-secondary">{formatVietnameseDate(data.date, day)}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
           <AppSignalChip label={seasonLabel(day.season)} color={accent} />
           <AppSignalChip label={colorLabel(day.liturgicalColor)} />
+          {day.liturgicalWeek && <AppSignalChip label={day.liturgicalWeek} />}
           {data.showLunarDate && day.lunarDate && <AppSignalChip label={day.lunarDate} />}
         </div>
-        {data.action && (
-          <div className="mt-4 border-t border-border-subtle pt-4">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-brand-primary">Việc sống đạo</p>
-            <p className="mt-1 text-sm leading-relaxed text-text-secondary">{data.action.prompt}</p>
-            <Link href={`/today/${data.date}`} className="mt-3 inline-flex rounded-lg bg-brand-soft px-3 py-2 text-xs font-bold text-brand-deep">
-              Mở Today ngày này
-            </Link>
+        {gospel && (
+          <div className="mt-5 rounded-lg border border-border-subtle bg-surface-secondary p-3">
+            <p className="flex items-center gap-2 text-xs font-extrabold uppercase text-brand-primary">
+              <BookOpen className="h-4 w-4" />
+              Tin Mừng
+            </p>
+            <p className="mt-1 font-serif text-lg font-bold text-text-primary">{gospel.citation}</p>
           </div>
         )}
+        <Link
+          href={`/today/${data.date}`}
+          className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-primary-pressed sm:w-auto"
+        >
+          <CalendarDays className="h-5 w-5" />
+          Xem ngày này
+        </Link>
       </AppBentoCard>
-      <ReadingReferencesCard readings={data.readings} />
-      {data.reflection && <DailyReflectionCard reflection={data.reflection} />}
-    </>
+
+      <div className="grid gap-4">
+        <ReadingReferencesCard readings={data.readings} />
+        {data.reflection && <DailyReflectionCard reflection={data.reflection} />}
+      </div>
+    </section>
   );
 }

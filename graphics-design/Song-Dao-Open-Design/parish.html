@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sống Đạo · Giáo xứ</title>
+  <link rel="stylesheet" href="songdao.css" />
+</head>
+<body>
+  <header class="topbar" data-od-id="topnav">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sống Đạo</a>
+      <nav class="navlinks" aria-label="Chính">
+        <a href="today.html">Hôm nay</a>
+        <a href="calendar.html">Lịch</a>
+        <a href="progress.html">Nhịp sống đạo</a>
+      </nav>
+      <a class="btn" href="today.html">Mở hôm nay</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container app-grid" data-od-id="parish-screen">
+      <aside class="sidebar" aria-label="Màn hình">
+        <a class="side-link" href="today.html">Hôm nay <span>01</span></a>
+        <a class="side-link" href="practice.html">Việc hôm nay <span>02</span></a>
+        <a class="side-link" href="calendar.html">Lịch <span>03</span></a>
+        <a class="side-link" aria-current="page" href="parish.html">Giáo xứ <span>04</span></a>
+        <a class="side-link" href="progress.html">Nhịp sống đạo <span>05</span></a>
+      </aside>
+
+      <section class="stack-lg" data-od-id="parish-main">
+        <div>
+          <p class="eyebrow">Giáo xứ của tôi</p>
+          <h1>Thánh lễ quan trọng nằm ngay trong việc hôm nay.</h1>
+          <p class="lead">Không cạnh tranh với bản đồ. Sống Đạo chỉ cần biết giáo xứ của bạn và các giờ lễ quan trọng để nhắc đúng lúc cho một người hoặc cả nhà.</p>
+        </div>
+
+        <article class="card stack">
+          <label class="meta" for="parish">Chọn giáo xứ</label>
+          <select class="select" id="parish" data-parish-select>
+            <option value="tan-dinh">Giáo xứ Tân Định</option>
+            <option value="duc-ba">Nhà thờ Đức Bà Sài Gòn</option>
+            <option value="ba-chuong">Giáo xứ Ba Chuông</option>
+          </select>
+          <div class="surface-warm card stack">
+            <span class="pill"><span class="dot"></span><span data-cache-state>Đã lưu để dùng offline</span></span>
+            <h2 data-parish-name>Giáo xứ Tân Định</h2>
+            <p class="lead" data-parish-mass>Chúa Nhật · 07:00 · 17:30</p>
+            <div class="grid-2">
+              <div class="panel">
+                <span class="meta">Xưng tội</span>
+                <h3>Thứ Bảy · 17:00</h3>
+              </div>
+              <div class="panel">
+                <span class="meta">Cập nhật</span>
+                <h3>Đã xác minh gần đây</h3>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card stack">
+          <h3>Đề xuất chỉnh sửa</h3>
+          <p class="muted">Người dùng có thể gửi thay đổi giờ lễ, nhưng dữ liệu công khai cần được duyệt trước khi phát hành gói nội dung mới.</p>
+          <textarea class="textarea" placeholder="Ví dụ: Giờ lễ chiều Chúa Nhật đã chuyển sang 18:00..."></textarea>
+          <button class="btn" type="button">Lưu bản nháp góp ý</button>
+        </article>
+      </section>
+
+      <aside class="right-rail stack-lg" data-od-id="parish-rail">
+        <article class="panel stack">
+          <span class="meta">Cá nhân / gia đình</span>
+          <h3>Nhắc trước lễ 45 phút.</h3>
+          <p class="muted">CTA không phải “tìm nhà thờ”, mà là giúp người dùng chuẩn bị đi lễ đúng giờ.</p>
+        </article>
+        <article class="panel stack">
+          <span class="meta">Local-first</span>
+          <h3>Giáo xứ đã chọn được cache.</h3>
+          <p class="muted">Mở lại được khi không có mạng sau lần tải dữ liệu đầu tiên.</p>
+        </article>
+      </aside>
+    </div>
+  </main>
+  <script src="songdao.js"></script>
+</body>
+</html>

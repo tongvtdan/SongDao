@@ -1,5 +1,13 @@
-const CACHE_NAME = "songdao-cache-v3";
-const ASSETS_TO_CACHE = ["/favicon.ico", "/manifest.json"];
+const CACHE_NAME = "songdao-cache-v4";
+const APP_SHELL = ["/", "/calendar", "/pray", "/progress", "/settings", "/privacy"];
+const ASSETS_TO_CACHE = [
+  "/favicon.ico",
+  "/manifest.json",
+  "/icons/songdao-192.png",
+  "/icons/songdao-512.png",
+  "/icons/songdao-maskable-512.png",
+  ...APP_SHELL,
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -20,16 +28,33 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
-  if (url.pathname.startsWith("/_next/")) {
-    return;
-  }
-
   if (event.request.mode === "navigate") {
-    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request).then((cachedResponse) => cachedResponse || caches.match("/")))
+    );
     return;
   }
 
-  if (!ASSETS_TO_CACHE.includes(url.pathname)) {
+  if (url.pathname.startsWith("/_next/")) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(event.request).then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200) return networkResponse;
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          return networkResponse;
+        });
+      })
+    );
     return;
   }
 

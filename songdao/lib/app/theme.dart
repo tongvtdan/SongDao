@@ -3,25 +3,25 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   // Core surfaces
-  static const canvas = Color(0xFFFAF8F3);
-  static const surface = Color(0xFFFFFFFF);
-  static const surfaceSecondary = Color(0xFFF3F0E8);
-  static const surfaceContainer = Color(0xFFF0EEE8);
-  static const surfaceVariant = Color(0xFFE5E2DC);
-  static const inverse = Color(0xFF18221E);
+  static const canvas = Color(0xFFF5F4ED);
+  static const surface = Color(0xFFFAF9F5);
+  static const surfaceSecondary = Color(0xFFE8E6DC);
+  static const surfaceContainer = Color(0xFFF0EEE6);
+  static const surfaceVariant = Color(0xFFE2DED2);
+  static const inverse = Color(0xFF141413);
 
   // Text
-  static const textPrimary = Color(0xFF1F2522);
-  static const textSecondary = Color(0xFF5F6761);
-  static const textTertiary = Color(0xFF8A938D);
-  static const textInverse = Color(0xFFF8F5ED);
-  static const textLink = Color(0xFF1B6E5A);
+  static const textPrimary = Color(0xFF141413);
+  static const textSecondary = Color(0xFF5E5D59);
+  static const textTertiary = Color(0xFF87867F);
+  static const textInverse = Color(0xFFFAF9F5);
+  static const textLink = Color(0xFFC96442);
 
   // Brand & interaction
-  static const brand = Color(0xFF1F7A64);
-  static const brandPressed = Color(0xFF155744);
-  static const brandSoft = Color(0xFFE2F1EA);
-  static const brandDeep = Color(0xFF123C32);
+  static const brand = Color(0xFFC96442);
+  static const brandPressed = Color(0xFFAD5134);
+  static const brandSoft = Color(0xFFF2DFD5);
+  static const brandDeep = Color(0xFF743820);
 
   // Accent
   static const gold = Color(0xFFB8892E);
@@ -41,9 +41,9 @@ class AppColors {
   static const statusOffline = Color(0xFF5F6761);
 
   // Borders
-  static const borderSubtle = Color(0xFFE2DDD1);
-  static const borderStrong = Color(0xFFCFC7B7);
-  static const borderFocus = Color(0xFF1F7A64);
+  static const borderSubtle = Color(0xFFF0EEE6);
+  static const borderStrong = Color(0xFFD4CBBB);
+  static const borderFocus = Color(0xFFC96442);
 }
 
 class LiturgicalColors {
@@ -159,7 +159,7 @@ class AppTheme {
         backgroundColor: AppColors.surfaceSecondary,
         indicatorColor: AppColors.brandSoft.withValues(alpha: 0.5),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          return GoogleFonts.notoSerif(
+          return GoogleFonts.sourceSerif4(
             fontSize: 11,
             fontWeight: FontWeight.w500,
             color: states.contains(WidgetState.selected)
@@ -186,98 +186,99 @@ class AppTheme {
     );
 
     return baseTheme.copyWith(
-      textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme).copyWith(
-        displayLarge: GoogleFonts.notoSerif(
-          fontSize: 40,
-          fontWeight: FontWeight.w700,
-          height: 1.2,
-          color: AppColors.textPrimary,
-        ),
-        displayMedium: GoogleFonts.notoSerif(
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
-          height: 1.3,
-          color: AppColors.textPrimary,
-        ),
-        displaySmall: GoogleFonts.notoSerif(
-          fontSize: 28,
-          fontWeight: FontWeight.w600,
-          height: 1.3,
-          color: AppColors.textPrimary,
-        ),
-        headlineLarge: GoogleFonts.notoSerif(
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
-          height: 1.3,
-          color: AppColors.textPrimary,
-        ),
-        headlineMedium: GoogleFonts.notoSerif(
-          fontSize: 24,
-          fontWeight: FontWeight.w500,
-          height: 1.4,
-          color: AppColors.textPrimary,
-        ),
-        headlineSmall: GoogleFonts.notoSerif(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-          height: 1.4,
-          color: AppColors.textPrimary,
-        ),
-        titleLarge: GoogleFonts.notoSerif(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-        titleMedium: GoogleFonts.inter(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.15,
-          color: AppColors.textPrimary,
-        ),
-        titleSmall: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.1,
-          color: AppColors.textPrimary,
-        ),
-        bodyLarge: GoogleFonts.inter(
-          fontSize: 18,
-          fontWeight: FontWeight.w400,
-          height: 1.5,
-          color: AppColors.textPrimary,
-        ),
-        bodyMedium: GoogleFonts.inter(
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-          height: 1.45,
-          color: AppColors.textPrimary,
-        ),
-        bodySmall: GoogleFonts.inter(
-          fontSize: 13,
-          fontWeight: FontWeight.w400,
-          height: 1.4,
-          color: AppColors.textPrimary,
-        ),
-        labelLarge: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.1,
-          color: AppColors.textPrimary,
-        ),
-        labelMedium: GoogleFonts.inter(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.05,
-          height: 1.3,
-          color: AppColors.textPrimary,
-        ),
-        labelSmall: GoogleFonts.inter(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.5,
-          color: AppColors.textPrimary,
-        ),
-      ),
+      textTheme: GoogleFonts.beVietnamProTextTheme(baseTheme.textTheme)
+          .copyWith(
+            displayLarge: GoogleFonts.sourceSerif4(
+              fontSize: 40,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+              color: AppColors.textPrimary,
+            ),
+            displayMedium: GoogleFonts.sourceSerif4(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+              color: AppColors.textPrimary,
+            ),
+            displaySmall: GoogleFonts.sourceSerif4(
+              fontSize: 28,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+              color: AppColors.textPrimary,
+            ),
+            headlineLarge: GoogleFonts.sourceSerif4(
+              fontSize: 32,
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+              color: AppColors.textPrimary,
+            ),
+            headlineMedium: GoogleFonts.sourceSerif4(
+              fontSize: 24,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+              color: AppColors.textPrimary,
+            ),
+            headlineSmall: GoogleFonts.sourceSerif4(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              height: 1.4,
+              color: AppColors.textPrimary,
+            ),
+            titleLarge: GoogleFonts.sourceSerif4(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+            titleMedium: GoogleFonts.beVietnamPro(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.15,
+              color: AppColors.textPrimary,
+            ),
+            titleSmall: GoogleFonts.beVietnamPro(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.1,
+              color: AppColors.textPrimary,
+            ),
+            bodyLarge: GoogleFonts.beVietnamPro(
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+              color: AppColors.textPrimary,
+            ),
+            bodyMedium: GoogleFonts.beVietnamPro(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              height: 1.45,
+              color: AppColors.textPrimary,
+            ),
+            bodySmall: GoogleFonts.beVietnamPro(
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              height: 1.4,
+              color: AppColors.textPrimary,
+            ),
+            labelLarge: GoogleFonts.beVietnamPro(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
+              color: AppColors.textPrimary,
+            ),
+            labelMedium: GoogleFonts.beVietnamPro(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.05,
+              height: 1.3,
+              color: AppColors.textPrimary,
+            ),
+            labelSmall: GoogleFonts.beVietnamPro(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+              color: AppColors.textPrimary,
+            ),
+          ),
     );
   }
 }

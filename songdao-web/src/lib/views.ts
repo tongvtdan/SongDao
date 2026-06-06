@@ -11,6 +11,7 @@ import {
 } from "./engine";
 import { getActionLog, getAllLogs, getShowLunarDate } from "./storage";
 import {
+  CalendarAgendaItem,
   CalendarDayDetail,
   CalendarMonthViewData,
   DailyAction,
@@ -48,6 +49,22 @@ export function getCalendarMonthView(monthKey: string, selectedDate: string, inc
     visibleMonth: monthKey,
     days: Object.fromEntries(days.map((day) => [day.date, day])),
   };
+}
+
+export function getCalendarMonthAgenda(monthKey: string): CalendarAgendaItem[] {
+  const { start, end } = monthBounds(monthKey);
+  const locale = "vi";
+  return contentLoader.getCalendarDaysInRange(start, end).map((calendarDay) => {
+    const celebrations = contentLoader.getCelebrations(calendarDay.date);
+    return {
+      date: calendarDay.date,
+      calendarDay,
+      celebrations,
+      readings: sortReadings(contentLoader.getReadings(calendarDay.date)),
+      action: selectDailyAction(calendarDay.date, calendarDay, celebrations, contentLoader.getActionRules(), locale),
+      reflection: contentLoader.getReflection(calendarDay.date),
+    };
+  });
 }
 
 export function getCalendarDayDetail(dateKey: string, includeClientState = true): CalendarDayDetail {

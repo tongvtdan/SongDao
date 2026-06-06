@@ -30,19 +30,24 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
   final Map<String, Future<TodayViewData>> _previewFutures = {};
   int _cardPage = _initialCardPage;
   String? _cardDateKey;
+  String _savedNoteText = '';
   bool _isCompleting = false;
   bool _isSavingNote = false;
+  bool _isNoteDirty = false;
+  bool _isSyncingNoteText = false;
 
   @override
   void initState() {
     super.initState();
     _cardPageController = PageController(initialPage: _initialCardPage);
+    _noteController.addListener(_handleNoteChanged);
     _todayFuture = _loadToday();
   }
 
   @override
   void dispose() {
     _cardPageController.dispose();
+    _noteController.removeListener(_handleNoteChanged);
     _noteController.dispose();
     super.dispose();
   }
@@ -56,7 +61,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         engine: ref.read(dailyActionEngineProvider),
       ).load();
 
-      _noteController.text = data.log?.note ?? '';
+      _syncSavedNote(data.log?.note ?? '');
       return data;
     } catch (error, stackTrace) {
       debugPrint('Today load failed: $error\n$stackTrace');
@@ -77,6 +82,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     try {
       await _controller.completeAction(data, note: _noteController.text);
       if (mounted) {
+        _markCurrentNoteSaved();
         final future = _loadToday();
         setState(() {
           _todayFuture = future;
@@ -97,6 +103,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     try {
       await _controller.saveNote(data, _noteController.text);
       if (mounted) {
+        _markCurrentNoteSaved();
         final future = _loadToday();
         setState(() {
           _todayFuture = future;
@@ -176,6 +183,8 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
                           ReflectionNoteCard(
                             controller: _noteController,
                             isSaving: _isSavingNote,
+                            isDirty: _isNoteDirty,
+                            hasSavedNote: _savedNoteText.trim().isNotEmpty,
                             onSave: () => _saveNote(data),
                           ),
                         ],
@@ -247,11 +256,33 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     return _animateCardToPage(_initialCardPage);
   }
 
+  void _handleNoteChanged() {
+    if (_isSyncingNoteText) {
+      return;
+    }
+    final isDirty = _noteController.text.trim() != _savedNoteText.trim();
+    if (isDirty == _isNoteDirty || !mounted) {
+      return;
+    }
+    setState(() => _isNoteDirty = isDirty);
+  }
+
+  void _syncSavedNote(String note) {
+    _isSyncingNoteText = true;
+    _savedNoteText = note;
+    _noteController.text = note;
+    _isNoteDirty = false;
+    _isSyncingNoteText = false;
+  }
+
+  void _markCurrentNoteSaved() {
+    _savedNoteText = _noteController.text.trim();
+    _isNoteDirty = false;
+  }
+
   String _dateKeyForCardPage(int page, String todayDateKey) {
     final today = DateTime.parse(todayDateKey);
-    final previewDate = today.add(
-      Duration(days: page - _initialCardPage),
-    );
+    final previewDate = today.add(Duration(days: page - _initialCardPage));
     return DateFormat('yyyy-MM-dd').format(previewDate);
   }
 }
