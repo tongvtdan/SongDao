@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "songdao"
+		},
+		{
+			"path": "content"
 		}
 	],
 	"settings": {}

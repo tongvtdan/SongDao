@@ -1,0 +1,32 @@
+flowchart TD
+    A[Ý tưởng] --> B[Qwen nghiên cứu]
+    B --> C[Bản đặc tả nháp]
+    C --> D{Chọn cách đi}
+
+    D --> E[Tiết kiệm chi phí]
+    E --> E1[Qwen viết phạm vi, nội dung, kế hoạch]
+    E1 --> E2[Stitch dựng giao diện tham khảo]
+    E2 --> E3[Lovable.dev dựng trang giới thiệu]
+    E3 --> E4[Codex chỉnh khi cần]
+
+    D --> F[Tối ưu kết quả]
+    F --> F1[ChatGPT cắt phạm vi và làm rõ định vị]
+    F1 --> F2[Open Design + Codex tạo hệ thiết kế]
+    F2 --> F3[Stitch tạo biến thể giao diện]
+    F3 --> F4[Codex xây bản thử Flutter]
+    F3 --> F5[Lovable.dev + Codex làm trang giới thiệu]
+
+    E4 --> G[Thử với người dùng]
+    F4 --> G
+    F5 --> G
+    G --> H[Giữ lại thứ có tín hiệu thật]
+
+    classDef low fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20,stroke-width:2px;
+    classDef high fill:#F3E5F5,stroke:#8E24AA,color:#4A148C,stroke-width:2px;
+    classDef core fill:#E3F2FD,stroke:#1565C0,color:#0D47A1,stroke-width:2px;
+    classDef test fill:#FFF3E0,stroke:#EF6C00,color:#E65100,stroke-width:2px;
+
+    class A,B,C,D core;
+    class E,E1,E2,E3,E4 low;
+    class F,F1,F2,F3,F4,F5 high;
+    class G,H test;
