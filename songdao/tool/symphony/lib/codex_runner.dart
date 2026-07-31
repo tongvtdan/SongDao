@@ -245,7 +245,7 @@ class CodexRunner {
   }) {
     if (turnNumber == 1) {
       final source = workflow.promptTemplate.trim().isEmpty
-          ? 'You are working on an issue from Linear.'
+          ? 'You are working on a GitHub issue.'
           : workflow.promptTemplate;
       return StrictTemplate(source).render(issue: issue, attempt: attempt);
     }

@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../tool/symphony/lib/codex_runner.dart';
 import '../../tool/symphony/lib/config.dart';
-import '../../tool/symphony/lib/linear_client.dart';
+import '../../tool/symphony/lib/github_client.dart';
 import '../../tool/symphony/lib/models.dart';
 import '../../tool/symphony/lib/orchestrator.dart';
 import '../../tool/symphony/lib/template.dart';
@@ -19,14 +19,16 @@ void main() {
       final workflow = const WorkflowLoader().parse('''
 ---
 tracker:
-  kind: linear
-  api_key: \$LINEAR_API_KEY
-  project_slug: songdao-90622233d8fe
+  kind: github
+  token: \$GITHUB_TOKEN
+  owner: tongvtdan
+  project_number: 8
+  repository: tongvtdan/SongDao
 workspace:
   root: workspaces
 agent:
   max_concurrent_agents_by_state:
-    Todo: 1
+    Ready: 1
 hooks:
   before_run: |
     echo before
@@ -37,14 +39,17 @@ Work on {{ issue.identifier }}.
       final config = SymphonyConfig.fromWorkflow(
         workflow: workflow,
         workflowPath: '/tmp/repo/WORKFLOW.md',
-        environment: {'LINEAR_API_KEY': 'secret'},
+        environment: {'GITHUB_TOKEN': 'secret'},
       );
 
       expect(workflow.promptTemplate, 'Work on {{ issue.identifier }}.');
-      expect(config.tracker.apiKey, 'secret');
+      expect(config.tracker.token, 'secret');
+      expect(config.tracker.owner, 'tongvtdan');
+      expect(config.tracker.projectNumber, 8);
+      expect(config.tracker.repository, 'tongvtdan/SongDao');
       expect(config.polling.intervalMs, 30000);
       expect(config.workspace.root, '/tmp/repo/workspaces');
-      expect(config.agent.maxConcurrentAgentsByState, {'todo': 1});
+      expect(config.agent.maxConcurrentAgentsByState, {'ready': 1});
       expect(config.hooks.beforeRun, 'echo before');
       expect(config.validateForDispatch(), isEmpty);
     });
@@ -54,7 +59,7 @@ Work on {{ issue.identifier }}.
         id: '1',
         identifier: 'DAN-1',
         title: 'Test',
-        state: 'Todo',
+        state: 'Ready',
       );
 
       expect(
@@ -76,14 +81,16 @@ Work on {{ issue.identifier }}.
     });
   });
 
-  group('Linear adapter', () {
+  group('GitHub adapter', () {
     test('normalizes paginated candidate issues', () async {
       final workflow = WorkflowDefinition(
         config: {
           'tracker': {
-            'kind': 'linear',
-            'api_key': 'secret',
-            'project_slug': 'songdao-90622233d8fe',
+            'kind': 'github',
+            'token': 'secret',
+            'owner': 'tongvtdan',
+            'project_number': 8,
+            'repository': 'tongvtdan/SongDao',
           },
         },
         promptTemplate: '',
@@ -93,25 +100,30 @@ Work on {{ issue.identifier }}.
         workflowPath: '/tmp/WORKFLOW.md',
       );
       var calls = 0;
-      final client = LinearIssueTrackerClient(
+      final client = GitHubIssueTrackerClient(
         config: config,
         poster: (_, _, _, variables) async {
           calls += 1;
-          expect(variables['projectSlug'], 'songdao-90622233d8fe');
+          expect(variables['owner'], 'tongvtdan');
+          expect(variables['projectNumber'], 8);
           return {
             'data': {
-              'issues': {
-                'nodes': [
-                  _linearIssueNode(
-                    id: 'id-$calls',
-                    identifier: 'DAN-$calls',
-                    label: 'Backend',
-                    blockerState: calls == 1 ? 'Done' : null,
-                  ),
-                ],
-                'pageInfo': {
-                  'hasNextPage': calls == 1,
-                  'endCursor': calls == 1 ? 'cursor-1' : null,
+              'user': {
+                'projectV2': {
+                  'items': {
+                    'nodes': [
+                      _githubProjectItem(
+                        id: 'item-$calls',
+                        number: calls,
+                        label: 'Backend',
+                        blockerState: calls == 1 ? 'CLOSED' : null,
+                      ),
+                    ],
+                    'pageInfo': {
+                      'hasNextPage': calls == 1,
+                      'endCursor': calls == 1 ? 'cursor-1' : null,
+                    },
+                  },
                 },
               },
             },
@@ -122,6 +134,9 @@ Work on {{ issue.identifier }}.
       final issues = await client.fetchCandidateIssues();
 
       expect(issues, hasLength(2));
+      expect(issues.first.identifier, 'SongDao#1');
+      expect(issues.first.priority, 0);
+      expect(issues.first.state, 'Ready');
       expect(issues.first.labels, ['backend']);
       expect(issues.first.blockedBy.single.state, 'Done');
       expect(calls, 2);
@@ -150,7 +165,7 @@ Work on {{ issue.identifier }}.
             id: '3',
             identifier: 'DAN-3',
             priority: 1,
-            blockedBy: const [IssueBlocker(state: 'In Progress')],
+            blockedBy: const [IssueBlocker(state: 'In progress')],
           ),
         ]);
         final dispatched = <String>[];
@@ -256,41 +271,43 @@ void main() {
   });
 }
 
-Map<String, Object?> _linearIssueNode({
+Map<String, Object?> _githubProjectItem({
   required String id,
-  required String identifier,
+  required int number,
   required String label,
   String? blockerState,
 }) {
   return {
     'id': id,
-    'identifier': identifier,
-    'title': 'Title',
-    'description': null,
-    'priority': 1,
-    'branchName': 'branch',
-    'url': 'https://linear.app/test',
-    'createdAt': '2026-01-01T00:00:00Z',
     'updatedAt': '2026-01-02T00:00:00Z',
-    'state': {'name': 'Todo'},
-    'labels': {
-      'nodes': [
-        {'name': label},
-      ],
-    },
-    'inverseRelations': {
-      'nodes': blockerState == null
-          ? []
-          : [
-              {
-                'type': 'blocks',
-                'issue': {
+    'status': {'name': 'Ready'},
+    'priorityValue': {'name': 'P0'},
+    'content': {
+      'id': 'issue-$number',
+      'number': number,
+      'title': 'Title',
+      'body': null,
+      'url': 'https://github.com/tongvtdan/SongDao/issues/$number',
+      'createdAt': '2026-01-01T00:00:00Z',
+      'updatedAt': '2026-01-02T00:00:00Z',
+      'repository': {'nameWithOwner': 'tongvtdan/SongDao'},
+      'labels': {
+        'nodes': [
+          {'name': label},
+        ],
+      },
+      'blockedBy': {
+        'nodes': blockerState == null
+            ? []
+            : [
+                {
                   'id': 'blocker',
-                  'identifier': 'DAN-0',
-                  'state': {'name': blockerState},
+                  'number': 0,
+                  'state': blockerState,
+                  'repository': {'nameWithOwner': 'tongvtdan/SongDao'},
                 },
-              },
-            ],
+              ],
+      },
     },
   };
 }
@@ -307,7 +324,7 @@ SymphonyIssue _issue({
     identifier: identifier,
     title: 'Issue $identifier',
     priority: priority,
-    state: 'Todo',
+    state: 'Ready',
     blockedBy: blockedBy,
     createdAt: createdAt,
   );
@@ -322,9 +339,11 @@ SymphonyConfig _testConfig({
     workflow: WorkflowDefinition(
       config: {
         'tracker': {
-          'kind': 'linear',
-          'api_key': 'secret',
-          'project_slug': 'songdao',
+          'kind': 'github',
+          'token': 'secret',
+          'owner': 'tongvtdan',
+          'project_number': 8,
+          'repository': 'tongvtdan/SongDao',
         },
         'agent': {'max_concurrent_agents': maxConcurrentAgents},
         if (codexCommand != null) 'codex': {'command': codexCommand},

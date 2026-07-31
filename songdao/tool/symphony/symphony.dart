@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'lib/codex_runner.dart';
-import 'lib/linear_client.dart';
+import 'lib/github_client.dart';
 import 'lib/observability.dart';
 import 'lib/orchestrator.dart';
 import 'lib/workflow.dart';
@@ -38,7 +38,7 @@ Future<void> main(List<String> args) async {
   );
   var orchestrator = Orchestrator(
     config: runtime.config,
-    tracker: LinearIssueTrackerClient(config: runtime.config),
+    tracker: GitHubIssueTrackerClient(config: runtime.config),
     workspaceCleaner: workspaceManager,
     workerRunner: codexRunner.run,
   );

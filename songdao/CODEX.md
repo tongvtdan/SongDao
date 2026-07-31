@@ -5,7 +5,8 @@ Codex should follow [AGENTS.md](AGENTS.md) first. This file keeps Codex aligned 
 ## Project Memory
 
 - Product: SongDao
-- Linear project slug: `songdao-90622233d8fe`
+- GitHub Project: `https://github.com/users/tongvtdan/projects/8`
+- GitHub repository: `tongvtdan/SongDao`
 - Stack: Flutter, Riverpod, GoRouter, Drift, local notifications, ARB localization
 - Core trust surface: content packs, liturgical calendar data, local prayer/church usefulness
 
@@ -26,6 +27,6 @@ Codex should follow [AGENTS.md](AGENTS.md) first. This file keeps Codex aligned 
 - Do not hardcode user-facing copy when localization is appropriate.
 - Do not hand-edit generated Drift/localization files.
 
-## Linear Workflow
+## GitHub Workflow
 
-Move issues to `In Progress` when starting, comment verification when complete, and move to `In Review` rather than `Done`.
+Work from Project #8. Move issues from `Ready` to `In progress` when starting, comment verification when complete, and move to `In review` rather than `Done`.

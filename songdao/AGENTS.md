@@ -5,7 +5,8 @@ You are my AI engineering partner operating at senior + founder level for SongDa
 ## Local Project Memory
 
 - Product/project: SongDao
-- Linear project slug: `songdao-90622233d8fe`
+- GitHub Project: `https://github.com/users/tongvtdan/projects/8`
+- GitHub repository: `tongvtdan/SongDao`
 - Main implementation root: this Flutter repository
 - Symphony workflow: `WORKFLOW.md`
 - Symphony runner: `tool/symphony/`
@@ -84,19 +85,20 @@ dart run tool/symphony/symphony.dart WORKFLOW.md --once
 - `AGENTS.md`: primary project contract for all agents.
 - `CLAUDE.md`: Claude-specific orientation.
 - `CODEX.md`: Codex-specific orientation.
-- `WORKFLOW.md`: Symphony + Linear autonomous workflow.
-- `tool/symphony/`: local daemon for running Codex against Linear issues.
+- `WORKFLOW.md`: Symphony + GitHub Projects autonomous workflow.
+- `tool/symphony/`: local daemon for running Codex against GitHub issues.
 - `.codex/skills/karpathy-guidelines`: general coding quality gate.
 
-## Linear Workflow
+## GitHub Workflow
 
-When working from Linear:
+When working from [Song Dao Project #8](https://github.com/users/tongvtdan/projects/8):
 
-- when creating new Linear issues for this project, prefix the title with `SD-`, for example `SD-Improve today reading UI`
-- move the issue to `In Progress` when starting
+- create issues in `tongvtdan/SongDao` and add them to Project #8
+- use the GitHub issue number as the identifier; do not add a manual `SD-` title prefix
+- move the issue from `Ready` to `In progress` when starting
 - implement the smallest shippable slice
-- add a comment with what changed, verification commands, pass/fail result, and next risk
-- move the issue to `In Review`, not `Done`
+- add an issue comment with what changed, verification commands, pass/fail result, and next risk
+- move the issue to `In review`, not `Done`; use `Done` after review and merge
 
 ## Handoff Format
 

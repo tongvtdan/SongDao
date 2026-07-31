@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'config.dart';
-import 'linear_client.dart';
+import 'github_client.dart';
 import 'models.dart';
 
 typedef WorkerRunner =
@@ -119,7 +119,7 @@ class Orchestrator {
     }
     if (_availableGlobalSlots() <= 0) return false;
     if (_availableStateSlots(issue.state) <= 0) return false;
-    if (issue.state.toLowerCase() == 'todo' && _hasNonTerminalBlocker(issue)) {
+    if (_isInitialActiveState(issue.state) && _hasNonTerminalBlocker(issue)) {
       return false;
     }
     return true;
@@ -229,7 +229,7 @@ class Orchestrator {
     if (running.containsKey(issue.id)) return false;
     if (_availableGlobalSlots() <= 0) return false;
     if (_availableStateSlots(issue.state) <= 0) return false;
-    if (issue.state.toLowerCase() == 'todo' && _hasNonTerminalBlocker(issue)) {
+    if (_isInitialActiveState(issue.state) && _hasNonTerminalBlocker(issue)) {
       return false;
     }
     return true;
@@ -314,6 +314,12 @@ class Orchestrator {
       if (state == null) return true;
       return !config.isTerminalState(state);
     });
+  }
+
+  bool _isInitialActiveState(String state) {
+    final activeStates = config.tracker.activeStates;
+    return activeStates.isNotEmpty &&
+        state.toLowerCase() == activeStates.first.toLowerCase();
   }
 
   int _availableGlobalSlots() => _minInt(

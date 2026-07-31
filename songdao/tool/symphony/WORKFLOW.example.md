@@ -1,10 +1,14 @@
 ---
 tracker:
-  kind: linear
-  api_key: $LINEAR_API_KEY
-  project_slug: songdao-90622233d8fe
-  active_states: [Todo, In Progress]
-  terminal_states: [Closed, Cancelled, Canceled, Duplicate, Done]
+  kind: github
+  token: $GITHUB_TOKEN
+  owner: tongvtdan
+  project_number: 8
+  repository: tongvtdan/SongDao
+  status_field: Status
+  priority_field: Priority
+  active_states: [Ready, In progress]
+  terminal_states: [Done]
 
 polling:
   interval_ms: 30000
@@ -15,9 +19,10 @@ workspace:
 hooks:
   timeout_ms: 60000
   after_create: |
-    git status --short || true
+    git clone --origin origin https://github.com/tongvtdan/SongDao.git .
   before_run: |
-    pwd
+    git remote get-url origin
+    git status --short
   after_run: |
     true
   before_remove: |
@@ -28,8 +33,8 @@ agent:
   max_turns: 20
   max_retry_backoff_ms: 300000
   max_concurrent_agents_by_state:
-    Todo: 1
-    In Progress: 1
+    Ready: 1
+    In progress: 1
 
 codex:
   command: codex app-server
@@ -40,12 +45,12 @@ codex:
 server:
   port: 0
 ---
-You are working on Linear issue {{ issue.identifier }}.
+You are working on GitHub issue {{ issue.identifier }}.
 
 Title: {{ issue.title }}
 State: {{ issue.state }}
 Priority: {{ issue.priority }}
 
 Work inside the current repository workspace only. Implement the smallest
-shippable change, run relevant checks, and leave a concise handoff in Linear
-using the tools available in the Codex session.
+shippable change, run relevant checks, and leave a concise handoff on the
+GitHub issue using the tools available in the Codex session.

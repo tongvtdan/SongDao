@@ -5,7 +5,8 @@ Claude Code should follow [AGENTS.md](AGENTS.md) as the project contract. This f
 ## Project
 
 - Product: SongDao
-- Linear project slug: `songdao-90622233d8fe`
+- GitHub Project: `https://github.com/users/tongvtdan/projects/8`
+- GitHub repository: `tongvtdan/SongDao`
 - App type: Flutter local-first Catholic daily companion
 
 ## Claude Rules

@@ -1,8 +1,9 @@
 # Symphony Service
 
-Symphony is a local automation daemon for running Codex against Linear issues.
-It is intentionally isolated under `tool/symphony` so the SongDao Flutter app
-code stays focused on the mobile product.
+Symphony is a local automation daemon for running Codex against GitHub issues
+in a user-owned GitHub Project. It is intentionally isolated under
+`tool/symphony` so the SongDao Flutter app code stays focused on the mobile
+product.
 
 ## Run
 
@@ -26,11 +27,11 @@ The optional local status server exposes:
 ## Trust Posture
 
 The first implementation is a trusted local daemon. It is designed for a solo
-operator running against known repositories and known Linear projects.
+operator running against known repositories and known GitHub Projects.
 
 Current controls:
 
-- Linear API tokens are read from config/env and never logged.
+- GitHub tokens are read from config/env and never logged.
 - Codex is launched only with `cwd` equal to the per-issue workspace.
 - Workspace paths are sanitized from issue identifiers.
 - Workspace paths must stay under `workspace.root`.
@@ -44,17 +45,19 @@ Not included in the first pass:
 - VM/container isolation.
 - Durable scheduler database.
 - Remote SSH worker pool.
-- First-class Linear mutations in the orchestrator.
+- First-class GitHub issue and project mutations in the orchestrator.
 - Rich multi-user dashboard.
 
 ## Recommended Local Workflow
 
 1. Start with `WORKFLOW.example.md`.
-2. Set `LINEAR_API_KEY` in the shell.
-3. Point `tracker.project_slug` at a test Linear project first.
+2. Set `GITHUB_TOKEN` in the shell. It must be able to read the repository and
+   user project.
+3. Point `tracker.owner`, `tracker.project_number`, and `tracker.repository` at
+   a test GitHub Project first.
 4. Use a temporary `workspace.root`.
 5. Run `--once` before daemon mode.
-6. Only then point the workflow at active SongDao issues.
+6. Only then point the workflow at active SongDao GitHub issues.
 
 ## Test
 
@@ -62,4 +65,3 @@ Not included in the first pass:
 flutter test test/symphony/symphony_test.dart
 flutter analyze
 ```
-

@@ -45,17 +45,21 @@ class SymphonyConfig {
       tracker: TrackerConfig(
         kind: _string(tracker['kind']),
         endpoint:
-            _string(tracker['endpoint']) ?? 'https://api.linear.app/graphql',
-        apiKey:
-            _resolveEnv(_string(tracker['api_key']), env) ??
-            env['LINEAR_API_KEY'],
-        projectSlug: _string(tracker['project_slug']),
+            _string(tracker['endpoint']) ?? 'https://api.github.com/graphql',
+        token:
+            _resolveEnv(_string(tracker['token']), env) ??
+            env['GH_TOKEN'] ??
+            env['GITHUB_TOKEN'],
+        owner: _string(tracker['owner']),
+        projectNumber: _positiveIntOrNull(tracker['project_number']),
+        repository: _string(tracker['repository']),
+        statusField: _string(tracker['status_field']) ?? 'Status',
+        priorityField: _string(tracker['priority_field']) ?? 'Priority',
         activeStates:
             _stringList(tracker['active_states']) ??
-            const ['Todo', 'In Progress'],
+            const ['Ready', 'In progress'],
         terminalStates:
-            _stringList(tracker['terminal_states']) ??
-            const ['Closed', 'Cancelled', 'Canceled', 'Duplicate', 'Done'],
+            _stringList(tracker['terminal_states']) ?? const ['Done'],
       ),
       polling: PollingConfig(
         intervalMs: _positiveInt(polling['interval_ms'], 30000),
@@ -105,7 +109,7 @@ class SymphonyConfig {
           'tracker.kind is required.',
         ),
       );
-    } else if (tracker.kind != 'linear') {
+    } else if (tracker.kind != 'github') {
       failures.add(
         SymphonyFailure(
           'unsupported_tracker_kind',
@@ -113,19 +117,40 @@ class SymphonyConfig {
         ),
       );
     }
-    if (tracker.apiKey == null || tracker.apiKey!.isEmpty) {
+    if (tracker.token == null || tracker.token!.isEmpty) {
       failures.add(
         const SymphonyFailure(
-          'missing_tracker_api_key',
-          'Linear API key is required.',
+          'missing_tracker_token',
+          'GitHub token is required.',
         ),
       );
     }
-    if (tracker.projectSlug == null || tracker.projectSlug!.isEmpty) {
+    if (tracker.owner == null || tracker.owner!.isEmpty) {
       failures.add(
         const SymphonyFailure(
-          'missing_tracker_project_slug',
-          'tracker.project_slug is required.',
+          'missing_tracker_owner',
+          'tracker.owner is required.',
+        ),
+      );
+    }
+    if (tracker.projectNumber == null) {
+      failures.add(
+        const SymphonyFailure(
+          'missing_tracker_project_number',
+          'tracker.project_number must be a positive integer.',
+        ),
+      );
+    }
+    final repository = tracker.repository;
+    if (repository == null ||
+        repository.isEmpty ||
+        !repository.contains('/') ||
+        repository.startsWith('/') ||
+        repository.endsWith('/')) {
+      failures.add(
+        const SymphonyFailure(
+          'invalid_tracker_repository',
+          'tracker.repository must use owner/name format.',
         ),
       );
     }
@@ -151,16 +176,24 @@ class TrackerConfig {
   const TrackerConfig({
     required this.kind,
     required this.endpoint,
-    required this.apiKey,
-    required this.projectSlug,
+    required this.token,
+    required this.owner,
+    required this.projectNumber,
+    required this.repository,
+    required this.statusField,
+    required this.priorityField,
     required this.activeStates,
     required this.terminalStates,
   });
 
   final String? kind;
   final String endpoint;
-  final String? apiKey;
-  final String? projectSlug;
+  final String? token;
+  final String? owner;
+  final int? projectNumber;
+  final String? repository;
+  final String statusField;
+  final String priorityField;
   final List<String> activeStates;
   final List<String> terminalStates;
 
@@ -261,6 +294,11 @@ int _positiveInt(Object? value, int fallback) {
     );
   }
   return parsed;
+}
+
+int? _positiveIntOrNull(Object? value) {
+  final parsed = _int(value);
+  return parsed != null && parsed > 0 ? parsed : null;
 }
 
 List<String>? _stringList(Object? value) {

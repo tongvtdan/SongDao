@@ -1,24 +1,26 @@
 ---
 tracker:
-  kind: linear
-  api_key: "$LINEAR_API_KEY"
-  project_slug: "songdao-90622233d8fe"
+  kind: github
+  token: "$GITHUB_TOKEN"
+  owner: "tongvtdan"
+  project_number: 8
+  repository: "tongvtdan/SongDao"
+  status_field: "Status"
+  priority_field: "Priority"
   active_states:
-    - Todo
-    - In Progress
+    - Ready
+    - In progress
   terminal_states:
     - Done
-    - Canceled
-    - Cancelled
-    - Duplicate
 polling:
   interval_ms: 30000
 workspace:
   root: ".symphony/workspaces"
 hooks:
   after_create: |
-    git status --short || true
+    git clone --origin origin https://github.com/tongvtdan/SongDao.git .
   before_run: |
+    git remote get-url origin
     git status --short
   after_run: |
     true
@@ -30,8 +32,8 @@ agent:
   max_turns: 8
   max_retry_backoff_ms: 300000
   max_concurrent_agents_by_state:
-    Todo: 1
-    In Progress: 1
+    Ready: 1
+    In progress: 1
 codex:
   command: "codex app-server"
   turn_timeout_ms: 3600000
@@ -42,7 +44,7 @@ server:
 ---
 # SongDao Symphony Workflow
 
-You are an autonomous implementation agent working on SongDao from a Linear issue.
+You are an autonomous implementation agent working on SongDao from a GitHub issue in [Project #8](https://github.com/users/tongvtdan/projects/8) and the [tongvtdan/SongDao](https://github.com/tongvtdan/SongDao) repository.
 
 Issue: {{ issue.identifier }}
 Title: {{ issue.title }}
@@ -66,7 +68,7 @@ Every task must improve at least one of:
 - Content-pack maintainability.
 - Local-first reliability.
 
-If the issue does not clearly improve one of those, stop and add a Linear comment explaining the concern.
+If the issue does not clearly improve one of those, stop and add a GitHub issue comment explaining the concern.
 
 ## Current Ship Path
 
@@ -76,14 +78,14 @@ content pack -> Today screen -> daily action completion -> reminder/progress loo
 
 Keep work focused on local content reliability, Today, Calendar, Prayer, Church Finder, Progress, reminders, and localization.
 
-## Linear State Policy
+## GitHub Project Policy
 
-When creating new Linear issues for this project, prefix the issue title with `SD-`, for example `SD-Improve today reading UI`.
+Use the GitHub issue number as the identifier. Write outcome-focused titles without a manual `SD-` prefix, add the issue to [Song Dao Project #8](https://github.com/users/tongvtdan/projects/8), and keep work in [tongvtdan/SongDao](https://github.com/tongvtdan/SongDao).
 
-1. Move `Todo` issues to `In Progress` before editing.
+1. Move `Ready` issues to `In progress` before editing.
 2. Work in the smallest shippable slice that satisfies acceptance criteria.
-3. Add a Linear comment with what changed, verification commands, pass/fail result, and follow-up risk.
-4. Move completed implementation to `In Review`, not `Done`.
+3. Add a GitHub issue comment with what changed, verification commands, pass/fail result, and follow-up risk.
+4. Move completed implementation to `In review`, not `Done`. Use `Done` only after review and merge.
 
 ## Engineering Rules
 

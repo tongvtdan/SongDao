@@ -1,16 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "songdao-dialyfaith/song-dao-hien-tai"
-		},
-		{
-			"path": "graphics-design/Song-Dao-Open-Design"
-		},
-		{
+			"name": "songdao",
 			"path": "songdao"
-		},
-		{
-			"path": "content"
 		}
 	],
 	"settings": {}
