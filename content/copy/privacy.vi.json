@@ -1,0 +1,27 @@
+{
+  "locale": "vi",
+  "product_name": "Sống Đạo",
+  "privacy": {
+    "primary_promise": "Lịch sử thực hành của bạn được lưu trên thiết bị này, trừ khi bạn chọn sao lưu.",
+    "first_run_trust": "Sống Đạo hoạt động ngoại tuyến cho việc hôm nay, lịch sử hoàn thành, ghi chú và dữ liệu widget. Vị trí chỉ được hỏi nếu sau này bạn chọn tìm nhà thờ gần mình.",
+    "settings_summary": "Lịch sử thực hành và ghi chú suy niệm mặc định chỉ lưu trên máy. Đồng bộ, phân tích sử dụng và vị trí là tuỳ chọn, không bắt buộc.",
+    "practice_logs": "Lịch sử thực hành lưu trên thiết bị này.",
+    "reflection_notes": "Ghi chú suy niệm là riêng tư và mặc định chỉ lưu trên máy.",
+    "backup_optional": "Sao lưu là tuỳ chọn. Nếu bật sau này, bạn sẽ được hỏi trước.",
+    "analytics_optional": "Phân tích sử dụng là tuỳ chọn và mặc định tắt trong beta.",
+    "location_optional": "Vị trí chỉ được hỏi khi bạn chọn tìm nhà thờ gần mình.",
+    "sync_optional": "Đồng bộ không bắt buộc để dùng việc hôm nay, widget, ghi chú hoặc lịch sử hoàn thành.",
+    "offline_normal": "Bạn vẫn có thể dùng việc hôm nay, ghi chú và lịch sử hoàn thành khi không có mạng."
+  },
+  "permissions": {
+    "notifications_rationale": "Nhận một lời nhắc nhẹ cho việc hôm nay.",
+    "location_rationale": "Dùng vị trí để tìm nhà thờ gần bạn khi bạn yêu cầu.",
+    "analytics_rationale": "Giúp cải thiện beta bằng dữ liệu sử dụng tổng quát nếu bạn đồng ý."
+  },
+  "blocked_language": [
+    "Faith score",
+    "You failed today",
+    "Prove you attended Mass",
+    "Become a better Catholic"
+  ]
+}

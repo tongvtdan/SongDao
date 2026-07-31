@@ -1,0 +1,24 @@
+flowchart TD
+    A[Ý tưởng ứng dụng] --> B[Qwen nghiên cứu]
+    B --> C[Qwen tạo bản đặc tả nháp]
+    C --> D[ChatGPT tinh chỉnh chiến lược]
+    D --> E[Open Design + Codex tạo hướng thiết kế]
+    E --> F[Stitch dựng giao diện điện thoại tham khảo]
+    F --> G[Lovable.dev dựng trang giới thiệu]
+    G --> H[Codex chỉnh thành bản dùng thật]
+    F --> I[Codex xây bản thử Flutter]
+    H --> J[Danh sách chờ hoặc bản dùng thử]
+    I --> J
+    J --> K[Phản hồi rồi cải tiến]
+
+    classDef idea fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20,stroke-width:2px;
+    classDef ai fill:#E3F2FD,stroke:#1565C0,color:#0D47A1,stroke-width:2px;
+    classDef design fill:#F3E5F5,stroke:#8E24AA,color:#4A148C,stroke-width:2px;
+    classDef build fill:#FFF3E0,stroke:#EF6C00,color:#E65100,stroke-width:2px;
+    classDef launch fill:#FCE4EC,stroke:#C2185B,color:#880E4F,stroke-width:2px;
+
+    class A idea;
+    class B,C,D ai;
+    class E,F,G design;
+    class H,I build;
+    class J,K launch;

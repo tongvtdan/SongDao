@@ -1,0 +1,43 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:songdao/l10n/app_localizations.dart';
+import 'package:songdao/features/today/today_controller.dart';
+
+import '../data/content/content_pack_provider.dart';
+import '../data/local/database_provider.dart';
+import 'theme.dart';
+import 'router.dart';
+
+class SongDaoApp extends ConsumerWidget {
+  const SongDaoApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    ref.listen(seedContentBootstrapProvider, (_, next) {
+      next.whenData((_) {
+        unawaited(
+          ref.read(dailyReminderServiceProvider).refreshScheduledReminders(),
+        );
+        unawaited(
+          ref
+              .read(appIconServiceProvider)
+              .applySeasonalIconForDate(TodayController.todayDateKey()),
+        );
+      });
+    });
+    ref.watch(seedContentBootstrapProvider);
+
+    return MaterialApp.router(
+      title: 'Sống Đạo',
+      theme: AppTheme.lightTheme,
+      routerConfig: router,
+      locale: const Locale('vi'), // Set Vietnamese as the default
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}

@@ -1,0 +1,27 @@
+flowchart TD
+    A[Ý tưởng Sống Đạo] --> B[Qwen nghiên cứu ứng dụng Công giáo]
+    B --> C[Bản đặc tả nháp: lịch phụng vụ, hành động hằng ngày, tiện ích màn hình]
+    C --> D[ChatGPT tinh chỉnh: hành động hằng ngày là lõi sản phẩm]
+    D --> E[Open Design + Codex: sổ tay nhà nguyện hiện đại]
+    E --> F[Stitch: Hôm nay, Lịch, Cầu nguyện, Nhà thờ, Tiến trình]
+    F --> G[Qwen hoặc ChatGPT: biểu tượng, lời giới thiệu, nội dung trang]
+    G --> H[Lovable.dev: bản nháp trang giới thiệu]
+    H --> I[Codex: chỉnh trang giới thiệu và danh sách chờ]
+    F --> J[Codex: bản thử Flutter]
+    J --> K[Bản dùng thử nội bộ]
+    I --> L[Danh sách người quan tâm]
+    K --> M[Phản hồi thật]
+    L --> M
+    M --> N[Cải tiến phần hành động hằng ngày và tiện ích màn hình trước]
+
+    classDef product fill:#E3F2FD,stroke:#1565C0,color:#0D47A1,stroke-width:2px;
+    classDef design fill:#F3E5F5,stroke:#8E24AA,color:#4A148C,stroke-width:2px;
+    classDef build fill:#FFF3E0,stroke:#EF6C00,color:#E65100,stroke-width:2px;
+    classDef launch fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20,stroke-width:2px;
+    classDef feedback fill:#FCE4EC,stroke:#C2185B,color:#880E4F,stroke-width:2px;
+
+    class A,B,C,D product;
+    class E,F,G,H design;
+    class I,J build;
+    class K,L launch;
+    class M,N feedback;

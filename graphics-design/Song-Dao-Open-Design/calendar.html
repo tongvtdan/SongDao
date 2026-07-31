@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sống Đạo · Lịch phụng vụ</title>
+  <link rel="stylesheet" href="songdao.css" />
+</head>
+<body>
+  <header class="topbar" data-od-id="topnav">
+    <div class="container nav">
+      <a class="brand" href="index.html">Sống Đạo</a>
+      <nav class="navlinks" aria-label="Chính">
+        <a href="today.html">Hôm nay</a>
+        <a href="practice.html">Việc hôm nay</a>
+        <a href="parish.html">Giáo xứ</a>
+      </nav>
+      <a class="btn" href="today.html">Việc hôm nay</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container app-grid" data-od-id="calendar-screen">
+      <aside class="sidebar" aria-label="Màn hình">
+        <a class="side-link" href="today.html">Hôm nay <span>01</span></a>
+        <a class="side-link" href="practice.html">Việc hôm nay <span>02</span></a>
+        <a class="side-link" aria-current="page" href="calendar.html">Lịch <span>03</span></a>
+        <a class="side-link" href="parish.html">Giáo xứ <span>04</span></a>
+        <a class="side-link" href="progress.html">Nhịp sống đạo <span>05</span></a>
+      </aside>
+
+      <section class="stack-lg" data-od-id="calendar-main">
+        <div>
+          <p class="eyebrow">Lịch phụng vụ</p>
+          <h1>Thấy tuần sắp tới, nhưng vẫn quay về một việc hôm nay.</h1>
+          <p class="lead">Lịch là bối cảnh cho hành động, không phải nơi nhồi thêm dữ liệu. Người dùng có thể tìm ngày lễ, bài đọc, hoặc kế hoạch Thánh lễ cho bản thân và gia đình.</p>
+        </div>
+        <label class="stack" for="search">
+          <span class="meta">Tìm ngày lễ, mùa, hoặc ý hướng</span>
+          <input class="input" id="search" data-calendar-search placeholder="Ví dụ: Chúa Nhật, Thường Niên, Thánh Phao-lô VI..." />
+        </label>
+
+        <div class="calendar-grid" aria-label="Tuần phụng vụ">
+          <article class="day" data-day>
+            <button type="button"><strong>Thứ Hai 25</strong><br><span class="muted">Tuần Thường Niên</span></button>
+            <span class="pill"><span class="dot-muted"></span>Đọc 1 câu</span>
+          </article>
+          <article class="day" data-day>
+            <button type="button"><strong>Thứ Ba 26</strong><br><span class="muted">Tuần Thường Niên</span></button>
+            <span class="pill"><span class="dot-muted"></span>Cầu cho người trẻ</span>
+          </article>
+          <article class="day" data-day>
+            <button type="button"><strong>Thứ Tư 27</strong><br><span class="muted">Tuần Thường Niên</span></button>
+            <span class="pill"><span class="dot-muted"></span>Biết ơn</span>
+          </article>
+          <article class="day" data-day>
+            <button type="button"><strong>Thứ Năm 28</strong><br><span class="muted">Tuần Thường Niên</span></button>
+            <span class="pill"><span class="dot-muted"></span>Làm hòa</span>
+          </article>
+          <article class="day surface-warm" data-day>
+            <button type="button"><strong>Hôm nay 29</strong><br><span class="muted">Thánh Phao-lô VI · Mc 11,11-26</span></button>
+            <span class="pill"><span class="dot"></span>Tiết chế / phục vụ</span>
+          </article>
+          <article class="day" data-day>
+            <button type="button"><strong>Thứ Bảy 30</strong><br><span class="muted">Đức Mẹ</span></button>
+            <span class="pill"><span class="dot-muted"></span>Kinh Mân Côi</span>
+          </article>
+          <article class="day" data-day>
+            <button type="button"><strong>Chúa Nhật 31</strong><br><span class="muted">Thánh lễ</span></button>
+            <span class="pill"><span class="dot-muted"></span>Chọn ý nguyện</span>
+          </article>
+        </div>
+      </section>
+
+      <aside class="right-rail stack-lg" data-od-id="calendar-rail">
+        <article class="panel stack">
+          <span class="meta">Sắp tới</span>
+          <h3>Chúa Nhật · 07:00</h3>
+          <p class="muted">Tự ưu tiên trước các ngày thường vì ảnh hưởng đến nhịp cầu nguyện cá nhân và kế hoạch gia đình.</p>
+        </article>
+        <article class="panel stack">
+          <span class="meta">MVP-safe</span>
+          <h3>Hiển thị tham chiếu bài đọc.</h3>
+          <p class="muted">Tránh rủi ro bản quyền trước khi có license nội dung đầy đủ.</p>
+        </article>
+      </aside>
+    </div>
+  </main>
+  <script src="songdao.js"></script>
+</body>
+</html>

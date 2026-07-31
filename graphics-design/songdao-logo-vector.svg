@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">SongDao chapel path logo</title>
+  <desc id="desc">Editable vector logo for SongDao using chapel window, integrated cross, daily path, sacred light, and secondary leaf.</desc>
+  <defs>
+    <linearGradient id="bgGlow" x1="512" y1="0" x2="512" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FAF8F3"/>
+      <stop offset="0.56" stop-color="#FFF7DE"/>
+      <stop offset="1" stop-color="#FAF8F3"/>
+    </linearGradient>
+    <radialGradient id="morningLight" cx="512" cy="438" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.18" stop-color="#FFF7C9"/>
+      <stop offset="0.58" stop-color="#F4C96B"/>
+      <stop offset="1" stop-color="#B8892E"/>
+    </radialGradient>
+    <radialGradient id="centerGlow" cx="512" cy="458" r="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#FFF8C7" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFF8C7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="frameGreen" x1="273" y1="936" x2="752" y2="88" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#155744"/>
+      <stop offset="0.52" stop-color="#1F7A64"/>
+      <stop offset="1" stop-color="#00614F"/>
+    </linearGradient>
+    <linearGradient id="innerGreen" x1="324" y1="850" x2="703" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00614F"/>
+      <stop offset="1" stop-color="#064337"/>
+    </linearGradient>
+    <linearGradient id="pathFill" x1="392" y1="1017" x2="604" y2="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DFF0E5"/>
+      <stop offset="0.62" stop-color="#F2F7E8"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="hillGreen" x1="237" y1="894" x2="926" y2="728" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#155744"/>
+      <stop offset="0.5" stop-color="#1F7A64"/>
+      <stop offset="1" stop-color="#00614F"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#1F2522" flood-opacity="0.18"/>
+    </filter>
+    <filter id="smallShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="6" flood-color="#1F2522" flood-opacity="0.18"/>
+    </filter>
+    <clipPath id="innerWindowClip">
+      <path d="M341 674V431c0-90 55-181 171-310 116 129 171 220 171 310v243Z"/>
+    </clipPath>
+  </defs>
+
+  <g id="background">
+    <rect width="1024" height="1024" fill="url(#bgGlow)"/>
+  </g>
+
+  <g id="chapel-window" filter="url(#softShadow)">
+    <path id="outer-frame" d="M249 1024V430c0-139 88-273 263-393 175 120 263 254 263 393v594Z" fill="url(#frameGreen)"/>
+    <path id="inner-recess" d="M295 1024V434c0-116 70-225 217-344 147 119 217 228 217 344v590Z" fill="#064337"/>
+    <path id="inner-window" d="M341 1024V431c0-90 55-181 171-310 116 129 171 220 171 310v593Z" fill="url(#morningLight)"/>
+    <path id="window-gold-trim" d="M341 674V431c0-90 55-181 171-310 116 129 171 220 171 310v243" fill="none" stroke="#F0C966" stroke-width="10" stroke-linejoin="round"/>
+    <path id="window-inner-line" d="M356 674V434c0-80 50-164 156-282 106 118 156 202 156 282v240" fill="none" stroke="#FFF1BA" stroke-width="3" stroke-linejoin="round" opacity="0.85"/>
+    <g id="morning-rays" clip-path="url(#innerWindowClip)" opacity="0.32">
+      <path d="M512 480V185" stroke="#FFFFFF" stroke-width="3"/>
+      <path d="M512 480 415 194" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M512 480 609 194" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M512 480 321 326" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M512 480 703 326" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M512 480 308 484" stroke="#FFFFFF" stroke-width="2"/>
+      <path d="M512 480 716 484" stroke="#FFFFFF" stroke-width="2"/>
+    </g>
+    <circle id="cross-glow" cx="512" cy="470" r="255" fill="url(#centerGlow)" clip-path="url(#innerWindowClip)"/>
+  </g>
+
+  <g id="integrated-cross" filter="url(#smallShadow)">
+    <path id="cross-white-cut" d="M493 236H531C546 255 550 269 550 287V596H493V287C493 269 478 255 493 236Z" fill="#FFFFFF"/>
+    <path id="cross-vertical" d="M507 259H517C528 276 531 286 531 300V592H493V300C493 286 496 276 507 259Z" fill="#D99A25"/>
+    <rect id="cross-horizontal-white-cut" x="329" y="403" width="365" height="46" fill="#FFFFFF"/>
+    <rect id="cross-horizontal" x="341" y="414" width="342" height="24" fill="#D99A25"/>
+    <path id="cross-inner-highlight" d="M512 262V592M344 426H681" fill="none" stroke="#F8D982" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <g id="foreground-hills">
+    <path id="left-hill" d="M249 1024V658c78-15 143 2 215 37 74 36 143 35 216-1v330Z" fill="#155744"/>
+    <path id="right-hill" d="M454 1024V691c100-23 177-1 234 55 55-75 105-96 149-130v408Z" fill="url(#hillGreen)"/>
+    <path id="hill-gold-edge" d="M249 658c78-15 143 2 215 37 74 36 143 35 216-1" fill="none" stroke="#F0C966" stroke-width="5" stroke-linecap="round"/>
+  </g>
+
+  <g id="daily-path" filter="url(#smallShadow)">
+    <path id="path-gold-border" d="M304 1024V958c0-126 72-210 194-281 48-28 69-48 76-77 46 8 85 36 102 75 24 57-24 99-78 139-68 50-71 118 35 183 16 10 29 19 40 27Z" fill="none" stroke="#D99A25" stroke-width="11" stroke-linejoin="round"/>
+    <path id="path-fill" d="M304 1024V958c0-126 72-210 194-281 48-28 69-48 76-77 46 8 85 36 102 75 24 57-24 99-78 139-68 50-71 118 35 183 16 10 29 19 40 27Z" fill="url(#pathFill)"/>
+    <path id="path-center-light" d="M342 1010c2-96 60-167 167-230 54-32 88-71 93-116" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" opacity="0.72"/>
+  </g>
+
+  <g id="leaf" filter="url(#smallShadow)">
+    <path id="leaf-outer" d="M697 706c47-94 110-115 140-164-1 83-28 147-97 183-31 16-60 19-87 12 13-10 28-20 44-31Z" fill="#008064" stroke="#F0C966" stroke-width="5" stroke-linejoin="round"/>
+    <path id="leaf-inner" d="M723 721c27-58 72-76 101-96-18 48-50 83-94 105-24 12-45 14-64 10 18-6 38-12 57-19Z" fill="#C7E4C8" stroke="#F5F3EA" stroke-width="4" stroke-linejoin="round"/>
+    <path id="leaf-vein" d="M664 740c54-34 106-70 160-115" fill="none" stroke="#1F7A64" stroke-width="3" stroke-linecap="round" opacity="0.48"/>
+  </g>
+</svg>

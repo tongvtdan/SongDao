@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#afe2b3",
+                    "on-tertiary-container": "#ffc8c6",
+                    "secondary-fixed": "#eddcff",
+                    "on-background": "#1c1c18",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414941",
+                    "on-surface": "#1c1c18",
+                    "outline": "#727970",
+                    "surface": "#fcf9f3",
+                    "primary-fixed-dim": "#a0d3a5",
+                    "secondary-container": "#d1affe",
+                    "on-primary-fixed": "#00210a",
+                    "surface-dim": "#dcdad4",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#28054f",
+                    "primary-fixed": "#bcefc0",
+                    "primary-container": "#386641",
+                    "tertiary": "#841d24",
+                    "inverse-on-surface": "#f3f0ea",
+                    "surface-container-highest": "#e5e2dc",
+                    "on-primary-fixed-variant": "#22502d",
+                    "tertiary-container": "#a43539",
+                    "surface-container": "#f0eee8",
+                    "surface-variant": "#e5e2dc",
+                    "surface-container-low": "#f6f3ed",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d8b9ff",
+                    "surface-tint": "#3a6843",
+                    "secondary": "#6e5097",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f3",
+                    "inverse-surface": "#31312d",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#a0d3a5",
+                    "on-tertiary-fixed": "#410007",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#861f25",
+                    "outline-variant": "#c1c9be",
+                    "surface-container-high": "#ebe8e2",
+                    "tertiary-fixed-dim": "#ffb3b0",
+                    "primary": "#204e2b",
+                    "tertiary-fixed": "#ffdad8",
+                    "on-secondary-fixed-variant": "#55387d",
+                    "background": "#fcf9f3",
+                    "on-secondary-container": "#5c3e84",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "base": "8px",
+                    "container-max": "1200px",
+                    "xl": "64px",
+                    "xs": "4px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Noto Serif"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Noto Serif"],
+                    "headline-lg": ["Noto Serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-sm shadow-sm dark:shadow-none border-b border-stone-200 dark:border-stone-800 fixed top-0 z-40 w-full h-16 flex justify-between items-center px-6">
+<button class="text-green-800 dark:text-green-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-xl font-bold font-serif text-green-900 dark:text-green-100 tracking-tight">Sống Đạo</h1>
+<button class="text-green-800 dark:text-green-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</header>
+<main class="pt-20 px-4 md:px-gutter max-w-screen-xl mx-auto">
+<!-- Calendar Header Section -->
+<section class="mb-md text-center">
+<div class="flex items-center justify-between mb-sm">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-primary">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h2 class="font-headline-md text-headline-md text-on-surface">Tháng 3, 2024</h2>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="flex justify-center gap-xs mb-md">
+<span class="bg-secondary-container/20 text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm border border-secondary-container/30">Mùa Chay</span>
+<span class="bg-surface-container-high text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-label-sm">Năm Phụng Vụ B</span>
+</div>
+</section>
+<!-- Bento Grid Calendar Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Main Calendar Card -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm p-4 md:p-6">
+<div class="calendar-grid mb-4">
+<div class="text-center font-label-sm text-label-sm text-error/70 py-2">CN</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T2</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T3</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T4</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T5</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T6</div>
+<div class="text-center font-label-sm text-label-sm text-outline py-2">T7</div>
+</div>
+<div class="calendar-grid gap-1 md:gap-2">
+<!-- Placeholder days from prev month -->
+<div class="aspect-square flex items-center justify-center text-outline/30 text-body-md font-body-md">26</div>
+<div class="aspect-square flex items-center justify-center text-outline/30 text-body-md font-body-md">27</div>
+<div class="aspect-square flex items-center justify-center text-outline/30 text-body-md font-body-md">28</div>
+<div class="aspect-square flex items-center justify-center text-outline/30 text-body-md font-body-md">29</div>
+<!-- March Days -->
+<div class="aspect-square flex items-center justify-center text-on-surface text-body-md font-body-md relative group cursor-pointer hover:bg-surface-container transition-colors rounded-lg">1</div>
+<div class="aspect-square flex items-center justify-center text-on-surface text-body-md font-body-md relative group cursor-pointer hover:bg-surface-container transition-colors rounded-lg">2</div>
+<!-- Sunday (Feast/Red) -->
+<div class="aspect-square flex flex-col items-center justify-center text-error font-bold text-body-md relative cursor-pointer bg-error-container/10 rounded-lg">
+                        3
+                        <span class="w-1 h-1 bg-error rounded-full mt-1"></span>
+</div>
+<!-- Lent Days (Violet Highlight) -->
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">4</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">5</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">6</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">7</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">8</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg cursor-pointer">9</div>
+<!-- Sunday -->
+<div class="aspect-square flex flex-col items-center justify-center text-error font-bold text-body-md bg-error-container/10 rounded-lg cursor-pointer">
+                        10
+                        <span class="w-1 h-1 bg-error rounded-full mt-1"></span>
+</div>
+<!-- Active Day -->
+<div class="aspect-square flex flex-col items-center justify-center text-on-primary bg-primary rounded-lg shadow-md ring-4 ring-primary/10">
+                        11
+                        <span class="font-label-sm text-[10px] mt-1">Hôm nay</span>
+</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">12</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">13</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">14</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">15</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">16</div>
+<!-- Sunday II Lent -->
+<div class="aspect-square flex flex-col items-center justify-center text-error font-bold text-body-md bg-error-container/10 rounded-lg border-2 border-secondary/20">
+                        17
+                        <span class="w-1 h-1 bg-secondary rounded-full mt-1"></span>
+</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">18</div>
+<!-- Feast of St. Joseph -->
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant font-bold text-body-md bg-surface-container-high rounded-lg">
+                        19
+                        <span class="material-symbols-outlined text-[14px] text-surface-tint">auto_awesome</span>
+</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">20</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">21</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">22</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">23</div>
+<!-- Palm Sunday -->
+<div class="aspect-square flex flex-col items-center justify-center text-error font-bold text-body-md bg-error-container/20 rounded-lg">
+                        24
+                        <span class="material-symbols-outlined text-[14px]">potted_plant</span>
+</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">25</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">26</div>
+<div class="aspect-square flex items-center justify-center text-secondary font-medium text-body-md bg-secondary-fixed/30 rounded-lg">27</div>
+<!-- Holy Thursday -->
+<div class="aspect-square flex items-center justify-center text-on-primary-container bg-primary-container rounded-lg">28</div>
+<!-- Good Friday -->
+<div class="aspect-square flex items-center justify-center text-on-tertiary bg-tertiary rounded-lg">29</div>
+<!-- Holy Saturday -->
+<div class="aspect-square flex items-center justify-center text-on-surface bg-outline-variant rounded-lg">30</div>
+<!-- Easter Sunday -->
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface font-bold text-body-md bg-yellow-100 rounded-lg shadow-sm border border-yellow-200">
+                        31
+                        <span class="material-symbols-outlined text-[14px] text-yellow-600">sunny</span>
+</div>
+</div>
+</div>
+<!-- Upcoming Events Sidebar -->
+<div class="lg:col-span-4 space-y-gutter">
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/30">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4">Sự kiện sắp tới</h3>
+<div class="space-y-4">
+<!-- Event 1 -->
+<div class="flex gap-4 p-3 rounded-lg hover:bg-surface-container-lowest transition-colors border-l-4 border-secondary bg-surface-container-lowest shadow-sm">
+<div class="flex-shrink-0 text-center w-12">
+<div class="font-label-sm text-label-sm text-outline">TH3</div>
+<div class="font-headline-md text-headline-md text-on-surface leading-tight">17</div>
+</div>
+<div>
+<h4 class="font-bold text-body-md text-on-surface">Chúa Nhật II Mùa Chay</h4>
+<p class="text-label-sm text-on-surface-variant">Lễ trọng • Màu tím</p>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="flex gap-4 p-3 rounded-lg hover:bg-surface-container-lowest transition-colors border-l-4 border-surface-tint bg-surface-container-lowest/50">
+<div class="flex-shrink-0 text-center w-12">
+<div class="font-label-sm text-label-sm text-outline">TH3</div>
+<div class="font-headline-md text-headline-md text-on-surface leading-tight">19</div>
+</div>
+<div>
+<h4 class="font-bold text-body-md text-on-surface">Lễ Thánh Giuse</h4>
+<p class="text-label-sm text-on-surface-variant">Bạn trăm năm Đức Trinh Nữ Maria</p>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="flex gap-4 p-3 rounded-lg hover:bg-surface-container-lowest transition-colors border-l-4 border-error bg-surface-container-lowest/50">
+<div class="flex-shrink-0 text-center w-12">
+<div class="font-label-sm text-label-sm text-outline">TH3</div>
+<div class="font-headline-md text-headline-md text-on-surface leading-tight">24</div>
+</div>
+<div>
+<h4 class="font-bold text-body-md text-on-surface">Chúa Nhật Lễ Lá</h4>
+<p class="text-label-sm text-on-surface-variant">Tưởng niệm Chúa vào thành Giêrusalem</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-colors">
+                        Xem tất cả sự kiện
+                    </button>
+</div>
+<!-- Featured Devotion Card -->
+<div class="relative overflow-hidden rounded-xl h-48 flex items-end p-6 shadow-md group">
+<img alt="Lenten devotion atmosphere" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Close up of a wooden cross and candle on a rustic table with soft atmospheric lighting, moody spiritual atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIQ81eR5XH1KZ_prKDVj68XhUU_Mghcvq5xAXRNwx2pRyrjb1C3v7Sy70nktvAhUK6btcBVcBE-F0kyqb5ArigmfAF6bOHXzsjHXSzdSh_kr8s1gmHWlEO6wzdeh4WR5WY3GGd93ZprKXInjF1XVe4n2jEnLtoGQcyeXcWhdbV3G5Qd6AgcQ6wN-boW-bzUTqp5BpaQq8sSDK3_EeXcnYGgeYb2TORsO8nCF5z3aN54LGwLAuWN3xJ9MP6UoGAmdTMymC9mEwB3ejg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/80 to-transparent"></div>
+<div class="relative z-10">
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm mb-2 inline-block">Suy niệm hôm nay</span>
+<h4 class="text-white font-headline-md text-headline-md leading-tight">Sám hối và Tin mừng</h4>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full bg-stone-50 dark:bg-stone-900 flex justify-around items-center px-2 py-3 pb-safe border-t border-stone-200 dark:border-stone-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50 rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-serif text-[11px] font-medium mt-1">Hôm nay</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center text-green-800 dark:text-green-400 bg-green-50/50 dark:bg-green-900/20 rounded-xl px-3 py-1 transition-transform duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-serif text-[11px] font-medium mt-1">Lịch</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-serif text-[11px] font-medium mt-1">Cầu nguyện</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="church">church</span>
+<span class="font-serif text-[11px] font-medium mt-1">Nhà thờ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-serif text-[11px] font-medium mt-1">Tiến triển</span>
+</a>
+</nav>
+</body></html>

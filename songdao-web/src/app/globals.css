@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #FAF8F3;
+  --color-surface-primary: #FFFFFF;
+  --color-surface-secondary: #F3F0E8;
+  --color-surface-container: #F0EEE8;
+  --color-surface-variant: #E5E2DC;
+  --color-surface-inverse: #18221E;
+
+  --color-text-primary: #1F2522;
+  --color-text-secondary: #5F6761;
+  --color-text-tertiary: #8A938D;
+  --color-text-inverse: #F8F5ED;
+  --color-text-link: #1B6E5A;
+
+  --color-brand-primary: #1F7A64;
+  --color-brand-primary-pressed: #155744;
+  --color-brand-soft: #E2F1EA;
+  --color-brand-deep: #123C32;
+
+  --color-accent-gold: #B8892E;
+  --color-accent-burgundy: #8F2F3D;
+  --color-accent-blue: #2F5F8F;
+
+  --color-liturgical-green: #2F7D4F;
+  --color-liturgical-white: #F7F3E8;
+  --color-liturgical-gold: #C69A3D;
+  --color-liturgical-red: #B33A3A;
+  --color-liturgical-purple: #6B4A7A;
+  --color-liturgical-rose: #C9788D;
+  --color-liturgical-black: #242424;
+
+  --color-status-complete: #2F7D4F;
+  --color-status-warning: #B8892E;
+  --color-status-error: #B33A3A;
+  --color-status-offline: #5F6761;
+
+  --color-border-subtle: #E2DDD1;
+  --color-border-strong: #CFC7B7;
+  --color-border-focus: #1F7A64;
+
+  --font-sans: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif", "Noto Serif Fallback", ui-serif, Georgia, serif;
+}
+
+html,
+body {
+  min-height: 100%;
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+button,
+a,
+input,
+textarea,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom premium scrollbar for desktop dashboard panels */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-subtle);
+  border-radius: 10px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+}
+
+@utility pb-safe-nav {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+@utility pb-nav-offset {
+  padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+}
+
+.ritual-enter {
+  animation: ritual-enter 360ms ease both;
+}
+
+.ritual-note-reveal,
+.ritual-complete-reveal {
+  animation: ritual-reveal 320ms ease both;
+}
+
+.ritual-check-pulse {
+  animation: ritual-check-pulse 900ms ease both;
+}
+
+.ritual-primary-button {
+  transform: translateY(0) scale(1);
+}
+
+.ritual-primary-button:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+
+.ritual-primary-button:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.ritual-icon-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-surface-primary);
+  color: var(--color-text-secondary);
+  transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.ritual-icon-button:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--color-brand-primary) 40%, var(--color-border-subtle));
+  background: var(--color-brand-soft);
+  color: var(--color-brand-primary);
+}
+
+.ritual-icon-button:active {
+  transform: translateY(0);
+}
+
+@keyframes ritual-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ritual-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ritual-check-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-status-complete) 38%, transparent);
+    transform: scale(0.92);
+  }
+  60% {
+    box-shadow: 0 0 0 12px transparent;
+    transform: scale(1.04);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes ritual-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ritual-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .ritual-primary-button:hover,
+  .ritual-primary-button:active,
+  .ritual-icon-button:hover,
+  .ritual-icon-button:active {
+    transform: none;
+  }
+}

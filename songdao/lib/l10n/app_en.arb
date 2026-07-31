@@ -1,0 +1,14 @@
+{
+  "@@locale": "en",
+  "tabToday": "Today",
+  "tabCalendar": "Calendar",
+  "tabPray": "Pray",
+  "tabChurch": "Church",
+  "tabProgress": "Progress",
+  "prayerTagDaily": "Daily",
+  "prayerTagMorning": "Morning",
+  "prayerTagEvening": "Evening",
+  "prayerTagReflection": "Examen",
+  "prayerTagWork": "Work",
+  "prayerTagPeace": "Peace"
+}

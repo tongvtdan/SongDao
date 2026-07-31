@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#afe2b3",
+                    "on-tertiary-container": "#ffc8c6",
+                    "secondary-fixed": "#eddcff",
+                    "on-background": "#1c1c18",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#414941",
+                    "on-surface": "#1c1c18",
+                    "outline": "#727970",
+                    "surface": "#fcf9f3",
+                    "primary-fixed-dim": "#a0d3a5",
+                    "secondary-container": "#d1affe",
+                    "on-primary-fixed": "#00210a",
+                    "surface-dim": "#dcdad4",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#28054f",
+                    "primary-fixed": "#bcefc0",
+                    "primary-container": "#386641",
+                    "tertiary": "#841d24",
+                    "inverse-on-surface": "#f3f0ea",
+                    "surface-container-highest": "#e5e2dc",
+                    "on-primary-fixed-variant": "#22502d",
+                    "tertiary-container": "#a43539",
+                    "surface-container": "#f0eee8",
+                    "surface-variant": "#e5e2dc",
+                    "surface-container-low": "#f6f3ed",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#d8b9ff",
+                    "surface-tint": "#3a6843",
+                    "secondary": "#6e5097",
+                    "on-primary": "#ffffff",
+                    "surface-bright": "#fcf9f3",
+                    "inverse-surface": "#31312d",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#a0d3a5",
+                    "on-tertiary-fixed": "#410007",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#861f25",
+                    "outline-variant": "#c1c9be",
+                    "surface-container-high": "#ebe8e2",
+                    "tertiary-fixed-dim": "#ffb3b0",
+                    "primary": "#204e2b",
+                    "tertiary-fixed": "#ffdad8",
+                    "on-secondary-fixed-variant": "#55387d",
+                    "background": "#fcf9f3",
+                    "on-secondary-container": "#5c3e84",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "base": "8px",
+                    "container-max": "1200px",
+                    "xl": "64px",
+                    "xs": "4px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Noto Serif"],
+                    "label-sm": ["Inter"],
+                    "display-lg": ["Noto Serif"],
+                    "headline-lg": ["Noto Serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f3;
+        }
+        .sacred-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800 shadow-sm dark:shadow-none fixed top-0 w-full z-40 h-16 flex justify-between items-center px-6">
+<button class="text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-xl font-bold font-serif text-green-900 dark:text-green-100 tracking-tight">Sống Đạo</h1>
+<button class="text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</header>
+<main class="pt-24 pb-32 px-gutter max-w-2xl mx-auto">
+<!-- Search Bar -->
+<div class="mb-8">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="block w-full pl-12 pr-4 py-4 bg-surface-container-lowest border-none rounded-xl sacred-shadow focus:ring-2 focus:ring-primary/20 text-body-md font-body-md placeholder-stone-400 transition-all" placeholder="Tìm nhà thờ" type="text"/>
+</div>
+</div>
+<!-- Parish Hero Card -->
+<section class="mb-10">
+<div class="mb-6 flex justify-between items-end">
+<div>
+<span class="inline-block px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm mb-2">Giáo xứ của tôi</span>
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Giáo xứ Tân Định</h2>
+</div>
+<button class="flex items-center gap-1 text-primary hover:underline transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="edit_location">edit_location</span>
+<span class="text-label-sm font-label-sm">Thay đổi</span>
+</button>
+</div>
+<div class="relative h-64 w-full rounded-2xl overflow-hidden sacred-shadow mb-6">
+<img alt="Nội thất Giáo xứ Tân Định - Serene interior of Tan Dinh Church" class="w-full h-full object-cover" data-alt="A high-quality photograph of the serene interior altar and gothic architecture of Tân Định Church" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqC3TEsIyjSAVIfbqgGIVChzMs8Awo9hwsGCS9TOXb2sUlbhsDe_2zPMrGU88ijl94W78NF3asoBD_CRGYIv9RmncdHzIPnO0SfyGznN6bx0MSZL_n9x48QwX3iRRdwLx2ApSYdfZSfcG3st4PWmWJV4eWV1V_LapCq7_Rp1FY5WOzrJc1vPKDNs-f9Vs8cZnR8yQjd5yd2RmT0HEUl4smtqCnePb2J7RqECHgwQphKEwkSUYPjjH5OhmcptEjGffpvc0vIqjHs_oi"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
+<!-- Contact/Address Card -->
+<div class="bg-surface-container-lowest p-6 rounded-2xl sacred-shadow border border-surface-container mb-8">
+<div class="flex items-start gap-4">
+<div class="p-3 rounded-xl bg-surface-container text-primary">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<div class="flex-1">
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">Địa chỉ</p>
+<p class="text-body-md font-body-md text-on-surface">289 Hai Bà Trưng, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh</p>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-primary">
+<span class="material-symbols-outlined" data-icon="directions">directions</span>
+</button>
+</div>
+</div>
+<!-- Mass Times Grid -->
+<div class="space-y-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" data-icon="schedule">schedule</span>
+<h3 class="text-headline-md font-headline-md">Lịch Thánh Lễ</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Weekdays -->
+<div class="bg-surface-container-low p-6 rounded-2xl border border-surface-variant/50">
+<h4 class="font-headline-md text-[18px] mb-4 text-on-surface">Ngày thường</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center py-2 border-b border-outline-variant/30">
+<span class="text-body-md font-body-md text-on-surface-variant">Sáng</span>
+<span class="text-body-md font-semibold text-primary">05:00, 06:15</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-body-md font-body-md text-on-surface-variant">Chiều</span>
+<span class="text-body-md font-semibold text-primary">17:30, 19:00</span>
+</div>
+</div>
+</div>
+<!-- Sunday -->
+<div class="bg-primary/5 p-6 rounded-2xl border border-primary/10">
+<h4 class="font-headline-md text-[18px] mb-4 text-primary">Chúa Nhật</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center py-2 border-b border-primary/10">
+<span class="text-body-md font-body-md text-on-surface-variant">Sáng</span>
+<span class="text-body-md font-semibold text-primary">05:00, 06:15, 07:30, 09:00</span>
+</div>
+<div class="flex justify-between items-center py-2">
+<span class="text-body-md font-body-md text-on-surface-variant">Chiều</span>
+<span class="text-body-md font-semibold text-primary">16:00, 17:30, 19:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggest Correction -->
+<div class="mt-12 pt-8 border-t border-surface-container flex flex-col items-center">
+<p class="text-body-md text-outline mb-4 italic">Thông tin chưa chính xác?</p>
+<button class="group flex items-center gap-3 px-6 py-3 bg-tertiary-container text-on-tertiary-container rounded-full transition-all hover:scale-105 active:scale-95 shadow-md">
+<span class="material-symbols-outlined text-[20px]" data-icon="report">report</span>
+<span class="font-label-sm uppercase tracking-wide">Góp ý sửa đổi</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-3 pb-safe bg-stone-50 dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-50 rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="today">today</span>
+<span class="font-serif text-[11px] font-medium mt-1">Hôm nay</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-serif text-[11px] font-medium mt-1">Lịch</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-serif text-[11px] font-medium mt-1">Cầu nguyện</span>
+</a>
+<a class="flex flex-col items-center justify-center text-green-800 dark:text-green-400 bg-green-50/50 dark:bg-green-900/20 rounded-xl px-3 py-1 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="church">church</span>
+<span class="font-serif text-[11px] font-medium mt-1">Nhà thờ</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 hover:text-green-700 dark:hover:text-green-300 transition-transform active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="font-serif text-[11px] font-medium mt-1">Tiến triển</span>
+</a>
+</nav>
+</body></html>

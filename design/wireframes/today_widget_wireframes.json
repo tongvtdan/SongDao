@@ -1,0 +1,249 @@
+{
+  "linear_issue": "DAN-117",
+  "status": "locked_for_beta",
+  "updated_at": "2026-04-27",
+  "source_docs": [
+    "Design.md",
+    "docs/today-widget-wireframes.md"
+  ],
+  "tokens": {
+    "surface_canvas": "#FAF8F3",
+    "surface_primary": "#FFFFFF",
+    "surface_secondary": "#F3F0E8",
+    "text_primary": "#1F2522",
+    "text_secondary": "#5F6761",
+    "brand_primary": "#1F7A64",
+    "brand_soft": "#E2F1EA",
+    "accent_gold": "#B8892E",
+    "border_subtle": "#E2DDD1",
+    "liturgical_white": "#F7F3E8"
+  },
+  "today_screen": {
+    "route": "/today",
+    "deeplink": "songdao://today",
+    "layout": {
+      "type": "single_column_scroll",
+      "background": "surface_canvas",
+      "content_padding": 16,
+      "card_radius": 8,
+      "card_border": "border_subtle",
+      "bottom_nav": [
+        "today",
+        "calendar",
+        "pray",
+        "church",
+        "progress"
+      ]
+    },
+    "sections": [
+      {
+        "id": "liturgical_context",
+        "order": 1,
+        "component": "today_header",
+        "required": true,
+        "data_fields": [
+          "date_label",
+          "liturgical_week",
+          "celebration_title",
+          "liturgical_color",
+          "season"
+        ],
+        "copy": {
+          "date_label": "Mon, 27 Apr",
+          "title": "Thứ Hai tuần II Phục Sinh",
+          "color_label": "Màu phụng vụ: Trắng"
+        },
+        "visual_priority": "compact"
+      },
+      {
+        "id": "daily_action",
+        "order": 2,
+        "component": "daily_action_card",
+        "required": true,
+        "data_fields": [
+          "action_title",
+          "action_prompt",
+          "duration_minutes",
+          "completion_state",
+          "source_rule_id"
+        ],
+        "copy": {
+          "eyebrow": "Một việc nhỏ hôm nay",
+          "title": "Viết một câu về Tin Mừng hôm nay",
+          "prompt": "Đọc câu Tin Mừng được gợi ý và viết lại một điều bạn muốn sống hôm nay.",
+          "duration": "5 phút",
+          "primary_button": "Tôi đã làm việc này"
+        },
+        "visual_priority": "primary"
+      },
+      {
+        "id": "completion_state",
+        "order": 3,
+        "component": "completion_summary",
+        "required": true,
+        "data_fields": [
+          "completed_at",
+          "note_exists"
+        ],
+        "copy": {
+          "completed_title": "Đã hoàn thành hôm nay",
+          "completed_body": "Nhịp sống của bạn đang được xây từng ngày."
+        },
+        "rules": [
+          "show inside or directly below daily_action",
+          "never use score, failure, proof, or ranking language"
+        ]
+      },
+      {
+        "id": "reading_references",
+        "order": 4,
+        "component": "reading_reference_card",
+        "required": true,
+        "data_fields": [
+          "reading_type",
+          "citation",
+          "source_url"
+        ],
+        "copy": {
+          "title": "Bài đọc hôm nay",
+          "items": [
+            "Bài đọc I: Cv 14,5-18",
+            "Tin Mừng: Ga 3,1-8"
+          ]
+        },
+        "rules": [
+          "show citations only unless licensed text is present",
+          "do not show full copyrighted reading text in beta"
+        ]
+      },
+      {
+        "id": "important_mass",
+        "order": 5,
+        "component": "important_mass_card",
+        "required": true,
+        "data_fields": [
+          "selected_church_id",
+          "church_name",
+          "next_mass_time",
+          "mass_language",
+          "verified_at",
+          "stale_state"
+        ],
+        "copy": {
+          "title": "Thánh lễ quan trọng",
+          "missing_parish_body": "Chọn giáo xứ của bạn để xem lễ Chúa nhật hoặc lễ trọng sắp tới.",
+          "missing_parish_button": "Chọn giáo xứ",
+          "with_mass_summary": "CN 07:30 / Giáo xứ đã chọn",
+          "stale_warning": "Lịch lễ này cần được kiểm tra lại. Hãy xác nhận với giáo xứ trước khi đi."
+        }
+      },
+      {
+        "id": "reflection_note",
+        "order": 6,
+        "component": "private_note_card",
+        "required": true,
+        "data_fields": [
+          "note_text",
+          "updated_at"
+        ],
+        "copy": {
+          "title": "Ghi chú riêng",
+          "placeholder": "Bạn muốn nhớ điều gì hôm nay?"
+        },
+        "rules": [
+          "local only by default",
+          "do not upload without explicit backup opt-in"
+        ]
+      }
+    ],
+    "states": {
+      "incomplete": {
+        "primary_action_visible": true,
+        "copy": "Tôi đã làm việc này"
+      },
+      "completed": {
+        "primary_action_visible": false,
+        "copy": "Đã hoàn thành hôm nay"
+      },
+      "missing_parish": {
+        "important_mass_mode": "select_parish",
+        "copy": "Chọn giáo xứ của bạn để xem Thánh lễ quan trọng sắp tới."
+      },
+      "stale_mass_data": {
+        "important_mass_mode": "warning",
+        "copy": "Lịch lễ này cần được kiểm tra lại. Hãy xác nhận với giáo xứ trước khi đi."
+      },
+      "offline": {
+        "mode": "normal",
+        "copy": "Dữ liệu hôm nay đang dùng bản lưu trên thiết bị."
+      },
+      "missing_snapshot": {
+        "mode": "fallback",
+        "copy": "Mở ứng dụng để chuẩn bị việc hôm nay."
+      }
+    }
+  },
+  "widgets": {
+    "small": {
+      "family": "systemSmall",
+      "goal": "one glance, one action",
+      "deeplink": "songdao://today",
+      "required_fields": [
+        "date",
+        "weekday_label",
+        "liturgical_context",
+        "liturgical_color",
+        "action_short_title",
+        "duration_minutes",
+        "deep_link"
+      ],
+      "copy": {
+        "context": "Thứ Hai II PS",
+        "action": "Viết một câu về Tin Mừng hôm nay",
+        "duration": "5 phút"
+      },
+      "fallback": {
+        "title": "Sống Đạo",
+        "body": "Mở ứng dụng để chuẩn bị việc hôm nay."
+      }
+    },
+    "medium": {
+      "family": "systemMedium",
+      "goal": "action plus one supporting context line",
+      "deeplink": "songdao://today",
+      "required_fields": [
+        "date",
+        "weekday_label",
+        "liturgical_context",
+        "liturgical_color",
+        "action_short_title",
+        "action_prompt",
+        "duration_minutes",
+        "reading_summary",
+        "completion_state",
+        "mass_summary",
+        "deep_link"
+      ],
+      "copy": {
+        "context": "Thứ Hai tuần II Phục Sinh",
+        "action": "Viết một câu về Tin Mừng hôm nay",
+        "prompt": "Đọc và ghi lại một điều muốn sống.",
+        "readings": "Bài đọc: Cv 14,5-18 / Ga 3,1-8",
+        "mass_missing": "Thánh lễ: Chưa chọn giáo xứ",
+        "mass_available": "Thánh lễ: CN 07:30 / Giáo xứ đã chọn"
+      },
+      "fallback": {
+        "title": "Sống Đạo",
+        "body": "Mở ứng dụng để chuẩn bị việc hôm nay."
+      }
+    }
+  },
+  "acceptance_checks": [
+    "Today screen order is liturgical context, daily action, completion, readings, important Mass, reflection note.",
+    "Small widget shows date/context and one action.",
+    "Medium widget includes action plus Mass summary when available.",
+    "Empty, offline, and stale-data states are specified.",
+    "Widget tap opens Today.",
+    "No widget performs network fetches."
+  ]
+}
