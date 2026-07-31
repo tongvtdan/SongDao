@@ -6,8 +6,6 @@ import 'content_pack_importer.dart';
 
 const defaultContentPackAssets = [
   '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
-  '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
-  '../content/packs/songdao-pack-calendar-vn-post-demo-2026-0.1.0.json',
   '../content/packs/songdao-pack-parishes-vn-beta-2026-0.1.0.json',
 ];
 

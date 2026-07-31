@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../app/theme.dart';
+import 'reading_source.dart';
 
 class ReadingWebViewScreen extends StatefulWidget {
   const ReadingWebViewScreen({
     super.key,
-    required this.initialUrl,
+    required this.source,
     required this.title,
   });
 
-  final String initialUrl;
+  final ReadingSource source;
   final String title;
 
   @override
@@ -26,16 +27,21 @@ class _ReadingWebViewScreenState extends State<ReadingWebViewScreen> {
   void initState() {
     super.initState();
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setJavaScriptMode(
+        widget.source.requiresJavaScript
+            ? JavaScriptMode.unrestricted
+            : JavaScriptMode.disabled,
+      )
       ..setBackgroundColor(AppColors.canvas)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: readingNavigationDecision,
           onProgress: (progress) => setState(() => _progress = progress),
           onPageStarted: (_) => setState(() => _hasError = false),
           onWebResourceError: (_) => setState(() => _hasError = true),
         ),
       )
-      ..loadRequest(Uri.parse(widget.initialUrl));
+      ..loadRequest(widget.source.uri);
   }
 
   @override

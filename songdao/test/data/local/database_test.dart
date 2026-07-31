@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
@@ -1526,6 +1527,12 @@ void main() {
     test(
       'default bundled packs include calendar 2026 and parish data',
       () async {
+        expect(defaultContentPackAssets, hasLength(2));
+        expect(
+          defaultContentPackAssets.any((asset) => asset.contains('demo')),
+          isFalse,
+        );
+
         final importer = ContentPackImporter(db);
 
         for (final asset in defaultContentPackAssets) {
@@ -1547,9 +1554,174 @@ void main() {
           (await db.select(db.massTimes).get()).length,
           greaterThanOrEqualTo(10),
         );
+        final calendarDays = await db.select(db.calendarDays).get();
+        expect(
+          calendarDays.map((day) => '${day.locale}:${day.date}').toSet(),
+          hasLength(calendarDays.length),
+        );
+      },
+    );
+
+    test(
+      'overlapping calendar packs use the most recently imported readings',
+      () async {
+        final importer = ContentPackImporter(db);
+        final fullSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-2026-0.2.0.json',
+        ).readAsString();
+        final demoSource = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+
+        await importer.importPackJson(fullSource);
+        await importer.importPackJson(demoSource);
+
+        const overlapDate = '2026-04-28';
+        final demoPack = jsonDecode(demoSource) as Map<String, Object?>;
+        final expectedDemoCitations = _citationsForDate(demoPack, overlapDate);
+        final demoReadings =
+            await (db.select(db.readings)..where(
+                  (t) => t.date.equals(overlapDate) & t.locale.equals('vi'),
+                ))
+                .get();
+
+        expect(
+          demoReadings.map((reading) => reading.citation).toSet(),
+          expectedDemoCitations,
+        );
+        expect(demoReadings, hasLength(expectedDemoCitations.length));
+        expect(
+          await (db.select(db.calendarDays)..where(
+                (t) => t.date.equals(overlapDate) & t.locale.equals('vi'),
+              ))
+              .get(),
+          hasLength(1),
+        );
+        final demoRuleIds = _idsFromPack(demoPack, 'action_rules');
+        final demoAction = await DailyActionEngine(
+          db,
+        ).getOrCreateActionForDate(overlapDate);
+        expect(demoRuleIds, contains(demoAction.sourceRule));
+
+        final restored = await importer.importPackJson(fullSource);
+        final fullPack = jsonDecode(fullSource) as Map<String, Object?>;
+        final expectedFullCitations = _citationsForDate(fullPack, overlapDate);
+        final fullReadings =
+            await (db.select(db.readings)..where(
+                  (t) => t.date.equals(overlapDate) & t.locale.equals('vi'),
+                ))
+                .get();
+
+        expect(restored.imported, isTrue);
+        expect(
+          fullReadings.map((reading) => reading.citation).toSet(),
+          expectedFullCitations,
+        );
+        expect(fullReadings, hasLength(expectedFullCitations.length));
+        final fullRuleIds = _idsFromPack(fullPack, 'action_rules');
+        final fullAction = await DailyActionEngine(
+          db,
+        ).getOrCreateActionForDate(overlapDate);
+        expect(fullRuleIds, contains(fullAction.sourceRule));
+      },
+    );
+
+    test(
+      'new pack version removes stale rows and preserves completion notes',
+      () async {
+        final source = await File(
+          '../content/packs/songdao-pack-calendar-vn-demo-2026-0.1.0.json',
+        ).readAsString();
+        final pack = jsonDecode(source) as Map<String, Object?>;
+        final celebrations = pack['celebrations']! as List<Object?>;
+        final readings = pack['readings']! as List<Object?>;
+        final actionRules = pack['action_rules']! as List<Object?>;
+        final staleCelebration =
+            celebrations.removeAt(0)! as Map<String, Object?>;
+        final staleReading = readings.removeAt(0)! as Map<String, Object?>;
+        final staleRule = actionRules.removeAt(0)! as Map<String, Object?>;
+        pack['version'] = '0.1.1';
+        final updatedSource = _encodePackWithChecksum(pack);
+        final importer = ContentPackImporter(db);
+
+        await importer.importPackJson(source);
+        final controller = TodayController(
+          db: db,
+          settings: UserSettingsRepository(db),
+          engine: DailyActionEngine(db),
+        );
+        final today = await controller.load(date: '2026-04-28');
+        await controller.completeAction(
+          today,
+          note: 'Ghi chú riêng phải được giữ lại.',
+        );
+
+        await importer.importPackJson(updatedSource);
+
+        expect(
+          await (db.select(db.celebrations)
+                ..where((t) => t.id.equals(staleCelebration['id']! as String)))
+              .getSingleOrNull(),
+          isNull,
+        );
+        expect(
+          await (db.select(db.readings)
+                ..where((t) => t.id.equals(staleReading['id']! as String)))
+              .getSingleOrNull(),
+          isNull,
+        );
+        expect(
+          await (db.select(db.actionRules)
+                ..where((t) => t.id.equals(staleRule['id']! as String)))
+              .getSingleOrNull(),
+          isNull,
+        );
+
+        final preservedLog = await db.todayDao.getActionLogForAction(
+          today.action.id,
+        );
+        expect(preservedLog?.status, 'completed');
+        expect(preservedLog?.note, 'Ghi chú riêng phải được giữ lại.');
       },
     );
   });
+}
+
+Set<String> _citationsForDate(Map<String, Object?> pack, String date) {
+  return (pack['readings']! as List<Object?>)
+      .cast<Map<String, Object?>>()
+      .where((reading) => reading['date'] == date)
+      .map((reading) => reading['citation']! as String)
+      .toSet();
+}
+
+Set<String> _idsFromPack(Map<String, Object?> pack, String field) {
+  return (pack[field]! as List<Object?>)
+      .cast<Map<String, Object?>>()
+      .map((row) => row['id']! as String)
+      .toSet();
+}
+
+String _encodePackWithChecksum(Map<String, Object?> pack) {
+  pack['checksum'] = '';
+  final canonical = jsonEncode(_canonicalJsonValue(pack));
+  pack['checksum'] = 'sha256:${sha256.convert(utf8.encode(canonical))}';
+  return jsonEncode(pack);
+}
+
+Object? _canonicalJsonValue(Object? value) {
+  if (value is Map) {
+    final sorted = <String, Object?>{};
+    final keys = value.keys.map((key) => key.toString()).toList()..sort();
+    for (final key in keys) {
+      sorted[key] = _canonicalJsonValue(value[key]);
+    }
+    return sorted;
+  }
+  if (value is List) {
+    return value.map(_canonicalJsonValue).toList(growable: false);
+  }
+  return value;
 }
 
 Future<void> _insertCalendarDay(

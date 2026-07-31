@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/design_system.dart';
 import '../../../app/theme.dart';
 import '../../../data/local/app_database.dart';
+import '../../readings/reading_source.dart';
 
 class ReadingReferencesCard extends StatelessWidget {
   const ReadingReferencesCard({super.key, required this.readings});
@@ -133,7 +134,7 @@ void _openReadingInApp(BuildContext context, String title) {
     Uri(
       path: '/readings/web',
       queryParameters: {
-        'url': 'https://ktcgkpv.org/readings/mass-reading',
+        'source': ReadingSource.ktcgkpvMassReading.id,
         'title': title,
       },
     ).toString(),

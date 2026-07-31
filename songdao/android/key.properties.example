@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and replace every value.
+# Keep android/key.properties and the keystore out of version control.
+storeFile=/absolute/path/to/songdao-upload-key.jks
+storePassword=replace-me
+keyAlias=songdao-upload
+keyPassword=replace-me

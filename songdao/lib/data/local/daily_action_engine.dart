@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 import 'app_database.dart';
+import 'user_settings_repository.dart';
 import 'widget_snapshot_service.dart';
 
 class DailyActionEngine {
@@ -124,11 +125,15 @@ class DailyActionEngine {
               ..where((t) => t.isActive.equals(true))
               ..orderBy([(t) => OrderingTerm.asc(t.priority)]))
             .get();
+    final activePackId = await _activePackIdForDate(day.date, day.locale);
 
     final matches = rules
         .where(
           (rule) =>
               (rule.locale == null || rule.locale == day.locale) &&
+              (activePackId == null ||
+                  rule.packId == null ||
+                  rule.packId == activePackId) &&
               _matches(rule.triggerCondition, context),
         )
         .toList();
@@ -146,6 +151,35 @@ class DailyActionEngine {
       return a.priority.compareTo(b.priority);
     });
     return matches.first;
+  }
+
+  Future<String?> _activePackIdForDate(String date, String locale) async {
+    final setting =
+        await (db.select(db.userSettings)..where(
+              (t) =>
+                  t.key.equals(UserSettingsKeys.activeCalendarContent(locale)),
+            ))
+            .getSingleOrNull();
+    if (setting == null) {
+      return null;
+    }
+
+    try {
+      final scope = jsonDecode(setting.value);
+      if (scope is! Map<String, Object?>) {
+        return null;
+      }
+      final owner = scope[date];
+      if (owner is! String) {
+        return null;
+      }
+      final checksumSeparator = owner.indexOf('@');
+      return checksumSeparator <= 0
+          ? null
+          : owner.substring(0, checksumSeparator);
+    } on FormatException {
+      return null;
+    }
   }
 
   bool _matches(String conditionJson, _RuleContext context) {

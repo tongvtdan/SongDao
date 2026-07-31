@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/Users/dantong/Projects/Mobile-Apps/SongDao/songdao/linux"
+    "cmake.sourceDirectory": "/Users/dantong/Projects/Mobile-Apps/SongDao/songdao/linux",
+    "sweetpad.build.xcodeWorkspacePath": "ios/Runner.xcworkspace"
 }

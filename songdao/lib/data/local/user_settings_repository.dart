@@ -13,6 +13,10 @@ class UserSettingsKeys {
   static const dailyReminderMinute = 'daily_reminder_minute';
   static const seasonalIconEnabled = 'seasonal_icon_enabled';
   static const selectedAppIconVariant = 'selected_app_icon_variant';
+
+  static String activeCalendarContent(String locale) {
+    return 'active_calendar_content_$locale';
+  }
 }
 
 class DailyReminderSettings {

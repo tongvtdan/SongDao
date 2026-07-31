@@ -9,6 +9,7 @@ import '../local/user_settings_repository.dart';
 import '../local/widget_snapshot_service.dart';
 
 const _legacyDemoChurchId = 'giao_xu_demo_tan_dinh';
+const _packManifestKeyPrefix = 'content_pack_manifest_';
 
 class ContentPackImportResult {
   const ContentPackImportResult({
@@ -44,12 +45,43 @@ class ContentPackImporter {
     final packId = decoded['pack_id']! as String;
     final version = decoded['version']! as String;
     final checksum = decoded['checksum']! as String;
+    final locale = decoded['locale']! as String;
+    final calendarDays = _list(decoded, 'calendar_days');
+    final celebrations = _list(decoded, 'celebrations');
+    final readings = _list(decoded, 'readings');
+    final dailyReflections = _optionalList(decoded, 'daily_reflections');
+    final actionRules = _list(decoded, 'action_rules');
+    final prayers = _list(decoded, 'prayers');
+    final churches = _list(decoded, 'churches');
+    final massTimes = _list(decoded, 'mass_times');
     final activeKey = 'active_content_pack_$packId';
+    final manifestKey = '$_packManifestKeyPrefix$packId';
+    final calendarScopeKey = UserSettingsKeys.activeCalendarContent(locale);
     final existing = await (db.select(
       db.userSettings,
     )..where((t) => t.key.equals(activeKey))).getSingleOrNull();
+    final previousManifestSetting = await (db.select(
+      db.userSettings,
+    )..where((t) => t.key.equals(manifestKey))).getSingleOrNull();
+    final calendarScopeSetting = await (db.select(
+      db.userSettings,
+    )..where((t) => t.key.equals(calendarScopeKey))).getSingleOrNull();
+    final previousManifest = _decodeObject(previousManifestSetting?.value);
+    final calendarScope = _decodeStringMap(calendarScopeSetting?.value);
+    final calendarDates = calendarDays
+        .map((row) => row['date']! as String)
+        .toSet();
+    final ownsCalendarScope = calendarDates.every(
+      (date) => calendarScope[date] == '$packId@$checksum',
+    );
+    final manifestIsCurrent =
+        previousManifest['checksum'] == checksum &&
+        previousManifest['version'] == version;
 
-    if (!force && existing?.value == checksum) {
+    if (!force &&
+        existing?.value == checksum &&
+        manifestIsCurrent &&
+        ownsCalendarScope) {
       return ContentPackImportResult(
         packId: packId,
         version: version,
@@ -59,23 +91,53 @@ class ContentPackImporter {
     }
 
     await db.transaction(() async {
-      await _removeLegacyDemoChurch();
-      await _importCalendarDays(_list(decoded, 'calendar_days'));
-      await _importCelebrations(_list(decoded, 'celebrations'));
-      await _importReadings(_list(decoded, 'readings'));
-      await _importDailyReflections(
-        _optionalList(decoded, 'daily_reflections'),
+      await _removePreviouslyImportedRows(previousManifest, packId);
+      await _replaceCalendarScope(
+        locale: locale,
+        packId: packId,
+        checksum: checksum,
+        incomingDates: calendarDates,
+        previousManifest: previousManifest,
+        calendarScope: calendarScope,
+        calendarScopeKey: calendarScopeKey,
       );
-      await _importActionRules(_list(decoded, 'action_rules'), packId);
-      await _importPrayers(_list(decoded, 'prayers'));
-      await _importChurches(_list(decoded, 'churches'));
-      await _importMassTimes(_list(decoded, 'mass_times'));
+      await _removeLegacyDemoChurch();
+      await _importCalendarDays(calendarDays);
+      await _importCelebrations(celebrations);
+      await _importReadings(readings);
+      await _importDailyReflections(dailyReflections);
+      await _importActionRules(actionRules, packId);
+      await _importPrayers(prayers);
+      await _importChurches(churches);
+      await _importMassTimes(massTimes);
       await db
           .into(db.userSettings)
           .insertOnConflictUpdate(
             UserSettingsCompanion.insert(
               key: activeKey,
               value: checksum,
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+      await db
+          .into(db.userSettings)
+          .insertOnConflictUpdate(
+            UserSettingsCompanion.insert(
+              key: manifestKey,
+              value: jsonEncode({
+                'pack_id': packId,
+                'version': version,
+                'checksum': checksum,
+                'locale': locale,
+                'calendar_dates': calendarDates.toList()..sort(),
+                'celebration_ids': _ids(celebrations),
+                'reading_ids': _ids(readings),
+                'daily_reflection_ids': _ids(dailyReflections),
+                'action_rule_ids': _ids(actionRules),
+                'prayer_ids': _ids(prayers),
+                'church_ids': _ids(churches),
+                'mass_time_ids': _ids(massTimes),
+              }),
               updatedAt: Value(DateTime.now()),
             ),
           );
@@ -103,6 +165,185 @@ class ContentPackImporter {
       checksum: checksum,
       imported: true,
     );
+  }
+
+  Future<void> _replaceCalendarScope({
+    required String locale,
+    required String packId,
+    required String checksum,
+    required Set<String> incomingDates,
+    required Map<String, Object?> previousManifest,
+    required Map<String, String> calendarScope,
+    required String calendarScopeKey,
+  }) async {
+    final previousDates = _stringSet(previousManifest['calendar_dates']);
+    final ownedPreviousDates = previousDates.where(
+      (date) => calendarScope[date]?.startsWith('$packId@') ?? false,
+    );
+    final staleDates = ownedPreviousDates.toSet()..removeAll(incomingDates);
+    final datesToReplace = {...incomingDates, ...staleDates};
+
+    await _deleteCalendarContent(datesToReplace, locale);
+    await _deleteUncommittedDailyActions(datesToReplace, locale);
+
+    for (final date in staleDates) {
+      calendarScope.remove(date);
+      final hasUserAction =
+          await (db.select(db.dailyActions)
+                ..where((t) => t.date.equals(date))
+                ..limit(1))
+              .getSingleOrNull() !=
+          null;
+      if (!hasUserAction) {
+        await (db.delete(
+          db.calendarDays,
+        )..where((t) => t.date.equals(date) & t.locale.equals(locale))).go();
+      }
+    }
+    for (final date in incomingDates) {
+      calendarScope[date] = '$packId@$checksum';
+    }
+
+    if (datesToReplace.isNotEmpty) {
+      await db
+          .into(db.userSettings)
+          .insertOnConflictUpdate(
+            UserSettingsCompanion.insert(
+              key: calendarScopeKey,
+              value: jsonEncode(calendarScope),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+    }
+  }
+
+  Future<void> _deleteCalendarContent(Set<String> dates, String locale) async {
+    for (final chunk in _chunks(dates)) {
+      await (db.delete(
+        db.dailyReflections,
+      )..where((t) => t.date.isIn(chunk) & t.locale.equals(locale))).go();
+      await (db.delete(
+        db.readings,
+      )..where((t) => t.date.isIn(chunk) & t.locale.equals(locale))).go();
+      await (db.delete(
+        db.celebrations,
+      )..where((t) => t.date.isIn(chunk) & t.locale.equals(locale))).go();
+    }
+  }
+
+  Future<void> _deleteUncommittedDailyActions(
+    Set<String> dates,
+    String locale,
+  ) async {
+    for (final dateChunk in _chunks(dates)) {
+      final actions = await (db.select(
+        db.dailyActions,
+      )..where((t) => t.date.isIn(dateChunk) & t.locale.equals(locale))).get();
+      final actionIds = actions.map((action) => action.id).toSet();
+      if (actionIds.isEmpty) {
+        continue;
+      }
+
+      final loggedActionIds = <String>{};
+      for (final actionChunk in _chunks(actionIds)) {
+        final logs = await (db.select(
+          db.actionLogs,
+        )..where((t) => t.actionId.isIn(actionChunk))).get();
+        loggedActionIds.addAll(logs.map((log) => log.actionId));
+      }
+      actionIds.removeAll(loggedActionIds);
+      await _deleteIds(
+        actionIds,
+        (ids) =>
+            (db.delete(db.dailyActions)..where((t) => t.id.isIn(ids))).go(),
+      );
+    }
+  }
+
+  Future<void> _removePreviouslyImportedRows(
+    Map<String, Object?> manifest,
+    String packId,
+  ) async {
+    await _deleteIds(
+      _stringSet(manifest['mass_time_ids']),
+      (ids) => (db.delete(db.massTimes)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await _deleteIds(
+      _stringSet(manifest['church_ids']),
+      (ids) => (db.delete(db.churches)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await _deleteIds(
+      _stringSet(manifest['prayer_ids']),
+      (ids) => (db.delete(db.prayers)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await _deleteIds(
+      _stringSet(manifest['daily_reflection_ids']),
+      (ids) =>
+          (db.delete(db.dailyReflections)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await _deleteIds(
+      _stringSet(manifest['reading_ids']),
+      (ids) => (db.delete(db.readings)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await _deleteIds(
+      _stringSet(manifest['celebration_ids']),
+      (ids) => (db.delete(db.celebrations)..where((t) => t.id.isIn(ids))).go(),
+    );
+    await (db.delete(
+      db.actionRules,
+    )..where((t) => t.packId.equals(packId))).go();
+  }
+
+  Future<void> _deleteIds(
+    Set<String> ids,
+    Future<int> Function(List<String>) delete,
+  ) async {
+    for (final chunk in _chunks(ids)) {
+      await delete(chunk);
+    }
+  }
+
+  Iterable<List<String>> _chunks(Iterable<String> values) sync* {
+    final chunk = <String>[];
+    for (final value in values) {
+      chunk.add(value);
+      if (chunk.length == 400) {
+        yield List<String>.of(chunk);
+        chunk.clear();
+      }
+    }
+    if (chunk.isNotEmpty) {
+      yield chunk;
+    }
+  }
+
+  List<String> _ids(List<Map<String, Object?>> rows) {
+    return rows.map((row) => row['id']! as String).toList(growable: false);
+  }
+
+  Set<String> _stringSet(Object? value) {
+    if (value is! List) {
+      return {};
+    }
+    return value.whereType<String>().toSet();
+  }
+
+  Map<String, Object?> _decodeObject(String? value) {
+    if (value == null) {
+      return {};
+    }
+    try {
+      final decoded = jsonDecode(value);
+      return decoded is Map<String, Object?> ? decoded : {};
+    } on FormatException {
+      return {};
+    }
+  }
+
+  Map<String, String> _decodeStringMap(String? value) {
+    return _decodeObject(value).map(
+      (key, value) => MapEntry(key, value is String ? value : ''),
+    )..removeWhere((key, value) => value.isEmpty);
   }
 
   Future<void> _regenerateNextWidgetSnapshots(String validFrom) async {

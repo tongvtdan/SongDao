@@ -9,6 +9,7 @@ import '../features/prayer/prayer_library_screen.dart';
 import '../features/church_finder/church_search_screen.dart';
 import '../features/progress/journal_screen.dart';
 import '../features/progress/progress_screen.dart';
+import '../features/readings/reading_source.dart';
 import '../features/readings/reading_webview_screen.dart';
 import '../features/settings/settings_screen.dart';
 
@@ -49,12 +50,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/readings/web',
         parentNavigatorKey: rootNavigatorKey,
+        redirect: (context, state) {
+          final source = ReadingSource.fromId(
+            state.uri.queryParameters['source'],
+          );
+          return source == null ? '/today' : null;
+        },
         builder: (context, state) {
-          final url =
-              state.uri.queryParameters['url'] ??
-              'https://ktcgkpv.org/readings/mass-reading';
+          final source = ReadingSource.fromId(
+            state.uri.queryParameters['source'],
+          )!;
           final title = state.uri.queryParameters['title'] ?? 'Bài đọc';
-          return ReadingWebViewScreen(initialUrl: url, title: title);
+          return ReadingWebViewScreen(source: source, title: title);
         },
       ),
       StatefulShellRoute.indexedStack(
