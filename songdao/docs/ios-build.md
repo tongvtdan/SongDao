@@ -6,9 +6,13 @@ CocoaPods is not part of the supported build path. Do not recreate `ios/Podfile`
 
 ## Supported toolchain
 
-- Flutter 3.44.x stable or newer within the supported project SDK range
+- Flutter 3.44.0 stable or newer
+- Dart 3.12.0 or newer (the minimum bundled by Flutter 3.44)
 - Xcode 26.6 stable
 - iOS deployment target 15.0 for Runner, TodayWidget, and RunnerTests
+
+The Flutter and Dart floors are also enforced by `pubspec.yaml`. Release and
+CI builds must use a Flutter SDK that satisfies those constraints.
 
 Flutter generates the plugin package under `ios/Flutter/ephemeral/` during a
 build. That directory is generated and ignored; the Xcode project reference to

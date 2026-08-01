@@ -31,6 +31,7 @@ class DailyReminderService {
   }
 
   Future<void> refreshScheduledReminders() async {
+    await _notifications.configureTimezone();
     final reminder = await _settings.dailyReminder();
     if (!reminder.enabled) {
       await _notifications.cancelDailyReminders();

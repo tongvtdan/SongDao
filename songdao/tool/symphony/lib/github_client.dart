@@ -195,8 +195,12 @@ List<Map<String, Object?>> _nodes(
     );
   }
   return nodes
-      .whereType<Map>()
-      .map((node) => node.map((key, value) => MapEntry(key.toString(), value)))
+      .whereType<Map<Object?, Object?>>()
+      .map(
+        (node) => node.map(
+          (key, value) => MapEntry<String, Object?>(key.toString(), value),
+        ),
+      )
       .toList(growable: false);
 }
 
@@ -269,7 +273,7 @@ DateTime? _parseDate(Object? value) {
 List<String> _normalizeLabels(Object? labels) {
   if (labels is! Map || labels['nodes'] is! List) return const [];
   return (labels['nodes'] as List)
-      .whereType<Map>()
+      .whereType<Map<Object?, Object?>>()
       .map((label) => label['name'])
       .whereType<String>()
       .map((name) => name.toLowerCase())
@@ -291,7 +295,8 @@ int? _normalizePriority(Object? fieldValue) {
 List<IssueBlocker> _normalizeBlockers(Object? blockedBy) {
   if (blockedBy is! Map || blockedBy['nodes'] is! List) return const [];
   final blockers = <IssueBlocker>[];
-  for (final issue in (blockedBy['nodes'] as List).whereType<Map>()) {
+  for (final issue
+      in (blockedBy['nodes'] as List).whereType<Map<Object?, Object?>>()) {
     final repository = issue['repository'];
     final repositoryName = repository is Map
         ? _nullableString(repository['nameWithOwner'])?.split('/').last

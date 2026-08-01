@@ -10,5 +10,12 @@
   "prayerTagEvening": "Buổi tối",
   "prayerTagReflection": "Xét mình",
   "prayerTagWork": "Công việc",
-  "prayerTagPeace": "Bình an"
+  "prayerTagPeace": "Bình an",
+  "asyncErrorTitle": "Không thể tải nội dung",
+  "asyncErrorMessage": "Dữ liệu vẫn được lưu trên thiết bị. Hãy thử tải lại.",
+  "retry": "Tải lại",
+  "calendarEmptyTitle": "Chưa có lịch phụng vụ",
+  "calendarEmptyMessage": "Gói nội dung trên thiết bị chưa có dữ liệu cho tháng này.",
+  "progressEmptyTitle": "Chưa có việc hoàn thành",
+  "progressEmptyMessage": "Hoàn thành một việc nhỏ hôm nay để bắt đầu nhịp sống đức tin."
 }

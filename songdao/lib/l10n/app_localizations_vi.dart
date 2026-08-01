@@ -40,4 +40,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get prayerTagPeace => 'Bình an';
+
+  @override
+  String get asyncErrorTitle => 'Không thể tải nội dung';
+
+  @override
+  String get asyncErrorMessage =>
+      'Dữ liệu vẫn được lưu trên thiết bị. Hãy thử tải lại.';
+
+  @override
+  String get retry => 'Tải lại';
+
+  @override
+  String get calendarEmptyTitle => 'Chưa có lịch phụng vụ';
+
+  @override
+  String get calendarEmptyMessage =>
+      'Gói nội dung trên thiết bị chưa có dữ liệu cho tháng này.';
+
+  @override
+  String get progressEmptyTitle => 'Chưa có việc hoàn thành';
+
+  @override
+  String get progressEmptyMessage =>
+      'Hoàn thành một việc nhỏ hôm nay để bắt đầu nhịp sống đức tin.';
 }

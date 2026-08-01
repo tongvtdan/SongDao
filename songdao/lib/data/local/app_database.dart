@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -92,6 +92,38 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 5) {
         await m.createTable(dailyReflections);
+      }
+      if (from < 6) {
+        await m.addColumn(churches, churches.timezone);
+      }
+      if (from < 7) {
+        await m.database.customStatement('''
+          CREATE TABLE calendar_days_v7 (
+            date TEXT NOT NULL,
+            season TEXT NOT NULL,
+            liturgical_week INTEGER NOT NULL,
+            color TEXT NOT NULL,
+            cycle_year TEXT NOT NULL,
+            locale TEXT NOT NULL,
+            lunar_date TEXT,
+            PRIMARY KEY (date, locale)
+          )
+        ''');
+        await m.database.customStatement('''
+          INSERT INTO calendar_days_v7
+            (date, season, liturgical_week, color, cycle_year, locale, lunar_date)
+          SELECT date, season, liturgical_week, color, cycle_year, locale, lunar_date
+          FROM calendar_days
+        ''');
+        await m.database.customStatement('PRAGMA foreign_keys = OFF');
+        try {
+          await m.database.customStatement('DROP TABLE calendar_days');
+          await m.database.customStatement(
+            'ALTER TABLE calendar_days_v7 RENAME TO calendar_days',
+          );
+        } finally {
+          await m.database.customStatement('PRAGMA foreign_keys = ON');
+        }
       }
     },
   );

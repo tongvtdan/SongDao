@@ -108,7 +108,10 @@ class ContentPackImporter {
       await _importDailyReflections(dailyReflections);
       await _importActionRules(actionRules, packId);
       await _importPrayers(prayers);
-      await _importChurches(churches);
+      await _importChurches(
+        churches,
+        defaultTimezone: decoded['timezone'] as String?,
+      );
       await _importMassTimes(massTimes);
       await db
           .into(db.userSettings)
@@ -577,7 +580,10 @@ class ContentPackImporter {
     }
   }
 
-  Future<void> _importChurches(List<Map<String, Object?>> rows) async {
+  Future<void> _importChurches(
+    List<Map<String, Object?>> rows, {
+    String? defaultTimezone,
+  }) async {
     for (final row in rows) {
       await db
           .into(db.churches)
@@ -588,6 +594,9 @@ class ContentPackImporter {
               name: row['name']! as String,
               diocese: row['diocese']! as String,
               address: row['address']! as String,
+              timezone: Value(
+                (row['timezone'] as String?) ?? defaultTimezone ?? 'UTC',
+              ),
               latitude: Value((row['latitude'] as num?)?.toDouble()),
               longitude: Value((row['longitude'] as num?)?.toDouble()),
               phone: Value(row['phone'] as String?),

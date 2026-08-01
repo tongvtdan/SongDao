@@ -8,6 +8,8 @@ import '../../app/design_system.dart';
 import '../../app/theme.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
+import '../../l10n/app_localizations.dart';
+import '../shared/widgets/async_state_view.dart';
 
 class ProgressScreen extends ConsumerStatefulWidget {
   const ProgressScreen({super.key});
@@ -18,18 +20,29 @@ class ProgressScreen extends ConsumerStatefulWidget {
 
 class _ProgressScreenState extends ConsumerState<ProgressScreen> {
   String? _selectedDate;
+  late Future<_ProgressViewData> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadWithDiagnostics();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Tiến trình')),
       body: FutureBuilder<_ProgressViewData>(
-        future: _load(ref),
+        future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
+          }
           final data = snapshot.data!;
+          final l10n = AppLocalizations.of(context);
           return ListView(
             padding: AppSpacing.screenPadding,
             children: [
@@ -62,6 +75,15 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                 },
               ),
               const SizedBox(height: 14),
+              if (data.completedLogs.isEmpty) ...[
+                AsyncEmptyState(
+                  title: l10n?.progressEmptyTitle ?? 'Chưa có việc hoàn thành',
+                  message:
+                      l10n?.progressEmptyMessage ??
+                      'Hoàn thành một việc nhỏ hôm nay để bắt đầu nhịp sống đức tin.',
+                ),
+                const SizedBox(height: 14),
+              ],
               _RecentLogsCard(
                 logs: data.logsForDate(_selectedDate),
                 selectedDate: _selectedDate,
@@ -73,7 +95,17 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     );
   }
 
-  Future<_ProgressViewData> _load(WidgetRef ref) async {
+  void _retry() {
+    setState(() {
+      _future = _loadWithDiagnostics();
+    });
+  }
+
+  Future<_ProgressViewData> _loadWithDiagnostics() {
+    return loadWithDiagnostics('Progress', _load);
+  }
+
+  Future<_ProgressViewData> _load() async {
     final db = ref.read(databaseProvider);
     final today = DateTime.now();
     final monday = today.subtract(Duration(days: today.weekday - 1));

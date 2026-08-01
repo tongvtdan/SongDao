@@ -63,8 +63,8 @@ class Orchestrator {
     required this.tracker,
     required this.workerRunner,
     required this.workspaceCleaner,
-    Clock clock = const SystemClock(),
-  }) : _clock = clock;
+    this._clock = const SystemClock(),
+  });
 
   SymphonyConfig config;
   final IssueTrackerClient tracker;

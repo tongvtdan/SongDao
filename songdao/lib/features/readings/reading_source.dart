@@ -4,7 +4,7 @@ enum ReadingSource {
   ktcgkpvMassReading(
     id: 'ktcgkpv_mass_reading',
     url: 'https://ktcgkpv.org/readings/mass-reading',
-    requiresJavaScript: false,
+    requiresJavaScript: true,
   );
 
   const ReadingSource({

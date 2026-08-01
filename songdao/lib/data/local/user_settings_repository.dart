@@ -19,6 +19,9 @@ class UserSettingsKeys {
   }
 }
 
+const supportedAppLocaleCodes = ['vi'];
+const defaultAppLocaleCode = 'vi';
+
 class DailyReminderSettings {
   const DailyReminderSettings({
     required this.enabled,
@@ -38,7 +41,17 @@ class UserSettingsRepository {
 
   Future<String> locale() async {
     final setting = await _get(UserSettingsKeys.locale);
-    return setting?.value ?? 'vi';
+    final value = setting?.value;
+    return supportedAppLocaleCodes.contains(value)
+        ? value!
+        : defaultAppLocaleCode;
+  }
+
+  Future<void> setLocale(String value) {
+    if (!supportedAppLocaleCodes.contains(value)) {
+      throw ArgumentError.value(value, 'value', 'Unsupported app locale');
+    }
+    return set(UserSettingsKeys.locale, value);
   }
 
   Future<bool> showLunarDate() async {

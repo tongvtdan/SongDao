@@ -7,10 +7,7 @@ import 'mass_service.dart';
 import 'widget_snapshot_bridge.dart';
 
 class WidgetSnapshotService {
-  WidgetSnapshotService(
-    this.db, {
-    WidgetSnapshotBridge bridge = const WidgetSnapshotBridge(),
-  }) : _bridge = bridge;
+  WidgetSnapshotService(this.db, {this._bridge = const WidgetSnapshotBridge()});
 
   final AppDatabase db;
   final WidgetSnapshotBridge _bridge;

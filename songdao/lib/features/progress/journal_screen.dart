@@ -5,10 +5,18 @@ import 'package:intl/intl.dart';
 import '../../app/design_system.dart';
 import '../../app/sentence_capitalization_formatter.dart';
 import '../../app/theme.dart';
-import '../../data/content/content_pack_provider.dart';
 import '../../data/local/daos/action_log_dao.dart';
 import '../../data/local/daily_action_engine.dart';
 import '../../data/local/database_provider.dart';
+import '../shared/widgets/async_state_view.dart';
+
+DateTime journalDatePickerFirstDate(DateTime referenceDate) {
+  return DateTime(referenceDate.year - 10);
+}
+
+DateTime journalDatePickerLastDate(DateTime referenceDate) {
+  return DateTime(referenceDate.year + 10, 12, 31);
+}
 
 class JournalScreen extends ConsumerStatefulWidget {
   const JournalScreen({super.key});
@@ -37,7 +45,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   Future<List<JournalEntry>> _loadEntries() async {
-    await ref.read(seedContentBootstrapProvider.future);
     return ref
         .read(databaseProvider)
         .actionLogDao
@@ -45,7 +52,16 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
   }
 
   void _refreshEntries() {
+    if (!mounted) {
+      return;
+    }
     setState(() => _entriesFuture = _loadEntries());
+  }
+
+  void _retry() {
+    setState(() {
+      _entriesFuture = _loadEntries();
+    });
   }
 
   Future<void> _saveEntry(String actionId, String note) async {
@@ -86,7 +102,6 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
       return;
     }
 
-    await ref.read(seedContentBootstrapProvider.future);
     final db = ref.read(databaseProvider);
     final locale = await ref.read(userSettingsRepositoryProvider).locale();
     final action = await DailyActionEngine(
@@ -110,6 +125,7 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         : DateTime.parse(entry.log.date);
     final noteController = TextEditingController(text: entry?.note ?? '');
     var selectedDate = initialDate;
+    final datePickerReference = DateTime.now();
 
     return showDialog<_NoteEditorResult>(
       context: context,
@@ -131,8 +147,12 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
                           final picked = await showDatePicker(
                             context: context,
                             initialDate: selectedDate,
-                            firstDate: DateTime(2026),
-                            lastDate: DateTime(2026, 12, 31),
+                            firstDate: journalDatePickerFirstDate(
+                              datePickerReference,
+                            ),
+                            lastDate: journalDatePickerLastDate(
+                              datePickerReference,
+                            ),
                           );
                           if (picked != null) {
                             setDialogState(() => selectedDate = picked);
@@ -207,6 +227,9 @@ class _JournalScreenState extends ConsumerState<JournalScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
           }
           final entries = snapshot.data ?? const <JournalEntry>[];
           return ListView(

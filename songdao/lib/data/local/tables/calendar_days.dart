@@ -10,5 +10,5 @@ class CalendarDays extends Table {
   TextColumn get lunarDate => text().nullable()();
 
   @override
-  Set<Column> get primaryKey => {date};
+  Set<Column> get primaryKey => {date, locale};
 }

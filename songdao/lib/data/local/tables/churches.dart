@@ -7,6 +7,7 @@ class Churches extends Table {
   TextColumn get name => text()();
   TextColumn get diocese => text()();
   TextColumn get address => text()();
+  TextColumn get timezone => text().withDefault(const Constant('UTC'))();
   RealColumn get latitude => real().nullable()();
   RealColumn get longitude => real().nullable()();
   TextColumn get phone => text().nullable()();

@@ -8,6 +8,8 @@ import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
+import '../shared/widgets/async_state_view.dart';
+import '../../l10n/app_localizations.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -24,7 +26,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _load();
+    _future = _loadWithDiagnostics();
   }
 
   Future<_CalendarViewData> _load() async {
@@ -93,15 +95,26 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void _changeMonth(int delta) {
     setState(() {
       _visibleMonth = DateTime(_visibleMonth.year, _visibleMonth.month + delta);
-      _future = _load();
+      _future = _loadWithDiagnostics();
     });
   }
 
   void _selectDate(DateTime date) {
     setState(() {
       _selectedDate = _dateKey(date);
-      _future = _load();
+      _future = _loadWithDiagnostics();
     });
+  }
+
+  void _retry() {
+    ref.invalidate(seedContentBootstrapProvider);
+    setState(() {
+      _future = _loadWithDiagnostics();
+    });
+  }
+
+  Future<_CalendarViewData> _loadWithDiagnostics() {
+    return loadWithDiagnostics('Calendar', _load);
   }
 
   @override
@@ -114,7 +127,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
+          }
           final data = snapshot.data!;
+          final l10n = AppLocalizations.of(context);
           return ListView(
             padding: AppSpacing.screenPadding,
             children: [
@@ -124,14 +141,23 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 onNext: () => _changeMonth(1),
               ),
               const SizedBox(height: 12),
-              _MonthGrid(
-                month: _visibleMonth,
-                days: data.days,
-                selectedDate: _selectedDate,
-                onSelect: _selectDate,
-              ),
-              const SizedBox(height: 14),
-              _SelectedDayCard(data: data),
+              if (data.days.isEmpty)
+                AsyncEmptyState(
+                  title: l10n?.calendarEmptyTitle ?? 'Chưa có lịch phụng vụ',
+                  message:
+                      l10n?.calendarEmptyMessage ??
+                      'Gói nội dung trên thiết bị chưa có dữ liệu cho tháng này.',
+                )
+              else ...[
+                _MonthGrid(
+                  month: _visibleMonth,
+                  days: data.days,
+                  selectedDate: _selectedDate,
+                  onSelect: _selectDate,
+                ),
+                const SizedBox(height: 14),
+                _SelectedDayCard(data: data),
+              ],
             ],
           );
         },
@@ -269,17 +295,16 @@ class _MonthGrid extends StatelessWidget {
                     children: [
                       Text(
                         '${date.day}',
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(
-                              color: selected
-                                  ? Colors.white
-                                  : inMonth
-                                  ? AppColors.textPrimary
-                                  : AppColors.textTertiary,
-                              fontWeight: isToday || selected
-                                  ? FontWeight.w800
-                                  : FontWeight.w500,
-                            ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: selected
+                              ? Colors.white
+                              : inMonth
+                              ? AppColors.textPrimary
+                              : AppColors.textTertiary,
+                          fontWeight: isToday || selected
+                              ? FontWeight.w800
+                              : FontWeight.w500,
+                        ),
                       ),
                       const SizedBox(height: 3),
                       Container(

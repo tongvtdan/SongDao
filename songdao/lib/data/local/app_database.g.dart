@@ -161,7 +161,7 @@ class $CalendarDaysTable extends CalendarDays
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {date};
+  Set<GeneratedColumn> get $primaryKey => {date, locale};
   @override
   CalendarDay map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -493,9 +493,6 @@ class $CelebrationsTable extends Celebrations
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES calendar_days (date)',
-    ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -945,9 +942,6 @@ class $ReadingsTable extends Readings with TableInfo<$ReadingsTable, Reading> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES calendar_days (date)',
-    ),
   );
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
@@ -2126,9 +2120,6 @@ class $DailyActionsTable extends DailyActions
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES calendar_days (date)',
-    ),
   );
   static const VerificationMeta _sourceRuleMeta = const VerificationMeta(
     'sourceRule',
@@ -2633,9 +2624,6 @@ class $DailyReflectionsTable extends DailyReflections
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES calendar_days (date)',
-    ),
   );
   static const VerificationMeta _localeMeta = const VerificationMeta('locale');
   @override
@@ -4326,6 +4314,18 @@ class $ChurchesTable extends Churches with TableInfo<$ChurchesTable, Church> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _timezoneMeta = const VerificationMeta(
+    'timezone',
+  );
+  @override
+  late final GeneratedColumn<String> timezone = GeneratedColumn<String>(
+    'timezone',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('UTC'),
+  );
   static const VerificationMeta _latitudeMeta = const VerificationMeta(
     'latitude',
   );
@@ -4407,6 +4407,7 @@ class $ChurchesTable extends Churches with TableInfo<$ChurchesTable, Church> {
     name,
     diocese,
     address,
+    timezone,
     latitude,
     longitude,
     phone,
@@ -4463,6 +4464,12 @@ class $ChurchesTable extends Churches with TableInfo<$ChurchesTable, Church> {
       );
     } else if (isInserting) {
       context.missing(_addressMeta);
+    }
+    if (data.containsKey('timezone')) {
+      context.handle(
+        _timezoneMeta,
+        timezone.isAcceptableOrUnknown(data['timezone']!, _timezoneMeta),
+      );
     }
     if (data.containsKey('latitude')) {
       context.handle(
@@ -4537,6 +4544,10 @@ class $ChurchesTable extends Churches with TableInfo<$ChurchesTable, Church> {
         DriftSqlType.string,
         data['${effectivePrefix}address'],
       )!,
+      timezone: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}timezone'],
+      )!,
       latitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}latitude'],
@@ -4580,6 +4591,7 @@ class Church extends DataClass implements Insertable<Church> {
   final String name;
   final String diocese;
   final String address;
+  final String timezone;
   final double? latitude;
   final double? longitude;
   final String? phone;
@@ -4593,6 +4605,7 @@ class Church extends DataClass implements Insertable<Church> {
     required this.name,
     required this.diocese,
     required this.address,
+    required this.timezone,
     this.latitude,
     this.longitude,
     this.phone,
@@ -4609,6 +4622,7 @@ class Church extends DataClass implements Insertable<Church> {
     map['name'] = Variable<String>(name);
     map['diocese'] = Variable<String>(diocese);
     map['address'] = Variable<String>(address);
+    map['timezone'] = Variable<String>(timezone);
     if (!nullToAbsent || latitude != null) {
       map['latitude'] = Variable<double>(latitude);
     }
@@ -4636,6 +4650,7 @@ class Church extends DataClass implements Insertable<Church> {
       name: Value(name),
       diocese: Value(diocese),
       address: Value(address),
+      timezone: Value(timezone),
       latitude: latitude == null && nullToAbsent
           ? const Value.absent()
           : Value(latitude),
@@ -4667,6 +4682,7 @@ class Church extends DataClass implements Insertable<Church> {
       name: serializer.fromJson<String>(json['name']),
       diocese: serializer.fromJson<String>(json['diocese']),
       address: serializer.fromJson<String>(json['address']),
+      timezone: serializer.fromJson<String>(json['timezone']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
       phone: serializer.fromJson<String?>(json['phone']),
@@ -4685,6 +4701,7 @@ class Church extends DataClass implements Insertable<Church> {
       'name': serializer.toJson<String>(name),
       'diocese': serializer.toJson<String>(diocese),
       'address': serializer.toJson<String>(address),
+      'timezone': serializer.toJson<String>(timezone),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
       'phone': serializer.toJson<String?>(phone),
@@ -4701,6 +4718,7 @@ class Church extends DataClass implements Insertable<Church> {
     String? name,
     String? diocese,
     String? address,
+    String? timezone,
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
     Value<String?> phone = const Value.absent(),
@@ -4714,6 +4732,7 @@ class Church extends DataClass implements Insertable<Church> {
     name: name ?? this.name,
     diocese: diocese ?? this.diocese,
     address: address ?? this.address,
+    timezone: timezone ?? this.timezone,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
     phone: phone.present ? phone.value : this.phone,
@@ -4729,6 +4748,7 @@ class Church extends DataClass implements Insertable<Church> {
       name: data.name.present ? data.name.value : this.name,
       diocese: data.diocese.present ? data.diocese.value : this.diocese,
       address: data.address.present ? data.address.value : this.address,
+      timezone: data.timezone.present ? data.timezone.value : this.timezone,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
       phone: data.phone.present ? data.phone.value : this.phone,
@@ -4749,6 +4769,7 @@ class Church extends DataClass implements Insertable<Church> {
           ..write('name: $name, ')
           ..write('diocese: $diocese, ')
           ..write('address: $address, ')
+          ..write('timezone: $timezone, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
           ..write('phone: $phone, ')
@@ -4767,6 +4788,7 @@ class Church extends DataClass implements Insertable<Church> {
     name,
     diocese,
     address,
+    timezone,
     latitude,
     longitude,
     phone,
@@ -4784,6 +4806,7 @@ class Church extends DataClass implements Insertable<Church> {
           other.name == this.name &&
           other.diocese == this.diocese &&
           other.address == this.address &&
+          other.timezone == this.timezone &&
           other.latitude == this.latitude &&
           other.longitude == this.longitude &&
           other.phone == this.phone &&
@@ -4799,6 +4822,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
   final Value<String> name;
   final Value<String> diocese;
   final Value<String> address;
+  final Value<String> timezone;
   final Value<double?> latitude;
   final Value<double?> longitude;
   final Value<String?> phone;
@@ -4813,6 +4837,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
     this.name = const Value.absent(),
     this.diocese = const Value.absent(),
     this.address = const Value.absent(),
+    this.timezone = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
     this.phone = const Value.absent(),
@@ -4828,6 +4853,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
     required String name,
     required String diocese,
     required String address,
+    this.timezone = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
     this.phone = const Value.absent(),
@@ -4848,6 +4874,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
     Expression<String>? name,
     Expression<String>? diocese,
     Expression<String>? address,
+    Expression<String>? timezone,
     Expression<double>? latitude,
     Expression<double>? longitude,
     Expression<String>? phone,
@@ -4863,6 +4890,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
       if (name != null) 'name': name,
       if (diocese != null) 'diocese': diocese,
       if (address != null) 'address': address,
+      if (timezone != null) 'timezone': timezone,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
       if (phone != null) 'phone': phone,
@@ -4880,6 +4908,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
     Value<String>? name,
     Value<String>? diocese,
     Value<String>? address,
+    Value<String>? timezone,
     Value<double?>? latitude,
     Value<double?>? longitude,
     Value<String?>? phone,
@@ -4895,6 +4924,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
       name: name ?? this.name,
       diocese: diocese ?? this.diocese,
       address: address ?? this.address,
+      timezone: timezone ?? this.timezone,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       phone: phone ?? this.phone,
@@ -4923,6 +4953,9 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
     }
     if (address.present) {
       map['address'] = Variable<String>(address.value);
+    }
+    if (timezone.present) {
+      map['timezone'] = Variable<String>(timezone.value);
     }
     if (latitude.present) {
       map['latitude'] = Variable<double>(latitude.value);
@@ -4959,6 +4992,7 @@ class ChurchesCompanion extends UpdateCompanion<Church> {
           ..write('name: $name, ')
           ..write('diocese: $diocese, ')
           ..write('address: $address, ')
+          ..write('timezone: $timezone, ')
           ..write('latitude: $latitude, ')
           ..write('longitude: $longitude, ')
           ..write('phone: $phone, ')
@@ -6241,89 +6275,6 @@ typedef $$CalendarDaysTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$CalendarDaysTableReferences
-    extends BaseReferences<_$AppDatabase, $CalendarDaysTable, CalendarDay> {
-  $$CalendarDaysTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$CelebrationsTable, List<Celebration>>
-  _celebrationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.celebrations,
-    aliasName: $_aliasNameGenerator(db.calendarDays.date, db.celebrations.date),
-  );
-
-  $$CelebrationsTableProcessedTableManager get celebrationsRefs {
-    final manager = $$CelebrationsTableTableManager(
-      $_db,
-      $_db.celebrations,
-    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
-
-    final cache = $_typedResult.readTableOrNull(_celebrationsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$ReadingsTable, List<Reading>> _readingsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.readings,
-    aliasName: $_aliasNameGenerator(db.calendarDays.date, db.readings.date),
-  );
-
-  $$ReadingsTableProcessedTableManager get readingsRefs {
-    final manager = $$ReadingsTableTableManager(
-      $_db,
-      $_db.readings,
-    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
-
-    final cache = $_typedResult.readTableOrNull(_readingsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$DailyActionsTable, List<DailyAction>>
-  _dailyActionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.dailyActions,
-    aliasName: $_aliasNameGenerator(db.calendarDays.date, db.dailyActions.date),
-  );
-
-  $$DailyActionsTableProcessedTableManager get dailyActionsRefs {
-    final manager = $$DailyActionsTableTableManager(
-      $_db,
-      $_db.dailyActions,
-    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
-
-    final cache = $_typedResult.readTableOrNull(_dailyActionsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$DailyReflectionsTable, List<DailyReflection>>
-  _dailyReflectionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.dailyReflections,
-    aliasName: $_aliasNameGenerator(
-      db.calendarDays.date,
-      db.dailyReflections.date,
-    ),
-  );
-
-  $$DailyReflectionsTableProcessedTableManager get dailyReflectionsRefs {
-    final manager = $$DailyReflectionsTableTableManager(
-      $_db,
-      $_db.dailyReflections,
-    ).filter((f) => f.date.date.sqlEquals($_itemColumn<String>('date')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _dailyReflectionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
 class $$CalendarDaysTableFilterComposer
     extends Composer<_$AppDatabase, $CalendarDaysTable> {
   $$CalendarDaysTableFilterComposer({
@@ -6367,106 +6318,6 @@ class $$CalendarDaysTableFilterComposer
     column: $table.lunarDate,
     builder: (column) => ColumnFilters(column),
   );
-
-  Expression<bool> celebrationsRefs(
-    Expression<bool> Function($$CelebrationsTableFilterComposer f) f,
-  ) {
-    final $$CelebrationsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.celebrations,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CelebrationsTableFilterComposer(
-            $db: $db,
-            $table: $db.celebrations,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> readingsRefs(
-    Expression<bool> Function($$ReadingsTableFilterComposer f) f,
-  ) {
-    final $$ReadingsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.readings,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReadingsTableFilterComposer(
-            $db: $db,
-            $table: $db.readings,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> dailyActionsRefs(
-    Expression<bool> Function($$DailyActionsTableFilterComposer f) f,
-  ) {
-    final $$DailyActionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.dailyActions,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DailyActionsTableFilterComposer(
-            $db: $db,
-            $table: $db.dailyActions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> dailyReflectionsRefs(
-    Expression<bool> Function($$DailyReflectionsTableFilterComposer f) f,
-  ) {
-    final $$DailyReflectionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.dailyReflections,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DailyReflectionsTableFilterComposer(
-            $db: $db,
-            $table: $db.dailyReflections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$CalendarDaysTableOrderingComposer
@@ -6545,106 +6396,6 @@ class $$CalendarDaysTableAnnotationComposer
 
   GeneratedColumn<String> get lunarDate =>
       $composableBuilder(column: $table.lunarDate, builder: (column) => column);
-
-  Expression<T> celebrationsRefs<T extends Object>(
-    Expression<T> Function($$CelebrationsTableAnnotationComposer a) f,
-  ) {
-    final $$CelebrationsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.celebrations,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CelebrationsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.celebrations,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> readingsRefs<T extends Object>(
-    Expression<T> Function($$ReadingsTableAnnotationComposer a) f,
-  ) {
-    final $$ReadingsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.readings,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReadingsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.readings,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> dailyActionsRefs<T extends Object>(
-    Expression<T> Function($$DailyActionsTableAnnotationComposer a) f,
-  ) {
-    final $$DailyActionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.dailyActions,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DailyActionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.dailyActions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> dailyReflectionsRefs<T extends Object>(
-    Expression<T> Function($$DailyReflectionsTableAnnotationComposer a) f,
-  ) {
-    final $$DailyReflectionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.dailyReflections,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$DailyReflectionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.dailyReflections,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$CalendarDaysTableTableManager
@@ -6658,14 +6409,12 @@ class $$CalendarDaysTableTableManager
           $$CalendarDaysTableAnnotationComposer,
           $$CalendarDaysTableCreateCompanionBuilder,
           $$CalendarDaysTableUpdateCompanionBuilder,
-          (CalendarDay, $$CalendarDaysTableReferences),
+          (
+            CalendarDay,
+            BaseReferences<_$AppDatabase, $CalendarDaysTable, CalendarDay>,
+          ),
           CalendarDay,
-          PrefetchHooks Function({
-            bool celebrationsRefs,
-            bool readingsRefs,
-            bool dailyActionsRefs,
-            bool dailyReflectionsRefs,
-          })
+          PrefetchHooks Function()
         > {
   $$CalendarDaysTableTableManager(_$AppDatabase db, $CalendarDaysTable table)
     : super(
@@ -6719,119 +6468,9 @@ class $$CalendarDaysTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CalendarDaysTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback:
-              ({
-                celebrationsRefs = false,
-                readingsRefs = false,
-                dailyActionsRefs = false,
-                dailyReflectionsRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (celebrationsRefs) db.celebrations,
-                    if (readingsRefs) db.readings,
-                    if (dailyActionsRefs) db.dailyActions,
-                    if (dailyReflectionsRefs) db.dailyReflections,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (celebrationsRefs)
-                        await $_getPrefetchedData<
-                          CalendarDay,
-                          $CalendarDaysTable,
-                          Celebration
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CalendarDaysTableReferences
-                              ._celebrationsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CalendarDaysTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).celebrationsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.date == item.date,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (readingsRefs)
-                        await $_getPrefetchedData<
-                          CalendarDay,
-                          $CalendarDaysTable,
-                          Reading
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CalendarDaysTableReferences
-                              ._readingsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CalendarDaysTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).readingsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.date == item.date,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (dailyActionsRefs)
-                        await $_getPrefetchedData<
-                          CalendarDay,
-                          $CalendarDaysTable,
-                          DailyAction
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CalendarDaysTableReferences
-                              ._dailyActionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CalendarDaysTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).dailyActionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.date == item.date,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (dailyReflectionsRefs)
-                        await $_getPrefetchedData<
-                          CalendarDay,
-                          $CalendarDaysTable,
-                          DailyReflection
-                        >(
-                          currentTable: table,
-                          referencedTable: $$CalendarDaysTableReferences
-                              ._dailyReflectionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CalendarDaysTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).dailyReflectionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.date == item.date,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -6846,14 +6485,12 @@ typedef $$CalendarDaysTableProcessedTableManager =
       $$CalendarDaysTableAnnotationComposer,
       $$CalendarDaysTableCreateCompanionBuilder,
       $$CalendarDaysTableUpdateCompanionBuilder,
-      (CalendarDay, $$CalendarDaysTableReferences),
+      (
+        CalendarDay,
+        BaseReferences<_$AppDatabase, $CalendarDaysTable, CalendarDay>,
+      ),
       CalendarDay,
-      PrefetchHooks Function({
-        bool celebrationsRefs,
-        bool readingsRefs,
-        bool dailyActionsRefs,
-        bool dailyReflectionsRefs,
-      })
+      PrefetchHooks Function()
     >;
 typedef $$CelebrationsTableCreateCompanionBuilder =
     CelebrationsCompanion Function({
@@ -6878,30 +6515,6 @@ typedef $$CelebrationsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$CelebrationsTableReferences
-    extends BaseReferences<_$AppDatabase, $CelebrationsTable, Celebration> {
-  $$CelebrationsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
-      db.calendarDays.createAlias(
-        $_aliasNameGenerator(db.celebrations.date, db.calendarDays.date),
-      );
-
-  $$CalendarDaysTableProcessedTableManager get date {
-    final $_column = $_itemColumn<String>('date')!;
-
-    final manager = $$CalendarDaysTableTableManager(
-      $_db,
-      $_db.calendarDays,
-    ).filter((f) => f.date.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_dateTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$CelebrationsTableFilterComposer
     extends Composer<_$AppDatabase, $CelebrationsTable> {
   $$CelebrationsTableFilterComposer({
@@ -6913,6 +6526,11 @@ class $$CelebrationsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6940,29 +6558,6 @@ class $$CelebrationsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$CalendarDaysTableFilterComposer get date {
-    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableFilterComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$CelebrationsTableOrderingComposer
@@ -6976,6 +6571,11 @@ class $$CelebrationsTableOrderingComposer
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7003,29 +6603,6 @@ class $$CelebrationsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$CalendarDaysTableOrderingComposer get date {
-    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableOrderingComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$CelebrationsTableAnnotationComposer
@@ -7039,6 +6616,9 @@ class $$CelebrationsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -7056,29 +6636,6 @@ class $$CelebrationsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$CalendarDaysTableAnnotationComposer get date {
-    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableAnnotationComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$CelebrationsTableTableManager
@@ -7092,9 +6649,12 @@ class $$CelebrationsTableTableManager
           $$CelebrationsTableAnnotationComposer,
           $$CelebrationsTableCreateCompanionBuilder,
           $$CelebrationsTableUpdateCompanionBuilder,
-          (Celebration, $$CelebrationsTableReferences),
+          (
+            Celebration,
+            BaseReferences<_$AppDatabase, $CelebrationsTable, Celebration>,
+          ),
           Celebration,
-          PrefetchHooks Function({bool date})
+          PrefetchHooks Function()
         > {
   $$CelebrationsTableTableManager(_$AppDatabase db, $CelebrationsTable table)
     : super(
@@ -7148,54 +6708,9 @@ class $$CelebrationsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CelebrationsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({date = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (date) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.date,
-                                referencedTable: $$CelebrationsTableReferences
-                                    ._dateTable(db),
-                                referencedColumn: $$CelebrationsTableReferences
-                                    ._dateTable(db)
-                                    .date,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -7210,9 +6725,12 @@ typedef $$CelebrationsTableProcessedTableManager =
       $$CelebrationsTableAnnotationComposer,
       $$CelebrationsTableCreateCompanionBuilder,
       $$CelebrationsTableUpdateCompanionBuilder,
-      (Celebration, $$CelebrationsTableReferences),
+      (
+        Celebration,
+        BaseReferences<_$AppDatabase, $CelebrationsTable, Celebration>,
+      ),
       Celebration,
-      PrefetchHooks Function({bool date})
+      PrefetchHooks Function()
     >;
 typedef $$ReadingsTableCreateCompanionBuilder =
     ReadingsCompanion Function({
@@ -7243,30 +6761,6 @@ typedef $$ReadingsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$ReadingsTableReferences
-    extends BaseReferences<_$AppDatabase, $ReadingsTable, Reading> {
-  $$ReadingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
-      db.calendarDays.createAlias(
-        $_aliasNameGenerator(db.readings.date, db.calendarDays.date),
-      );
-
-  $$CalendarDaysTableProcessedTableManager get date {
-    final $_column = $_itemColumn<String>('date')!;
-
-    final manager = $$CalendarDaysTableTableManager(
-      $_db,
-      $_db.calendarDays,
-    ).filter((f) => f.date.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_dateTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$ReadingsTableFilterComposer
     extends Composer<_$AppDatabase, $ReadingsTable> {
   $$ReadingsTableFilterComposer({
@@ -7278,6 +6772,11 @@ class $$ReadingsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7320,29 +6819,6 @@ class $$ReadingsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$CalendarDaysTableFilterComposer get date {
-    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableFilterComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ReadingsTableOrderingComposer
@@ -7356,6 +6832,11 @@ class $$ReadingsTableOrderingComposer
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7398,29 +6879,6 @@ class $$ReadingsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$CalendarDaysTableOrderingComposer get date {
-    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableOrderingComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ReadingsTableAnnotationComposer
@@ -7434,6 +6892,9 @@ class $$ReadingsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
@@ -7462,29 +6923,6 @@ class $$ReadingsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$CalendarDaysTableAnnotationComposer get date {
-    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableAnnotationComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$ReadingsTableTableManager
@@ -7498,9 +6936,9 @@ class $$ReadingsTableTableManager
           $$ReadingsTableAnnotationComposer,
           $$ReadingsTableCreateCompanionBuilder,
           $$ReadingsTableUpdateCompanionBuilder,
-          (Reading, $$ReadingsTableReferences),
+          (Reading, BaseReferences<_$AppDatabase, $ReadingsTable, Reading>),
           Reading,
-          PrefetchHooks Function({bool date})
+          PrefetchHooks Function()
         > {
   $$ReadingsTableTableManager(_$AppDatabase db, $ReadingsTable table)
     : super(
@@ -7566,54 +7004,9 @@ class $$ReadingsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ReadingsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({date = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (date) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.date,
-                                referencedTable: $$ReadingsTableReferences
-                                    ._dateTable(db),
-                                referencedColumn: $$ReadingsTableReferences
-                                    ._dateTable(db)
-                                    .date,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -7628,9 +7021,9 @@ typedef $$ReadingsTableProcessedTableManager =
       $$ReadingsTableAnnotationComposer,
       $$ReadingsTableCreateCompanionBuilder,
       $$ReadingsTableUpdateCompanionBuilder,
-      (Reading, $$ReadingsTableReferences),
+      (Reading, BaseReferences<_$AppDatabase, $ReadingsTable, Reading>),
       Reading,
-      PrefetchHooks Function({bool date})
+      PrefetchHooks Function()
     >;
 typedef $$ActionRulesTableCreateCompanionBuilder =
     ActionRulesCompanion Function({
@@ -7941,29 +7334,10 @@ final class $$DailyActionsTableReferences
     extends BaseReferences<_$AppDatabase, $DailyActionsTable, DailyAction> {
   $$DailyActionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
-      db.calendarDays.createAlias(
-        $_aliasNameGenerator(db.dailyActions.date, db.calendarDays.date),
-      );
-
-  $$CalendarDaysTableProcessedTableManager get date {
-    final $_column = $_itemColumn<String>('date')!;
-
-    final manager = $$CalendarDaysTableTableManager(
-      $_db,
-      $_db.calendarDays,
-    ).filter((f) => f.date.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_dateTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
   static MultiTypedResultKey<$ActionLogsTable, List<ActionLog>>
   _actionLogsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.actionLogs,
-    aliasName: $_aliasNameGenerator(db.dailyActions.id, db.actionLogs.actionId),
+    aliasName: 'daily_actions__id__action_logs__action_id',
   );
 
   $$ActionLogsTableProcessedTableManager get actionLogsRefs {
@@ -7990,6 +7364,11 @@ class $$DailyActionsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8022,29 +7401,6 @@ class $$DailyActionsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$CalendarDaysTableFilterComposer get date {
-    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableFilterComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 
   Expression<bool> actionLogsRefs(
     Expression<bool> Function($$ActionLogsTableFilterComposer f) f,
@@ -8086,6 +7442,11 @@ class $$DailyActionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get sourceRule => $composableBuilder(
     column: $table.sourceRule,
     builder: (column) => ColumnOrderings(column),
@@ -8115,29 +7476,6 @@ class $$DailyActionsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$CalendarDaysTableOrderingComposer get date {
-    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableOrderingComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$DailyActionsTableAnnotationComposer
@@ -8151,6 +7489,9 @@ class $$DailyActionsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<String> get sourceRule => $composableBuilder(
     column: $table.sourceRule,
@@ -8171,29 +7512,6 @@ class $$DailyActionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$CalendarDaysTableAnnotationComposer get date {
-    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableAnnotationComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 
   Expression<T> actionLogsRefs<T extends Object>(
     Expression<T> Function($$ActionLogsTableAnnotationComposer a) f,
@@ -8234,7 +7552,7 @@ class $$DailyActionsTableTableManager
           $$DailyActionsTableUpdateCompanionBuilder,
           (DailyAction, $$DailyActionsTableReferences),
           DailyAction,
-          PrefetchHooks Function({bool date, bool actionLogsRefs})
+          PrefetchHooks Function({bool actionLogsRefs})
         > {
   $$DailyActionsTableTableManager(_$AppDatabase db, $DailyActionsTable table)
     : super(
@@ -8299,42 +7617,11 @@ class $$DailyActionsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({date = false, actionLogsRefs = false}) {
+          prefetchHooksCallback: ({actionLogsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [if (actionLogsRefs) db.actionLogs],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (date) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.date,
-                                referencedTable: $$DailyActionsTableReferences
-                                    ._dateTable(db),
-                                referencedColumn: $$DailyActionsTableReferences
-                                    ._dateTable(db)
-                                    .date,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
+              addJoins: null,
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (actionLogsRefs)
@@ -8376,7 +7663,7 @@ typedef $$DailyActionsTableProcessedTableManager =
       $$DailyActionsTableUpdateCompanionBuilder,
       (DailyAction, $$DailyActionsTableReferences),
       DailyAction,
-      PrefetchHooks Function({bool date, bool actionLogsRefs})
+      PrefetchHooks Function({bool actionLogsRefs})
     >;
 typedef $$DailyReflectionsTableCreateCompanionBuilder =
     DailyReflectionsCompanion Function({
@@ -8405,35 +7692,6 @@ typedef $$DailyReflectionsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$DailyReflectionsTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $DailyReflectionsTable, DailyReflection> {
-  $$DailyReflectionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $CalendarDaysTable _dateTable(_$AppDatabase db) =>
-      db.calendarDays.createAlias(
-        $_aliasNameGenerator(db.dailyReflections.date, db.calendarDays.date),
-      );
-
-  $$CalendarDaysTableProcessedTableManager get date {
-    final $_column = $_itemColumn<String>('date')!;
-
-    final manager = $$CalendarDaysTableTableManager(
-      $_db,
-      $_db.calendarDays,
-    ).filter((f) => f.date.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_dateTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
 class $$DailyReflectionsTableFilterComposer
     extends Composer<_$AppDatabase, $DailyReflectionsTable> {
   $$DailyReflectionsTableFilterComposer({
@@ -8445,6 +7703,11 @@ class $$DailyReflectionsTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8482,29 +7745,6 @@ class $$DailyReflectionsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
-
-  $$CalendarDaysTableFilterComposer get date {
-    final $$CalendarDaysTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableFilterComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$DailyReflectionsTableOrderingComposer
@@ -8518,6 +7758,11 @@ class $$DailyReflectionsTableOrderingComposer
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8555,29 +7800,6 @@ class $$DailyReflectionsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
-
-  $$CalendarDaysTableOrderingComposer get date {
-    final $$CalendarDaysTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableOrderingComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$DailyReflectionsTableAnnotationComposer
@@ -8591,6 +7813,9 @@ class $$DailyReflectionsTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 
   GeneratedColumn<String> get locale =>
       $composableBuilder(column: $table.locale, builder: (column) => column);
@@ -8612,29 +7837,6 @@ class $$DailyReflectionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  $$CalendarDaysTableAnnotationComposer get date {
-    final $$CalendarDaysTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.date,
-      referencedTable: $db.calendarDays,
-      getReferencedColumn: (t) => t.date,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CalendarDaysTableAnnotationComposer(
-            $db: $db,
-            $table: $db.calendarDays,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$DailyReflectionsTableTableManager
@@ -8648,9 +7850,16 @@ class $$DailyReflectionsTableTableManager
           $$DailyReflectionsTableAnnotationComposer,
           $$DailyReflectionsTableCreateCompanionBuilder,
           $$DailyReflectionsTableUpdateCompanionBuilder,
-          (DailyReflection, $$DailyReflectionsTableReferences),
+          (
+            DailyReflection,
+            BaseReferences<
+              _$AppDatabase,
+              $DailyReflectionsTable,
+              DailyReflection
+            >,
+          ),
           DailyReflection,
-          PrefetchHooks Function({bool date})
+          PrefetchHooks Function()
         > {
   $$DailyReflectionsTableTableManager(
     _$AppDatabase db,
@@ -8714,56 +7923,9 @@ class $$DailyReflectionsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$DailyReflectionsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({date = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (date) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.date,
-                                referencedTable:
-                                    $$DailyReflectionsTableReferences
-                                        ._dateTable(db),
-                                referencedColumn:
-                                    $$DailyReflectionsTableReferences
-                                        ._dateTable(db)
-                                        .date,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -8778,9 +7940,12 @@ typedef $$DailyReflectionsTableProcessedTableManager =
       $$DailyReflectionsTableAnnotationComposer,
       $$DailyReflectionsTableCreateCompanionBuilder,
       $$DailyReflectionsTableUpdateCompanionBuilder,
-      (DailyReflection, $$DailyReflectionsTableReferences),
+      (
+        DailyReflection,
+        BaseReferences<_$AppDatabase, $DailyReflectionsTable, DailyReflection>,
+      ),
       DailyReflection,
-      PrefetchHooks Function({bool date})
+      PrefetchHooks Function()
     >;
 typedef $$ActionLogsTableCreateCompanionBuilder =
     ActionLogsCompanion Function({
@@ -8814,9 +7979,7 @@ final class $$ActionLogsTableReferences
   $$ActionLogsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $DailyActionsTable _actionIdTable(_$AppDatabase db) =>
-      db.dailyActions.createAlias(
-        $_aliasNameGenerator(db.actionLogs.actionId, db.dailyActions.id),
-      );
+      db.dailyActions.createAlias('action_logs__action_id__daily_actions__id');
 
   $$DailyActionsTableProcessedTableManager get actionId {
     final $_column = $_itemColumn<String>('action_id')!;
@@ -9520,6 +8683,7 @@ typedef $$ChurchesTableCreateCompanionBuilder =
       required String name,
       required String diocese,
       required String address,
+      Value<String> timezone,
       Value<double?> latitude,
       Value<double?> longitude,
       Value<String?> phone,
@@ -9536,6 +8700,7 @@ typedef $$ChurchesTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String> diocese,
       Value<String> address,
+      Value<String> timezone,
       Value<double?> latitude,
       Value<double?> longitude,
       Value<String?> phone,
@@ -9553,7 +8718,7 @@ final class $$ChurchesTableReferences
   static MultiTypedResultKey<$MassTimesTable, List<MassTime>>
   _massTimesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.massTimes,
-    aliasName: $_aliasNameGenerator(db.churches.id, db.massTimes.churchId),
+    aliasName: 'churches__id__mass_times__church_id',
   );
 
   $$MassTimesTableProcessedTableManager get massTimesRefs {
@@ -9600,6 +8765,11 @@ class $$ChurchesTableFilterComposer
 
   ColumnFilters<String> get address => $composableBuilder(
     column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timezone => $composableBuilder(
+    column: $table.timezone,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9698,6 +8868,11 @@ class $$ChurchesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get timezone => $composableBuilder(
+    column: $table.timezone,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get latitude => $composableBuilder(
     column: $table.latitude,
     builder: (column) => ColumnOrderings(column),
@@ -9757,6 +8932,9 @@ class $$ChurchesTableAnnotationComposer
 
   GeneratedColumn<String> get address =>
       $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get timezone =>
+      $composableBuilder(column: $table.timezone, builder: (column) => column);
 
   GeneratedColumn<double> get latitude =>
       $composableBuilder(column: $table.latitude, builder: (column) => column);
@@ -9840,6 +9018,7 @@ class $$ChurchesTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String> diocese = const Value.absent(),
                 Value<String> address = const Value.absent(),
+                Value<String> timezone = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
                 Value<String?> phone = const Value.absent(),
@@ -9854,6 +9033,7 @@ class $$ChurchesTableTableManager
                 name: name,
                 diocese: diocese,
                 address: address,
+                timezone: timezone,
                 latitude: latitude,
                 longitude: longitude,
                 phone: phone,
@@ -9870,6 +9050,7 @@ class $$ChurchesTableTableManager
                 required String name,
                 required String diocese,
                 required String address,
+                Value<String> timezone = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
                 Value<String?> phone = const Value.absent(),
@@ -9884,6 +9065,7 @@ class $$ChurchesTableTableManager
                 name: name,
                 diocese: diocese,
                 address: address,
+                timezone: timezone,
                 latitude: latitude,
                 longitude: longitude,
                 phone: phone,
@@ -9979,8 +9161,8 @@ final class $$MassTimesTableReferences
     extends BaseReferences<_$AppDatabase, $MassTimesTable, MassTime> {
   $$MassTimesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ChurchesTable _churchIdTable(_$AppDatabase db) => db.churches
-      .createAlias($_aliasNameGenerator(db.massTimes.churchId, db.churches.id));
+  static $ChurchesTable _churchIdTable(_$AppDatabase db) =>
+      db.churches.createAlias('mass_times__church_id__churches__id');
 
   $$ChurchesTableProcessedTableManager get churchId {
     final $_column = $_itemColumn<String>('church_id')!;

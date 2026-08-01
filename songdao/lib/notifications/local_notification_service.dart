@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -42,7 +43,7 @@ class LocalNotificationService {
     if (_initialized) {
       return null;
     }
-    _configureTimezone();
+    await configureTimezone();
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('ic_stat_songdao'),
       iOS: DarwinInitializationSettings(
@@ -145,9 +146,19 @@ class LocalNotificationService {
     );
   }
 
-  void _configureTimezone() {
+  Future<void> configureTimezone() async {
     tz_data.initializeTimeZones();
-    tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh'));
+    if (kIsWeb) {
+      tz.setLocalLocation(tz.UTC);
+      return;
+    }
+    try {
+      final timezone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(timezone.identifier));
+    } on Object {
+      // Keep initialization safe if a platform does not expose its timezone.
+      tz.setLocalLocation(tz.UTC);
+    }
   }
 }
 

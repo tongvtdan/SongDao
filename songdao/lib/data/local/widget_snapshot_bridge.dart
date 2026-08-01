@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 
 class WidgetSnapshotBridge {
   const WidgetSnapshotBridge({
-    MethodChannel channel = const MethodChannel(_channelName),
-  }) : _channel = channel;
+    this._channel = const MethodChannel(_channelName),
+  });
 
   static const _channelName = 'app.songdao/widget_snapshot';
   static const appGroupId = 'group.com.dantino.songdao';

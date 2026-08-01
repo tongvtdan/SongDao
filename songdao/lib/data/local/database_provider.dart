@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_info_service.dart';
 import 'app_database.dart';
@@ -20,6 +21,11 @@ final dailyActionEngineProvider = Provider<DailyActionEngine>((ref) {
 
 final userSettingsRepositoryProvider = Provider<UserSettingsRepository>((ref) {
   return UserSettingsRepository(ref.watch(databaseProvider));
+});
+
+final appLocaleProvider = FutureProvider<Locale>((ref) async {
+  final code = await ref.watch(userSettingsRepositoryProvider).locale();
+  return Locale(code);
 });
 
 final massServiceProvider = Provider<MassService>((ref) {

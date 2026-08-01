@@ -163,6 +163,48 @@ abstract class AppLocalizations {
   /// In vi, this message translates to:
   /// **'Bình an'**
   String get prayerTagPeace;
+
+  /// No description provided for @asyncErrorTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể tải nội dung'**
+  String get asyncErrorTitle;
+
+  /// No description provided for @asyncErrorMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu vẫn được lưu trên thiết bị. Hãy thử tải lại.'**
+  String get asyncErrorMessage;
+
+  /// No description provided for @retry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải lại'**
+  String get retry;
+
+  /// No description provided for @calendarEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có lịch phụng vụ'**
+  String get calendarEmptyTitle;
+
+  /// No description provided for @calendarEmptyMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói nội dung trên thiết bị chưa có dữ liệu cho tháng này.'**
+  String get calendarEmptyMessage;
+
+  /// No description provided for @progressEmptyTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có việc hoàn thành'**
+  String get progressEmptyTitle;
+
+  /// No description provided for @progressEmptyMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hoàn thành một việc nhỏ hôm nay để bắt đầu nhịp sống đức tin.'**
+  String get progressEmptyMessage;
 }
 
 class _AppLocalizationsDelegate

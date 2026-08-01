@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   // Core surfaces
@@ -79,6 +78,8 @@ Color liturgicalColor(String value) {
 
 class AppTheme {
   static ThemeData get lightTheme {
+    // Use platform typography so first launch never depends on network fonts.
+    final defaultTextTheme = ThemeData().textTheme;
     final baseTheme = ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.brand,
@@ -159,7 +160,8 @@ class AppTheme {
         backgroundColor: AppColors.surfaceSecondary,
         indicatorColor: AppColors.brandSoft.withValues(alpha: 0.5),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          return GoogleFonts.sourceSerif4(
+          return defaultTextTheme.labelSmall!.copyWith(
+            fontFamily: 'serif',
             fontSize: 11,
             fontWeight: FontWeight.w500,
             color: states.contains(WidgetState.selected)
@@ -186,99 +188,105 @@ class AppTheme {
     );
 
     return baseTheme.copyWith(
-      textTheme: GoogleFonts.beVietnamProTextTheme(baseTheme.textTheme)
-          .copyWith(
-            displayLarge: GoogleFonts.sourceSerif4(
-              fontSize: 40,
-              fontWeight: FontWeight.w700,
-              height: 1.2,
-              color: AppColors.textPrimary,
-            ),
-            displayMedium: GoogleFonts.sourceSerif4(
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-              height: 1.3,
-              color: AppColors.textPrimary,
-            ),
-            displaySmall: GoogleFonts.sourceSerif4(
-              fontSize: 28,
-              fontWeight: FontWeight.w600,
-              height: 1.3,
-              color: AppColors.textPrimary,
-            ),
-            headlineLarge: GoogleFonts.sourceSerif4(
-              fontSize: 32,
-              fontWeight: FontWeight.w600,
-              height: 1.3,
-              color: AppColors.textPrimary,
-            ),
-            headlineMedium: GoogleFonts.sourceSerif4(
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-              height: 1.4,
-              color: AppColors.textPrimary,
-            ),
-            headlineSmall: GoogleFonts.sourceSerif4(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              height: 1.4,
-              color: AppColors.textPrimary,
-            ),
-            titleLarge: GoogleFonts.sourceSerif4(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-            titleMedium: GoogleFonts.beVietnamPro(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.15,
-              color: AppColors.textPrimary,
-            ),
-            titleSmall: GoogleFonts.beVietnamPro(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.1,
-              color: AppColors.textPrimary,
-            ),
-            bodyLarge: GoogleFonts.beVietnamPro(
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-              color: AppColors.textPrimary,
-            ),
-            bodyMedium: GoogleFonts.beVietnamPro(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              height: 1.45,
-              color: AppColors.textPrimary,
-            ),
-            bodySmall: GoogleFonts.beVietnamPro(
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              height: 1.4,
-              color: AppColors.textPrimary,
-            ),
-            labelLarge: GoogleFonts.beVietnamPro(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.1,
-              color: AppColors.textPrimary,
-            ),
-            labelMedium: GoogleFonts.beVietnamPro(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.05,
-              height: 1.3,
-              color: AppColors.textPrimary,
-            ),
-            labelSmall: GoogleFonts.beVietnamPro(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-              color: AppColors.textPrimary,
-            ),
-          ),
+      textTheme: baseTheme.textTheme.copyWith(
+        displayLarge: baseTheme.textTheme.displayLarge!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 40,
+          fontWeight: FontWeight.w700,
+          height: 1.2,
+          color: AppColors.textPrimary,
+        ),
+        displayMedium: baseTheme.textTheme.displayMedium!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
+          height: 1.3,
+          color: AppColors.textPrimary,
+        ),
+        displaySmall: baseTheme.textTheme.displaySmall!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 28,
+          fontWeight: FontWeight.w600,
+          height: 1.3,
+          color: AppColors.textPrimary,
+        ),
+        headlineLarge: baseTheme.textTheme.headlineLarge!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 32,
+          fontWeight: FontWeight.w600,
+          height: 1.3,
+          color: AppColors.textPrimary,
+        ),
+        headlineMedium: baseTheme.textTheme.headlineMedium!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          color: AppColors.textPrimary,
+        ),
+        headlineSmall: baseTheme.textTheme.headlineSmall!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+          color: AppColors.textPrimary,
+        ),
+        titleLarge: baseTheme.textTheme.titleLarge!.copyWith(
+          fontFamily: 'serif',
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+        titleMedium: baseTheme.textTheme.titleMedium!.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.15,
+          color: AppColors.textPrimary,
+        ),
+        titleSmall: baseTheme.textTheme.titleSmall!.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.1,
+          color: AppColors.textPrimary,
+        ),
+        bodyLarge: baseTheme.textTheme.bodyLarge!.copyWith(
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          height: 1.5,
+          color: AppColors.textPrimary,
+        ),
+        bodyMedium: baseTheme.textTheme.bodyMedium!.copyWith(
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+          height: 1.45,
+          color: AppColors.textPrimary,
+        ),
+        bodySmall: baseTheme.textTheme.bodySmall!.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          height: 1.4,
+          color: AppColors.textPrimary,
+        ),
+        labelLarge: baseTheme.textTheme.labelLarge!.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.1,
+          color: AppColors.textPrimary,
+        ),
+        labelMedium: baseTheme.textTheme.labelMedium!.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.05,
+          height: 1.3,
+          color: AppColors.textPrimary,
+        ),
+        labelSmall: baseTheme.textTheme.labelSmall!.copyWith(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+          color: AppColors.textPrimary,
+        ),
+      ),
     );
   }
 }

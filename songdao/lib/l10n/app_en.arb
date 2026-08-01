@@ -10,5 +10,12 @@
   "prayerTagEvening": "Evening",
   "prayerTagReflection": "Examen",
   "prayerTagWork": "Work",
-  "prayerTagPeace": "Peace"
+  "prayerTagPeace": "Peace",
+  "asyncErrorTitle": "Unable to load this content",
+  "asyncErrorMessage": "Your data stays on this device. Try loading it again.",
+  "retry": "Try again",
+  "calendarEmptyTitle": "No liturgical calendar data",
+  "calendarEmptyMessage": "This month is not included in the calendar pack on this device.",
+  "progressEmptyTitle": "No completed actions yet",
+  "progressEmptyMessage": "Complete one small action today to start your rhythm."
 }

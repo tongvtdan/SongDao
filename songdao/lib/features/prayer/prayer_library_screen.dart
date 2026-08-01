@@ -10,19 +10,54 @@ import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../shared/widgets/async_state_view.dart';
 
-class PrayerLibraryScreen extends ConsumerWidget {
+class PrayerLibraryScreen extends ConsumerStatefulWidget {
   const PrayerLibraryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PrayerLibraryScreen> createState() =>
+      _PrayerLibraryScreenState();
+}
+
+class _PrayerLibraryScreenState extends ConsumerState<PrayerLibraryScreen> {
+  late Future<List<Prayer>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _load();
+  }
+
+  Future<List<Prayer>> _load() async {
+    await ref.read(seedContentBootstrapProvider.future);
+    final db = ref.read(databaseProvider);
+    final locale = await ref.read(userSettingsRepositoryProvider).locale();
+    return (db.select(db.prayers)
+          ..where((t) => t.locale.equals(locale))
+          ..orderBy([(t) => OrderingTerm.asc(t.title)]))
+        .get();
+  }
+
+  void _retry() {
+    ref.invalidate(seedContentBootstrapProvider);
+    setState(() {
+      _future = _load();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Cầu nguyện')),
       body: FutureBuilder<List<Prayer>>(
-        future: _load(ref),
+        future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
           }
           final prayers = snapshot.data ?? const <Prayer>[];
           return ListView(
@@ -65,16 +100,6 @@ class PrayerLibraryScreen extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  Future<List<Prayer>> _load(WidgetRef ref) async {
-    await ref.read(seedContentBootstrapProvider.future);
-    final db = ref.read(databaseProvider);
-    final locale = await ref.read(userSettingsRepositoryProvider).locale();
-    return (db.select(db.prayers)
-          ..where((t) => t.locale.equals(locale))
-          ..orderBy([(t) => OrderingTerm.asc(t.title)]))
-        .get();
   }
 }
 

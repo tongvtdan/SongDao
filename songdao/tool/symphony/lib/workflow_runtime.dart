@@ -8,8 +8,8 @@ import 'workflow.dart';
 class WorkflowRuntime {
   WorkflowRuntime({
     required this.workflowPath,
-    WorkflowLoader loader = const WorkflowLoader(),
-  }) : _loader = loader;
+    this._loader = const WorkflowLoader(),
+  });
 
   final String workflowPath;
   final WorkflowLoader _loader;

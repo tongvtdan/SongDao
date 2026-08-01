@@ -498,9 +498,7 @@ class _SaintOfDayBlock extends StatelessWidget {
 // Helpers
 String _dateKeyForCardPage(int page, String todayDateKey) {
   final today = DateTime.parse(todayDateKey);
-  final previewDate = today.add(
-    Duration(days: page - _initialCardPage),
-  );
+  final previewDate = today.add(Duration(days: page - _initialCardPage));
   return DateFormat('yyyy-MM-dd').format(previewDate);
 }
 

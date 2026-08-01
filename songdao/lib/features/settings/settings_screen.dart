@@ -7,6 +7,7 @@ import '../../data/local/app_info_service.dart';
 import '../../data/local/app_icon_service.dart';
 import '../../data/local/database_provider.dart';
 import '../../data/local/user_settings_repository.dart';
+import '../shared/widgets/async_state_view.dart';
 
 const _privacyPolicyUrl = 'https://songdao.dantino.com/privacy';
 
@@ -26,7 +27,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _load();
+    _future = _loadWithDiagnostics();
+  }
+
+  Future<_SettingsViewData> _loadWithDiagnostics() {
+    return loadWithDiagnostics('Settings', _load);
+  }
+
+  void _retry() {
+    setState(() {
+      _future = _loadWithDiagnostics();
+    });
   }
 
   Future<_SettingsViewData> _load() async {
@@ -57,7 +68,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await ref.read(userSettingsRepositoryProvider).setShowLunarDate(value);
       if (mounted) {
-        setState(() => _future = _load());
+        setState(() {
+          _future = _loadWithDiagnostics();
+        });
       }
     } finally {
       if (mounted) {
@@ -92,7 +105,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await ref.read(dailyReminderServiceProvider).disableDailyReminder();
       }
       if (mounted) {
-        setState(() => _future = _load());
+        setState(() {
+          _future = _loadWithDiagnostics();
+        });
       }
     } finally {
       if (mounted) {
@@ -124,7 +139,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             .setDailyReminderTime(hour: selected.hour, minute: selected.minute);
       }
       if (mounted) {
-        setState(() => _future = _load());
+        setState(() {
+          _future = _loadWithDiagnostics();
+        });
       }
     } finally {
       if (mounted) {
@@ -154,7 +171,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         await iconService.setIcon(AppIconVariant.primary);
       }
       if (mounted) {
-        setState(() => _future = _load());
+        setState(() {
+          _future = _loadWithDiagnostics();
+        });
       }
     } finally {
       if (mounted) {
@@ -172,6 +191,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
           }
           final data = snapshot.data!;
           final lunarSupported = data.locale == 'vi';

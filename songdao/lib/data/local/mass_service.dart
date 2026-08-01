@@ -1,4 +1,7 @@
+import 'package:drift/drift.dart';
+
 import 'app_database.dart';
+import 'mass_occurrence.dart';
 import 'user_settings_repository.dart';
 
 class ImportantMass {
@@ -18,6 +21,36 @@ class MassService {
 
   final AppDatabase db;
 
+  Future<List<MassTime>> massTimesForChurch(String churchId) {
+    return (db.select(db.massTimes)
+          ..where((t) => t.churchId.equals(churchId))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.weekday),
+            (t) => OrderingTerm.asc(t.time),
+          ]))
+        .get();
+  }
+
+  Future<MassOccurrence?> nextOccurrence({DateTime? now}) async {
+    final selectedChurchId = await UserSettingsRepository(
+      db,
+    ).selectedChurchId();
+    if (selectedChurchId == null || selectedChurchId.isEmpty) {
+      return null;
+    }
+    final church = await (db.select(
+      db.churches,
+    )..where((t) => t.id.equals(selectedChurchId))).getSingleOrNull();
+    if (church == null) {
+      return null;
+    }
+    return MassOccurrenceCalculator.next(
+      massTimes: await massTimesForChurch(church.id),
+      now: now ?? DateTime.now(),
+      timezone: church.timezone,
+    );
+  }
+
   Future<ImportantMass?> nextImportantMassForDate(String date) async {
     final selectedChurchId = await UserSettingsRepository(
       db,
@@ -34,12 +67,16 @@ class MassService {
 
     final parsedDate = DateTime.parse(date);
     final weekday = _weekdayForDate(parsedDate);
-    final calendarDay = await (db.select(
-      db.calendarDays,
-    )..where((t) => t.date.equals(date))).getSingleOrNull();
-    final celebrations = await (db.select(
-      db.celebrations,
-    )..where((t) => t.date.equals(date))).get();
+    final calendarDay =
+        await (db.select(db.calendarDays)..where(
+              (t) => t.date.equals(date) & t.locale.equals(church.locale),
+            ))
+            .getSingleOrNull();
+    final celebrations =
+        await (db.select(db.celebrations)..where(
+              (t) => t.date.equals(date) & t.locale.equals(church.locale),
+            ))
+            .get();
     final isSunday = weekday == 'sunday';
     final isHolyDay = celebrations.any(
       (item) =>

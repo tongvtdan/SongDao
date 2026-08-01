@@ -1,10 +1,12 @@
 import 'package:drift/drift.dart';
 
+// Referenced by the custom composite foreign key below.
+// ignore: unused_import
 import 'calendar_days.dart';
 
 class DailyReflections extends Table {
   TextColumn get id => text()();
-  TextColumn get date => text().references(CalendarDays, #date)();
+  TextColumn get date => text()();
   TextColumn get locale => text()();
   TextColumn get title => text()();
   TextColumn get body => text()();
@@ -15,4 +17,9 @@ class DailyReflections extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (date, locale) REFERENCES calendar_days (date, locale)',
+  ];
 }

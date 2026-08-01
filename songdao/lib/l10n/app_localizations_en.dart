@@ -40,4 +40,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get prayerTagPeace => 'Peace';
+
+  @override
+  String get asyncErrorTitle => 'Unable to load this content';
+
+  @override
+  String get asyncErrorMessage =>
+      'Your data stays on this device. Try loading it again.';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String get calendarEmptyTitle => 'No liturgical calendar data';
+
+  @override
+  String get calendarEmptyMessage =>
+      'This month is not included in the calendar pack on this device.';
+
+  @override
+  String get progressEmptyTitle => 'No completed actions yet';
+
+  @override
+  String get progressEmptyMessage =>
+      'Complete one small action today to start your rhythm.';
 }

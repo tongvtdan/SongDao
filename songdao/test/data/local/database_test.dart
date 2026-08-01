@@ -5,13 +5,16 @@ import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:songdao/data/content/content_pack_provider.dart';
 import 'package:songdao/data/content/content_pack_importer.dart';
 import 'package:songdao/data/local/app_database.dart';
 import 'package:songdao/data/local/app_icon_service.dart';
 import 'package:songdao/data/local/daily_action_engine.dart';
+import 'package:songdao/data/local/database_provider.dart';
 import 'package:songdao/data/local/mass_service.dart';
 import 'package:songdao/data/local/user_settings_repository.dart';
 import 'package:songdao/data/local/widget_snapshot_bridge.dart';
@@ -1093,7 +1096,34 @@ void main() {
 
       await repo.set(UserSettingsKeys.locale, 'en');
       await repo.setShowLunarDate(true);
-      expect(await repo.showLunarDate(), isFalse);
+      expect(await repo.showLunarDate(), isTrue);
+    });
+
+    test('repository keeps the shipped app locale consistent', () async {
+      final repo = UserSettingsRepository(db);
+      final container = ProviderContainer(
+        overrides: [databaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(container.dispose);
+
+      expect(await repo.locale(), 'vi');
+      expect(
+        await container.read(appLocaleProvider.future),
+        const Locale('vi'),
+      );
+
+      await repo.setLocale('vi');
+
+      await repo.set(UserSettingsKeys.locale, 'en');
+      expect(await repo.locale(), 'vi');
+      container.invalidate(appLocaleProvider);
+      expect(
+        await container.read(appLocaleProvider.future),
+        const Locale('vi'),
+      );
+
+      expect(() => repo.setLocale('fr'), throwsArgumentError);
+      expect(await repo.locale(), 'vi');
     });
 
     test('repository stores daily reminder settings locally', () async {
@@ -1393,6 +1423,12 @@ void main() {
           (await db.select(db.churches).get()).length,
           greaterThanOrEqualTo(3),
         );
+        expect(
+          (await db.select(db.churches).get()).every(
+            (church) => church.timezone == 'Asia/Ho_Chi_Minh',
+          ),
+          isTrue,
+        );
 
         final massTimes = await db.select(db.massTimes).get();
         // At least Sunday, weekday, and vigil entries
@@ -1627,6 +1663,64 @@ void main() {
     );
 
     test(
+      'imports calendar packs for two locales without overwriting dates',
+      () async {
+        final importer = ContentPackImporter(db);
+
+        await importer.importPackJson(_minimalCalendarPack(locale: 'vi'));
+        await importer.importPackJson(_minimalCalendarPack(locale: 'en'));
+
+        final rows = await (db.select(
+          db.calendarDays,
+        )..where((t) => t.date.equals('2026-01-01'))).get();
+        expect(rows.map((row) => row.locale).toSet(), {'en', 'vi'});
+      },
+    );
+
+    test('calendar child rows use the matching locale key', () async {
+      await db.customStatement('PRAGMA foreign_keys = ON');
+      await db
+          .into(db.calendarDays)
+          .insert(
+            CalendarDaysCompanion.insert(
+              date: '2026-01-01',
+              season: 'christmas',
+              liturgicalWeek: 1,
+              color: 'white',
+              cycleYear: 'A',
+              locale: 'vi',
+            ),
+          );
+
+      await db
+          .into(db.celebrations)
+          .insert(
+            CelebrationsCompanion.insert(
+              id: 'celebration-vi',
+              date: '2026-01-01',
+              name: 'Ngày đầu năm',
+              rank: 'solemnity',
+              locale: 'vi',
+            ),
+          );
+
+      await expectLater(
+        db
+            .into(db.celebrations)
+            .insert(
+              CelebrationsCompanion.insert(
+                id: 'celebration-missing-locale',
+                date: '2026-01-01',
+                name: 'Missing locale',
+                rank: 'solemnity',
+                locale: 'en',
+              ),
+            ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test(
       'new pack version removes stale rows and preserves completion notes',
       () async {
         final source = await File(
@@ -1707,6 +1801,42 @@ String _encodePackWithChecksum(Map<String, Object?> pack) {
   final canonical = jsonEncode(_canonicalJsonValue(pack));
   pack['checksum'] = 'sha256:${sha256.convert(utf8.encode(canonical))}';
   return jsonEncode(pack);
+}
+
+String _minimalCalendarPack({required String locale}) {
+  final pack = <String, Object?>{
+    'schema_version': '0.2',
+    'pack_id': 'calendar-$locale-test',
+    'version': '1.0.0',
+    'locale': locale,
+    'created_at': '2026-01-01T00:00:00Z',
+    'valid_from': '2026-01-01',
+    'valid_to': '2026-01-01',
+    'source_summary': 'Test calendar pack',
+    'license_summary': 'Test data',
+    'checksum': '',
+    'calendar_days': [
+      {
+        'id': 'calendar_day_${locale}_2026_01_01',
+        'date': '2026-01-01',
+        'locale': locale,
+        'season': 'christmas',
+        'liturgical_week': 'Christmas',
+        'liturgical_color': 'white',
+        'cycle_year': 'A',
+        'lunar_date': null,
+        'source': {'name': 'test'},
+      },
+    ],
+    'celebrations': <Object?>[],
+    'readings': <Object?>[],
+    'daily_reflections': <Object?>[],
+    'action_rules': <Object?>[],
+    'prayers': <Object?>[],
+    'churches': <Object?>[],
+    'mass_times': <Object?>[],
+  };
+  return _encodePackWithChecksum(pack);
 }
 
 Object? _canonicalJsonValue(Object? value) {

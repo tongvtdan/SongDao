@@ -17,12 +17,10 @@ enum AppIconVariant {
 
 class AppIconService {
   const AppIconService({
-    required AppDatabase db,
-    required UserSettingsRepository settings,
-    MethodChannel channel = const MethodChannel(_channelName),
-  }) : _db = db,
-       _settings = settings,
-       _channel = channel;
+    required this._db,
+    required this._settings,
+    this._channel = const MethodChannel(_channelName),
+  });
 
   static const _channelName = 'app.songdao/icon';
 

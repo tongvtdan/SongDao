@@ -173,7 +173,7 @@ Work on {{ issue.identifier }}.
           config: config,
           tracker: tracker,
           workspaceCleaner: _FakeCleaner(),
-          workerRunner: (issue, _, __) async {
+          workerRunner: (issue, _, _) async {
             dispatched.add(issue.identifier);
             return const RunAttemptResult(reason: WorkerExitReason.failed);
           },
@@ -298,7 +298,7 @@ Map<String, Object?> _githubProjectItem({
       },
       'blockedBy': {
         'nodes': blockerState == null
-            ? []
+            ? const <Map<String, Object?>>[]
             : [
                 {
                   'id': 'blocker',

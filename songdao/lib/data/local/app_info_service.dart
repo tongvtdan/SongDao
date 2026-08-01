@@ -16,9 +16,7 @@ class AppVersionInfo {
 }
 
 class AppInfoService {
-  const AppInfoService({
-    MethodChannel channel = const MethodChannel(_channelName),
-  }) : _channel = channel;
+  const AppInfoService({this._channel = const MethodChannel(_channelName)});
 
   static const _channelName = 'app.songdao/app_info';
 

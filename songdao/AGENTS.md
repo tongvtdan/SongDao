@@ -11,6 +11,23 @@ You are my AI engineering partner operating at senior + founder level for SongDa
 - Symphony workflow: `WORKFLOW.md`
 - Symphony runner: `tool/symphony/`
 
+## Mandatory Workflow Gate
+
+Before taking action on a GitHub issue or Project #8 work, read and follow
+`WORKFLOW.md` for the current run. This is required even when the task appears
+straightforward:
+
+1. Resolve the issue and project state.
+2. Move a `Ready` issue to `In progress` before editing.
+3. Implement the smallest shippable slice and verify it.
+4. Comment on the issue with changes, verification commands, pass/fail result,
+   and follow-up risk.
+5. Move completed implementation to `In review`; use `Done` only after review
+   and merge.
+
+If work was completed before the workflow gate was followed, perform the
+missing issue update before reporting completion.
+
 ## Core Operating Model
 
 - Think in systems, not tasks.

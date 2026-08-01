@@ -7,6 +7,8 @@ import '../../app/theme.dart';
 import '../../data/content/content_pack_provider.dart';
 import '../../data/local/app_database.dart';
 import '../../data/local/database_provider.dart';
+import '../shared/widgets/async_state_view.dart';
+import '../../data/local/mass_occurrence.dart';
 
 class ChurchSearchScreen extends ConsumerStatefulWidget {
   const ChurchSearchScreen({super.key});
@@ -22,7 +24,18 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _load();
+    _future = _loadWithDiagnostics();
+  }
+
+  Future<_ChurchViewData> _loadWithDiagnostics() {
+    return loadWithDiagnostics('Church Finder', _load);
+  }
+
+  void _retry() {
+    ref.invalidate(seedContentBootstrapProvider);
+    setState(() {
+      _future = _loadWithDiagnostics();
+    });
   }
 
   Future<_ChurchViewData> _load() async {
@@ -48,15 +61,22 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
     final churchForMass = selectedChurch;
     final massTimes = churchForMass == null
         ? <MassTime>[]
-        : await (db.select(db.massTimes)
-                ..where((t) => t.churchId.equals(churchForMass.id))
-                ..orderBy([(t) => OrderingTerm.asc(t.time)]))
-              .get();
+        : await ref
+              .read(massServiceProvider)
+              .massTimesForChurch(churchForMass.id);
+    final nextOccurrence = churchForMass == null
+        ? null
+        : MassOccurrenceCalculator.next(
+            massTimes: massTimes,
+            now: DateTime.now(),
+            timezone: churchForMass.timezone,
+          );
 
     return _ChurchViewData(
       churches: churches,
       selectedChurch: selectedChurch,
       massTimes: massTimes,
+      nextOccurrence: nextOccurrence,
     );
   }
 
@@ -64,8 +84,11 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
     await ref
         .read(userSettingsRepositoryProvider)
         .setSelectedChurchId(church.id);
+    await ref.read(dailyReminderServiceProvider).refreshScheduledReminders();
     if (mounted) {
-      setState(() => _future = _load());
+      setState(() {
+        _future = _loadWithDiagnostics();
+      });
     }
   }
 
@@ -78,6 +101,9 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return AsyncErrorState(onRetry: _retry);
           }
           final data = snapshot.data!;
           final churches = data.churches.where((church) {
@@ -104,6 +130,7 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
               _SelectedChurchCard(
                 church: data.selectedChurch,
                 massTimes: data.massTimes,
+                nextOccurrence: data.nextOccurrence,
               ),
               const SizedBox(height: 14),
               Text(
@@ -135,10 +162,15 @@ class _ChurchSearchScreenState extends ConsumerState<ChurchSearchScreen> {
 }
 
 class _SelectedChurchCard extends StatelessWidget {
-  const _SelectedChurchCard({required this.church, required this.massTimes});
+  const _SelectedChurchCard({
+    required this.church,
+    required this.massTimes,
+    required this.nextOccurrence,
+  });
 
   final Church? church;
   final List<MassTime> massTimes;
+  final MassOccurrence? nextOccurrence;
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +223,7 @@ class _SelectedChurchCard extends StatelessWidget {
             ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 14),
-          if (massTimes.isNotEmpty) ...[
+          if (nextOccurrence != null) ...[
             Text(
               'Thánh lễ kế tiếp',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -201,7 +233,7 @@ class _SelectedChurchCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              '${_weekdayLabel(massTimes.first.weekday)} ${massTimes.first.time}',
+              '${_weekdayLabel(nextOccurrence!.massTime.weekday)} ${nextOccurrence!.massTime.time}',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: AppColors.brand,
                 fontWeight: FontWeight.w700,
@@ -297,11 +329,13 @@ class _ChurchViewData {
     required this.churches,
     required this.selectedChurch,
     required this.massTimes,
+    required this.nextOccurrence,
   });
 
   final List<Church> churches;
   final Church? selectedChurch;
   final List<MassTime> massTimes;
+  final MassOccurrence? nextOccurrence;
 }
 
 String _weekdayLabel(String weekday) {

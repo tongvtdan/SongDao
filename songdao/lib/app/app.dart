@@ -10,11 +10,38 @@ import '../data/local/database_provider.dart';
 import 'theme.dart';
 import 'router.dart';
 
-class SongDaoApp extends ConsumerWidget {
+class SongDaoApp extends ConsumerStatefulWidget {
   const SongDaoApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SongDaoApp> createState() => _SongDaoAppState();
+}
+
+class _SongDaoAppState extends ConsumerState<SongDaoApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(
+        ref.read(dailyReminderServiceProvider).refreshScheduledReminders(),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     ref.listen(seedContentBootstrapProvider, (_, next) {
       next.whenData((_) {
@@ -30,13 +57,16 @@ class SongDaoApp extends ConsumerWidget {
     });
     ref.watch(seedContentBootstrapProvider);
 
+    final appLocale =
+        ref.watch(appLocaleProvider).valueOrNull ?? const Locale('vi');
+
     return MaterialApp.router(
       title: 'Sống Đạo',
       theme: AppTheme.lightTheme,
       routerConfig: router,
-      locale: const Locale('vi'), // Set Vietnamese as the default
+      locale: appLocale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [Locale('vi')],
       debugShowCheckedModeBanner: false,
     );
   }

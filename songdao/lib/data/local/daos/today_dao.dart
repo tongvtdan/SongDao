@@ -13,9 +13,10 @@ part 'today_dao.g.dart';
 class TodayDao extends DatabaseAccessor<AppDatabase> with _$TodayDaoMixin {
   TodayDao(super.db);
 
-  Future<CalendarDay?> getCalendarDay(String date) => (select(
-    calendarDays,
-  )..where((t) => t.date.equals(date))).getSingleOrNull();
+  Future<CalendarDay?> getCalendarDay(String date, {String locale = 'vi'}) =>
+      (select(calendarDays)
+            ..where((t) => t.date.equals(date) & t.locale.equals(locale)))
+          .getSingleOrNull();
 
   Future<List<DailyAction>> getDailyActionsForDate(String date) =>
       (select(dailyActions)

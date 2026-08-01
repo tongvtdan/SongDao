@@ -12,6 +12,10 @@ void main() {
       );
     });
 
+    test('enables JavaScript for the dynamic reading page', () {
+      expect(ReadingSource.ktcgkpvMassReading.requiresJavaScript, isTrue);
+    });
+
     test('rejects missing and unknown source identifiers', () {
       expect(ReadingSource.fromId(null), isNull);
       expect(ReadingSource.fromId('https://example.com'), isNull);
