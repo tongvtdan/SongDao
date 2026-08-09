@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'scaffold_with_nav_bar.dart';
 import '../features/today/today_screen.dart';
 import '../features/calendar/calendar_screen.dart';
+import '../features/calendar/user_event_editor_screen.dart';
 import '../features/prayer/prayer_library_screen.dart';
 import '../features/church_finder/church_search_screen.dart';
 import '../features/progress/journal_screen.dart';
@@ -83,7 +84,42 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/calendar',
-                builder: (context, state) => const CalendarScreen(),
+                builder: (context, state) => CalendarScreen(
+                  key: state.pageKey,
+                  initialDate: _parseCalendarDate(
+                    state.uri.queryParameters['date'],
+                  ),
+                  focusedEventId: int.tryParse(
+                    state.uri.queryParameters['eventId'] ?? '',
+                  ),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'events/new',
+                    builder: (context, state) => UserEventEditorScreen(
+                      initialDate:
+                          _parseCalendarDate(
+                            state.uri.queryParameters['date'],
+                          ) ??
+                          DateTime.now(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId/edit',
+                    redirect: (context, state) {
+                      return int.tryParse(
+                                state.pathParameters['eventId'] ?? '',
+                              ) ==
+                              null
+                          ? '/calendar'
+                          : null;
+                    },
+                    builder: (context, state) => UserEventEditorScreen(
+                      eventId: int.parse(state.pathParameters['eventId']!),
+                      initialDate: DateTime.now(),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -116,3 +152,14 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+DateTime? _parseCalendarDate(String? value) {
+  if (value == null) {
+    return null;
+  }
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null || value != parsed.toIso8601String().substring(0, 10)) {
+    return null;
+  }
+  return DateTime(parsed.year, parsed.month, parsed.day);
+}

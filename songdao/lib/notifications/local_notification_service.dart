@@ -9,6 +9,10 @@ class NotificationRoutes {
 
   static const todayUri = 'songdao:///today';
 
+  static String calendarEventUri(int eventId) {
+    return 'songdao:///calendar?eventId=$eventId';
+  }
+
   static String routeFromPayload(String? payload) {
     if (payload == null || payload.trim().isEmpty) {
       return '/today';
@@ -18,12 +22,17 @@ class NotificationRoutes {
       return '/today';
     }
     if (uri.scheme == 'songdao') {
-      return uri.path.isEmpty ? '/today' : uri.path;
+      return _pathWithQuery(uri);
     }
     if (uri.path.startsWith('/')) {
-      return uri.path;
+      return _pathWithQuery(uri);
     }
     return '/today';
+  }
+
+  static String _pathWithQuery(Uri uri) {
+    final path = uri.path.isEmpty ? '/today' : uri.path;
+    return uri.hasQuery ? '$path?${uri.query}' : path;
   }
 }
 
@@ -33,6 +42,10 @@ class LocalNotificationService {
 
   static const dailyReminderBaseId = 4100;
   static const dailyReminderWindowDays = 14;
+  static const personalEventReminderBaseId = 100000;
+  static const maxPersonalEventReminders = 50;
+  static const personalEventReminderUpperBound =
+      personalEventReminderBaseId + maxPersonalEventReminders;
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialized = false;
@@ -101,6 +114,23 @@ class LocalNotificationService {
     }
   }
 
+  Future<void> cancelAllPersonalEventReminders() async {
+    final pending = await _plugin.pendingNotificationRequests();
+    for (final notification in pending) {
+      if (notification.id >= personalEventReminderBaseId &&
+          notification.id < personalEventReminderUpperBound) {
+        await _plugin.cancel(id: notification.id);
+      }
+    }
+  }
+
+  int personalEventNotificationId(int slot) {
+    if (slot < 0 || slot >= maxPersonalEventReminders) {
+      throw RangeError.value(slot, 'slot');
+    }
+    return personalEventReminderBaseId + slot;
+  }
+
   Future<void> scheduleDailyReminder({
     required int offset,
     required DateTime date,
@@ -141,6 +171,56 @@ class LocalNotificationService {
           presentAlert: true,
           presentSound: true,
           presentBadge: false,
+        ),
+      ),
+    );
+  }
+
+  Future<void> schedulePersonalEventReminder({
+    required int notificationId,
+    required DateTime scheduledDate,
+    required String title,
+    required String body,
+    required String payload,
+    DateTimeComponents? matchDateTimeComponents,
+    required String channelName,
+    required String channelDescription,
+  }) async {
+    if (kIsWeb) {
+      return;
+    }
+    final localDate = tz.TZDateTime(
+      tz.local,
+      scheduledDate.year,
+      scheduledDate.month,
+      scheduledDate.day,
+      scheduledDate.hour,
+      scheduledDate.minute,
+    );
+    if (!localDate.isAfter(tz.TZDateTime.now(tz.local))) {
+      return;
+    }
+    await _plugin.zonedSchedule(
+      id: notificationId,
+      scheduledDate: localDate,
+      title: title,
+      body: body,
+      payload: payload,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: matchDateTimeComponents,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          'personal_events',
+          channelName,
+          channelDescription: channelDescription,
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+        ),
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          presentBadge: false,
+          threadIdentifier: 'personal_events',
         ),
       ),
     );

@@ -23,6 +23,9 @@ class _SongDaoAppState extends ConsumerState<SongDaoApp>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    unawaited(
+      ref.read(eventReminderServiceProvider).refreshScheduledReminders(),
+    );
   }
 
   @override
@@ -36,6 +39,9 @@ class _SongDaoAppState extends ConsumerState<SongDaoApp>
     if (state == AppLifecycleState.resumed) {
       unawaited(
         ref.read(dailyReminderServiceProvider).refreshScheduledReminders(),
+      );
+      unawaited(
+        ref.read(eventReminderServiceProvider).refreshScheduledReminders(),
       );
     }
   }

@@ -4,9 +4,12 @@ import 'app_info_service.dart';
 import 'app_database.dart';
 import 'app_icon_service.dart';
 import 'daily_reminder_service.dart';
+import 'event_reminder_service.dart';
 import 'daily_action_engine.dart';
 import 'mass_service.dart';
 import 'user_settings_repository.dart';
+import 'user_event_repository.dart';
+import 'vietnamese_lunar_calendar_service.dart';
 import '../../notifications/local_notification_service.dart';
 
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -21,6 +24,18 @@ final dailyActionEngineProvider = Provider<DailyActionEngine>((ref) {
 
 final userSettingsRepositoryProvider = Provider<UserSettingsRepository>((ref) {
   return UserSettingsRepository(ref.watch(databaseProvider));
+});
+
+final vietnameseLunarCalendarServiceProvider =
+    Provider<VietnameseLunarCalendarService>((ref) {
+      return const VietnameseLunarCalendarService();
+    });
+
+final userEventRepositoryProvider = Provider<UserEventRepository>((ref) {
+  return UserEventRepository(
+    ref.watch(databaseProvider),
+    ref.watch(vietnameseLunarCalendarServiceProvider),
+  );
 });
 
 final appLocaleProvider = FutureProvider<Locale>((ref) async {
@@ -46,6 +61,15 @@ final dailyReminderServiceProvider = Provider<DailyReminderService>((ref) {
   return DailyReminderService(
     UserSettingsRepository(db),
     DailyActionEngine(db),
+    localNotificationService,
+  );
+});
+
+final eventReminderServiceProvider = Provider<EventReminderService>((ref) {
+  final db = ref.watch(databaseProvider);
+  return EventReminderService(
+    ref.watch(userEventRepositoryProvider),
+    UserSettingsRepository(db),
     localNotificationService,
   );
 });

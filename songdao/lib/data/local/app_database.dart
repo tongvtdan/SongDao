@@ -16,6 +16,7 @@ import 'tables/mass_times.dart';
 import 'tables/prayers.dart';
 import 'tables/readings.dart';
 import 'tables/user_settings.dart';
+import 'tables/user_events.dart';
 import 'tables/widget_snapshots.dart';
 import 'daos/action_log_dao.dart';
 import 'daos/today_dao.dart';
@@ -36,6 +37,7 @@ part 'app_database.g.dart';
     Churches,
     MassTimes,
     Prayers,
+    UserEvents,
   ],
   daos: [TodayDao, ActionLogDao],
 )
@@ -45,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -124,6 +126,20 @@ class AppDatabase extends _$AppDatabase {
         } finally {
           await m.database.customStatement('PRAGMA foreign_keys = ON');
         }
+      }
+      if (from < 8) {
+        await m.createTable(userEvents);
+      }
+      if (from >= 8 && from < 9) {
+        await m.addColumn(userEvents, userEvents.eventHour);
+        await m.addColumn(userEvents, userEvents.eventMinute);
+        await m.addColumn(userEvents, userEvents.reminderOffsetMinutes);
+        await m.addColumn(userEvents, userEvents.color);
+        await m.database.customStatement('''
+          UPDATE user_events
+          SET reminder_offset_minutes = reminder_offset_days * 1440
+          WHERE reminder_offset_days IS NOT NULL
+        ''');
       }
     },
   );

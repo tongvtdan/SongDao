@@ -1166,6 +1166,21 @@ void main() {
       expect(NotificationRoutes.routeFromPayload('/today'), '/today');
       expect(NotificationRoutes.routeFromPayload('not a route'), '/today');
     });
+
+    test('preserves Calendar query parameters in notification routes', () {
+      expect(
+        NotificationRoutes.routeFromPayload(
+          NotificationRoutes.calendarEventUri(42),
+        ),
+        '/calendar?eventId=42',
+      );
+      expect(
+        NotificationRoutes.routeFromPayload(
+          '/calendar?date=2026-08-09&eventId=42',
+        ),
+        '/calendar?date=2026-08-09&eventId=42',
+      );
+    });
   });
 
   group('MassService', () {

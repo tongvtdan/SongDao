@@ -6211,6 +6211,1083 @@ class PrayersCompanion extends UpdateCompanion<Prayer> {
   }
 }
 
+class $UserEventsTable extends UserEvents
+    with TableInfo<$UserEventsTable, UserEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _calendarSystemMeta = const VerificationMeta(
+    'calendarSystem',
+  );
+  @override
+  late final GeneratedColumn<String> calendarSystem = GeneratedColumn<String>(
+    'calendar_system',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anchorYearMeta = const VerificationMeta(
+    'anchorYear',
+  );
+  @override
+  late final GeneratedColumn<int> anchorYear = GeneratedColumn<int>(
+    'anchor_year',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anchorMonthMeta = const VerificationMeta(
+    'anchorMonth',
+  );
+  @override
+  late final GeneratedColumn<int> anchorMonth = GeneratedColumn<int>(
+    'anchor_month',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anchorDayMeta = const VerificationMeta(
+    'anchorDay',
+  );
+  @override
+  late final GeneratedColumn<int> anchorDay = GeneratedColumn<int>(
+    'anchor_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isLeapMonthMeta = const VerificationMeta(
+    'isLeapMonth',
+  );
+  @override
+  late final GeneratedColumn<bool> isLeapMonth = GeneratedColumn<bool>(
+    'is_leap_month',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_leap_month" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _recurrenceMeta = const VerificationMeta(
+    'recurrence',
+  );
+  @override
+  late final GeneratedColumn<String> recurrence = GeneratedColumn<String>(
+    'recurrence',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventHourMeta = const VerificationMeta(
+    'eventHour',
+  );
+  @override
+  late final GeneratedColumn<int> eventHour = GeneratedColumn<int>(
+    'event_hour',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _eventMinuteMeta = const VerificationMeta(
+    'eventMinute',
+  );
+  @override
+  late final GeneratedColumn<int> eventMinute = GeneratedColumn<int>(
+    'event_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderOffsetMinutesMeta =
+      const VerificationMeta('reminderOffsetMinutes');
+  @override
+  late final GeneratedColumn<int> reminderOffsetMinutes = GeneratedColumn<int>(
+    'reminder_offset_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('burgundy'),
+  );
+  static const VerificationMeta _reminderOffsetDaysMeta =
+      const VerificationMeta('reminderOffsetDays');
+  @override
+  late final GeneratedColumn<int> reminderOffsetDays = GeneratedColumn<int>(
+    'reminder_offset_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderHourMeta = const VerificationMeta(
+    'reminderHour',
+  );
+  @override
+  late final GeneratedColumn<int> reminderHour = GeneratedColumn<int>(
+    'reminder_hour',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderMinuteMeta = const VerificationMeta(
+    'reminderMinute',
+  );
+  @override
+  late final GeneratedColumn<int> reminderMinute = GeneratedColumn<int>(
+    'reminder_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    type,
+    title,
+    note,
+    calendarSystem,
+    anchorYear,
+    anchorMonth,
+    anchorDay,
+    isLeapMonth,
+    recurrence,
+    eventHour,
+    eventMinute,
+    reminderOffsetMinutes,
+    color,
+    reminderOffsetDays,
+    reminderHour,
+    reminderMinute,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('calendar_system')) {
+      context.handle(
+        _calendarSystemMeta,
+        calendarSystem.isAcceptableOrUnknown(
+          data['calendar_system']!,
+          _calendarSystemMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_calendarSystemMeta);
+    }
+    if (data.containsKey('anchor_year')) {
+      context.handle(
+        _anchorYearMeta,
+        anchorYear.isAcceptableOrUnknown(data['anchor_year']!, _anchorYearMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_anchorYearMeta);
+    }
+    if (data.containsKey('anchor_month')) {
+      context.handle(
+        _anchorMonthMeta,
+        anchorMonth.isAcceptableOrUnknown(
+          data['anchor_month']!,
+          _anchorMonthMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_anchorMonthMeta);
+    }
+    if (data.containsKey('anchor_day')) {
+      context.handle(
+        _anchorDayMeta,
+        anchorDay.isAcceptableOrUnknown(data['anchor_day']!, _anchorDayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_anchorDayMeta);
+    }
+    if (data.containsKey('is_leap_month')) {
+      context.handle(
+        _isLeapMonthMeta,
+        isLeapMonth.isAcceptableOrUnknown(
+          data['is_leap_month']!,
+          _isLeapMonthMeta,
+        ),
+      );
+    }
+    if (data.containsKey('recurrence')) {
+      context.handle(
+        _recurrenceMeta,
+        recurrence.isAcceptableOrUnknown(data['recurrence']!, _recurrenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recurrenceMeta);
+    }
+    if (data.containsKey('event_hour')) {
+      context.handle(
+        _eventHourMeta,
+        eventHour.isAcceptableOrUnknown(data['event_hour']!, _eventHourMeta),
+      );
+    }
+    if (data.containsKey('event_minute')) {
+      context.handle(
+        _eventMinuteMeta,
+        eventMinute.isAcceptableOrUnknown(
+          data['event_minute']!,
+          _eventMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_offset_minutes')) {
+      context.handle(
+        _reminderOffsetMinutesMeta,
+        reminderOffsetMinutes.isAcceptableOrUnknown(
+          data['reminder_offset_minutes']!,
+          _reminderOffsetMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    }
+    if (data.containsKey('reminder_offset_days')) {
+      context.handle(
+        _reminderOffsetDaysMeta,
+        reminderOffsetDays.isAcceptableOrUnknown(
+          data['reminder_offset_days']!,
+          _reminderOffsetDaysMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_hour')) {
+      context.handle(
+        _reminderHourMeta,
+        reminderHour.isAcceptableOrUnknown(
+          data['reminder_hour']!,
+          _reminderHourMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_minute')) {
+      context.handle(
+        _reminderMinuteMeta,
+        reminderMinute.isAcceptableOrUnknown(
+          data['reminder_minute']!,
+          _reminderMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      calendarSystem: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}calendar_system'],
+      )!,
+      anchorYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anchor_year'],
+      )!,
+      anchorMonth: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anchor_month'],
+      )!,
+      anchorDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}anchor_day'],
+      )!,
+      isLeapMonth: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_leap_month'],
+      )!,
+      recurrence: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurrence'],
+      )!,
+      eventHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_hour'],
+      ),
+      eventMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_minute'],
+      ),
+      reminderOffsetMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_offset_minutes'],
+      ),
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
+      reminderOffsetDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_offset_days'],
+      ),
+      reminderHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_hour'],
+      ),
+      reminderMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_minute'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $UserEventsTable createAlias(String alias) {
+    return $UserEventsTable(attachedDatabase, alias);
+  }
+}
+
+class UserEvent extends DataClass implements Insertable<UserEvent> {
+  final int id;
+  final String type;
+  final String title;
+  final String? note;
+  final String calendarSystem;
+  final int anchorYear;
+  final int anchorMonth;
+  final int anchorDay;
+  final bool isLeapMonth;
+  final String recurrence;
+  final int? eventHour;
+  final int? eventMinute;
+  final int? reminderOffsetMinutes;
+  final String color;
+  final int? reminderOffsetDays;
+  final int? reminderHour;
+  final int? reminderMinute;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const UserEvent({
+    required this.id,
+    required this.type,
+    required this.title,
+    this.note,
+    required this.calendarSystem,
+    required this.anchorYear,
+    required this.anchorMonth,
+    required this.anchorDay,
+    required this.isLeapMonth,
+    required this.recurrence,
+    this.eventHour,
+    this.eventMinute,
+    this.reminderOffsetMinutes,
+    required this.color,
+    this.reminderOffsetDays,
+    this.reminderHour,
+    this.reminderMinute,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['type'] = Variable<String>(type);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['calendar_system'] = Variable<String>(calendarSystem);
+    map['anchor_year'] = Variable<int>(anchorYear);
+    map['anchor_month'] = Variable<int>(anchorMonth);
+    map['anchor_day'] = Variable<int>(anchorDay);
+    map['is_leap_month'] = Variable<bool>(isLeapMonth);
+    map['recurrence'] = Variable<String>(recurrence);
+    if (!nullToAbsent || eventHour != null) {
+      map['event_hour'] = Variable<int>(eventHour);
+    }
+    if (!nullToAbsent || eventMinute != null) {
+      map['event_minute'] = Variable<int>(eventMinute);
+    }
+    if (!nullToAbsent || reminderOffsetMinutes != null) {
+      map['reminder_offset_minutes'] = Variable<int>(reminderOffsetMinutes);
+    }
+    map['color'] = Variable<String>(color);
+    if (!nullToAbsent || reminderOffsetDays != null) {
+      map['reminder_offset_days'] = Variable<int>(reminderOffsetDays);
+    }
+    if (!nullToAbsent || reminderHour != null) {
+      map['reminder_hour'] = Variable<int>(reminderHour);
+    }
+    if (!nullToAbsent || reminderMinute != null) {
+      map['reminder_minute'] = Variable<int>(reminderMinute);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  UserEventsCompanion toCompanion(bool nullToAbsent) {
+    return UserEventsCompanion(
+      id: Value(id),
+      type: Value(type),
+      title: Value(title),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      calendarSystem: Value(calendarSystem),
+      anchorYear: Value(anchorYear),
+      anchorMonth: Value(anchorMonth),
+      anchorDay: Value(anchorDay),
+      isLeapMonth: Value(isLeapMonth),
+      recurrence: Value(recurrence),
+      eventHour: eventHour == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventHour),
+      eventMinute: eventMinute == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventMinute),
+      reminderOffsetMinutes: reminderOffsetMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderOffsetMinutes),
+      color: Value(color),
+      reminderOffsetDays: reminderOffsetDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderOffsetDays),
+      reminderHour: reminderHour == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderHour),
+      reminderMinute: reminderMinute == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderMinute),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory UserEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserEvent(
+      id: serializer.fromJson<int>(json['id']),
+      type: serializer.fromJson<String>(json['type']),
+      title: serializer.fromJson<String>(json['title']),
+      note: serializer.fromJson<String?>(json['note']),
+      calendarSystem: serializer.fromJson<String>(json['calendarSystem']),
+      anchorYear: serializer.fromJson<int>(json['anchorYear']),
+      anchorMonth: serializer.fromJson<int>(json['anchorMonth']),
+      anchorDay: serializer.fromJson<int>(json['anchorDay']),
+      isLeapMonth: serializer.fromJson<bool>(json['isLeapMonth']),
+      recurrence: serializer.fromJson<String>(json['recurrence']),
+      eventHour: serializer.fromJson<int?>(json['eventHour']),
+      eventMinute: serializer.fromJson<int?>(json['eventMinute']),
+      reminderOffsetMinutes: serializer.fromJson<int?>(
+        json['reminderOffsetMinutes'],
+      ),
+      color: serializer.fromJson<String>(json['color']),
+      reminderOffsetDays: serializer.fromJson<int?>(json['reminderOffsetDays']),
+      reminderHour: serializer.fromJson<int?>(json['reminderHour']),
+      reminderMinute: serializer.fromJson<int?>(json['reminderMinute']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'type': serializer.toJson<String>(type),
+      'title': serializer.toJson<String>(title),
+      'note': serializer.toJson<String?>(note),
+      'calendarSystem': serializer.toJson<String>(calendarSystem),
+      'anchorYear': serializer.toJson<int>(anchorYear),
+      'anchorMonth': serializer.toJson<int>(anchorMonth),
+      'anchorDay': serializer.toJson<int>(anchorDay),
+      'isLeapMonth': serializer.toJson<bool>(isLeapMonth),
+      'recurrence': serializer.toJson<String>(recurrence),
+      'eventHour': serializer.toJson<int?>(eventHour),
+      'eventMinute': serializer.toJson<int?>(eventMinute),
+      'reminderOffsetMinutes': serializer.toJson<int?>(reminderOffsetMinutes),
+      'color': serializer.toJson<String>(color),
+      'reminderOffsetDays': serializer.toJson<int?>(reminderOffsetDays),
+      'reminderHour': serializer.toJson<int?>(reminderHour),
+      'reminderMinute': serializer.toJson<int?>(reminderMinute),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  UserEvent copyWith({
+    int? id,
+    String? type,
+    String? title,
+    Value<String?> note = const Value.absent(),
+    String? calendarSystem,
+    int? anchorYear,
+    int? anchorMonth,
+    int? anchorDay,
+    bool? isLeapMonth,
+    String? recurrence,
+    Value<int?> eventHour = const Value.absent(),
+    Value<int?> eventMinute = const Value.absent(),
+    Value<int?> reminderOffsetMinutes = const Value.absent(),
+    String? color,
+    Value<int?> reminderOffsetDays = const Value.absent(),
+    Value<int?> reminderHour = const Value.absent(),
+    Value<int?> reminderMinute = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => UserEvent(
+    id: id ?? this.id,
+    type: type ?? this.type,
+    title: title ?? this.title,
+    note: note.present ? note.value : this.note,
+    calendarSystem: calendarSystem ?? this.calendarSystem,
+    anchorYear: anchorYear ?? this.anchorYear,
+    anchorMonth: anchorMonth ?? this.anchorMonth,
+    anchorDay: anchorDay ?? this.anchorDay,
+    isLeapMonth: isLeapMonth ?? this.isLeapMonth,
+    recurrence: recurrence ?? this.recurrence,
+    eventHour: eventHour.present ? eventHour.value : this.eventHour,
+    eventMinute: eventMinute.present ? eventMinute.value : this.eventMinute,
+    reminderOffsetMinutes: reminderOffsetMinutes.present
+        ? reminderOffsetMinutes.value
+        : this.reminderOffsetMinutes,
+    color: color ?? this.color,
+    reminderOffsetDays: reminderOffsetDays.present
+        ? reminderOffsetDays.value
+        : this.reminderOffsetDays,
+    reminderHour: reminderHour.present ? reminderHour.value : this.reminderHour,
+    reminderMinute: reminderMinute.present
+        ? reminderMinute.value
+        : this.reminderMinute,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  UserEvent copyWithCompanion(UserEventsCompanion data) {
+    return UserEvent(
+      id: data.id.present ? data.id.value : this.id,
+      type: data.type.present ? data.type.value : this.type,
+      title: data.title.present ? data.title.value : this.title,
+      note: data.note.present ? data.note.value : this.note,
+      calendarSystem: data.calendarSystem.present
+          ? data.calendarSystem.value
+          : this.calendarSystem,
+      anchorYear: data.anchorYear.present
+          ? data.anchorYear.value
+          : this.anchorYear,
+      anchorMonth: data.anchorMonth.present
+          ? data.anchorMonth.value
+          : this.anchorMonth,
+      anchorDay: data.anchorDay.present ? data.anchorDay.value : this.anchorDay,
+      isLeapMonth: data.isLeapMonth.present
+          ? data.isLeapMonth.value
+          : this.isLeapMonth,
+      recurrence: data.recurrence.present
+          ? data.recurrence.value
+          : this.recurrence,
+      eventHour: data.eventHour.present ? data.eventHour.value : this.eventHour,
+      eventMinute: data.eventMinute.present
+          ? data.eventMinute.value
+          : this.eventMinute,
+      reminderOffsetMinutes: data.reminderOffsetMinutes.present
+          ? data.reminderOffsetMinutes.value
+          : this.reminderOffsetMinutes,
+      color: data.color.present ? data.color.value : this.color,
+      reminderOffsetDays: data.reminderOffsetDays.present
+          ? data.reminderOffsetDays.value
+          : this.reminderOffsetDays,
+      reminderHour: data.reminderHour.present
+          ? data.reminderHour.value
+          : this.reminderHour,
+      reminderMinute: data.reminderMinute.present
+          ? data.reminderMinute.value
+          : this.reminderMinute,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserEvent(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('note: $note, ')
+          ..write('calendarSystem: $calendarSystem, ')
+          ..write('anchorYear: $anchorYear, ')
+          ..write('anchorMonth: $anchorMonth, ')
+          ..write('anchorDay: $anchorDay, ')
+          ..write('isLeapMonth: $isLeapMonth, ')
+          ..write('recurrence: $recurrence, ')
+          ..write('eventHour: $eventHour, ')
+          ..write('eventMinute: $eventMinute, ')
+          ..write('reminderOffsetMinutes: $reminderOffsetMinutes, ')
+          ..write('color: $color, ')
+          ..write('reminderOffsetDays: $reminderOffsetDays, ')
+          ..write('reminderHour: $reminderHour, ')
+          ..write('reminderMinute: $reminderMinute, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    type,
+    title,
+    note,
+    calendarSystem,
+    anchorYear,
+    anchorMonth,
+    anchorDay,
+    isLeapMonth,
+    recurrence,
+    eventHour,
+    eventMinute,
+    reminderOffsetMinutes,
+    color,
+    reminderOffsetDays,
+    reminderHour,
+    reminderMinute,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserEvent &&
+          other.id == this.id &&
+          other.type == this.type &&
+          other.title == this.title &&
+          other.note == this.note &&
+          other.calendarSystem == this.calendarSystem &&
+          other.anchorYear == this.anchorYear &&
+          other.anchorMonth == this.anchorMonth &&
+          other.anchorDay == this.anchorDay &&
+          other.isLeapMonth == this.isLeapMonth &&
+          other.recurrence == this.recurrence &&
+          other.eventHour == this.eventHour &&
+          other.eventMinute == this.eventMinute &&
+          other.reminderOffsetMinutes == this.reminderOffsetMinutes &&
+          other.color == this.color &&
+          other.reminderOffsetDays == this.reminderOffsetDays &&
+          other.reminderHour == this.reminderHour &&
+          other.reminderMinute == this.reminderMinute &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class UserEventsCompanion extends UpdateCompanion<UserEvent> {
+  final Value<int> id;
+  final Value<String> type;
+  final Value<String> title;
+  final Value<String?> note;
+  final Value<String> calendarSystem;
+  final Value<int> anchorYear;
+  final Value<int> anchorMonth;
+  final Value<int> anchorDay;
+  final Value<bool> isLeapMonth;
+  final Value<String> recurrence;
+  final Value<int?> eventHour;
+  final Value<int?> eventMinute;
+  final Value<int?> reminderOffsetMinutes;
+  final Value<String> color;
+  final Value<int?> reminderOffsetDays;
+  final Value<int?> reminderHour;
+  final Value<int?> reminderMinute;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const UserEventsCompanion({
+    this.id = const Value.absent(),
+    this.type = const Value.absent(),
+    this.title = const Value.absent(),
+    this.note = const Value.absent(),
+    this.calendarSystem = const Value.absent(),
+    this.anchorYear = const Value.absent(),
+    this.anchorMonth = const Value.absent(),
+    this.anchorDay = const Value.absent(),
+    this.isLeapMonth = const Value.absent(),
+    this.recurrence = const Value.absent(),
+    this.eventHour = const Value.absent(),
+    this.eventMinute = const Value.absent(),
+    this.reminderOffsetMinutes = const Value.absent(),
+    this.color = const Value.absent(),
+    this.reminderOffsetDays = const Value.absent(),
+    this.reminderHour = const Value.absent(),
+    this.reminderMinute = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  UserEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String type,
+    required String title,
+    this.note = const Value.absent(),
+    required String calendarSystem,
+    required int anchorYear,
+    required int anchorMonth,
+    required int anchorDay,
+    this.isLeapMonth = const Value.absent(),
+    required String recurrence,
+    this.eventHour = const Value.absent(),
+    this.eventMinute = const Value.absent(),
+    this.reminderOffsetMinutes = const Value.absent(),
+    this.color = const Value.absent(),
+    this.reminderOffsetDays = const Value.absent(),
+    this.reminderHour = const Value.absent(),
+    this.reminderMinute = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : type = Value(type),
+       title = Value(title),
+       calendarSystem = Value(calendarSystem),
+       anchorYear = Value(anchorYear),
+       anchorMonth = Value(anchorMonth),
+       anchorDay = Value(anchorDay),
+       recurrence = Value(recurrence);
+  static Insertable<UserEvent> custom({
+    Expression<int>? id,
+    Expression<String>? type,
+    Expression<String>? title,
+    Expression<String>? note,
+    Expression<String>? calendarSystem,
+    Expression<int>? anchorYear,
+    Expression<int>? anchorMonth,
+    Expression<int>? anchorDay,
+    Expression<bool>? isLeapMonth,
+    Expression<String>? recurrence,
+    Expression<int>? eventHour,
+    Expression<int>? eventMinute,
+    Expression<int>? reminderOffsetMinutes,
+    Expression<String>? color,
+    Expression<int>? reminderOffsetDays,
+    Expression<int>? reminderHour,
+    Expression<int>? reminderMinute,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (type != null) 'type': type,
+      if (title != null) 'title': title,
+      if (note != null) 'note': note,
+      if (calendarSystem != null) 'calendar_system': calendarSystem,
+      if (anchorYear != null) 'anchor_year': anchorYear,
+      if (anchorMonth != null) 'anchor_month': anchorMonth,
+      if (anchorDay != null) 'anchor_day': anchorDay,
+      if (isLeapMonth != null) 'is_leap_month': isLeapMonth,
+      if (recurrence != null) 'recurrence': recurrence,
+      if (eventHour != null) 'event_hour': eventHour,
+      if (eventMinute != null) 'event_minute': eventMinute,
+      if (reminderOffsetMinutes != null)
+        'reminder_offset_minutes': reminderOffsetMinutes,
+      if (color != null) 'color': color,
+      if (reminderOffsetDays != null)
+        'reminder_offset_days': reminderOffsetDays,
+      if (reminderHour != null) 'reminder_hour': reminderHour,
+      if (reminderMinute != null) 'reminder_minute': reminderMinute,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  UserEventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? type,
+    Value<String>? title,
+    Value<String?>? note,
+    Value<String>? calendarSystem,
+    Value<int>? anchorYear,
+    Value<int>? anchorMonth,
+    Value<int>? anchorDay,
+    Value<bool>? isLeapMonth,
+    Value<String>? recurrence,
+    Value<int?>? eventHour,
+    Value<int?>? eventMinute,
+    Value<int?>? reminderOffsetMinutes,
+    Value<String>? color,
+    Value<int?>? reminderOffsetDays,
+    Value<int?>? reminderHour,
+    Value<int?>? reminderMinute,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return UserEventsCompanion(
+      id: id ?? this.id,
+      type: type ?? this.type,
+      title: title ?? this.title,
+      note: note ?? this.note,
+      calendarSystem: calendarSystem ?? this.calendarSystem,
+      anchorYear: anchorYear ?? this.anchorYear,
+      anchorMonth: anchorMonth ?? this.anchorMonth,
+      anchorDay: anchorDay ?? this.anchorDay,
+      isLeapMonth: isLeapMonth ?? this.isLeapMonth,
+      recurrence: recurrence ?? this.recurrence,
+      eventHour: eventHour ?? this.eventHour,
+      eventMinute: eventMinute ?? this.eventMinute,
+      reminderOffsetMinutes:
+          reminderOffsetMinutes ?? this.reminderOffsetMinutes,
+      color: color ?? this.color,
+      reminderOffsetDays: reminderOffsetDays ?? this.reminderOffsetDays,
+      reminderHour: reminderHour ?? this.reminderHour,
+      reminderMinute: reminderMinute ?? this.reminderMinute,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (calendarSystem.present) {
+      map['calendar_system'] = Variable<String>(calendarSystem.value);
+    }
+    if (anchorYear.present) {
+      map['anchor_year'] = Variable<int>(anchorYear.value);
+    }
+    if (anchorMonth.present) {
+      map['anchor_month'] = Variable<int>(anchorMonth.value);
+    }
+    if (anchorDay.present) {
+      map['anchor_day'] = Variable<int>(anchorDay.value);
+    }
+    if (isLeapMonth.present) {
+      map['is_leap_month'] = Variable<bool>(isLeapMonth.value);
+    }
+    if (recurrence.present) {
+      map['recurrence'] = Variable<String>(recurrence.value);
+    }
+    if (eventHour.present) {
+      map['event_hour'] = Variable<int>(eventHour.value);
+    }
+    if (eventMinute.present) {
+      map['event_minute'] = Variable<int>(eventMinute.value);
+    }
+    if (reminderOffsetMinutes.present) {
+      map['reminder_offset_minutes'] = Variable<int>(
+        reminderOffsetMinutes.value,
+      );
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (reminderOffsetDays.present) {
+      map['reminder_offset_days'] = Variable<int>(reminderOffsetDays.value);
+    }
+    if (reminderHour.present) {
+      map['reminder_hour'] = Variable<int>(reminderHour.value);
+    }
+    if (reminderMinute.present) {
+      map['reminder_minute'] = Variable<int>(reminderMinute.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('note: $note, ')
+          ..write('calendarSystem: $calendarSystem, ')
+          ..write('anchorYear: $anchorYear, ')
+          ..write('anchorMonth: $anchorMonth, ')
+          ..write('anchorDay: $anchorDay, ')
+          ..write('isLeapMonth: $isLeapMonth, ')
+          ..write('recurrence: $recurrence, ')
+          ..write('eventHour: $eventHour, ')
+          ..write('eventMinute: $eventMinute, ')
+          ..write('reminderOffsetMinutes: $reminderOffsetMinutes, ')
+          ..write('color: $color, ')
+          ..write('reminderOffsetDays: $reminderOffsetDays, ')
+          ..write('reminderHour: $reminderHour, ')
+          ..write('reminderMinute: $reminderMinute, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6230,6 +7307,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChurchesTable churches = $ChurchesTable(this);
   late final $MassTimesTable massTimes = $MassTimesTable(this);
   late final $PrayersTable prayers = $PrayersTable(this);
+  late final $UserEventsTable userEvents = $UserEventsTable(this);
   late final TodayDao todayDao = TodayDao(this as AppDatabase);
   late final ActionLogDao actionLogDao = ActionLogDao(this as AppDatabase);
   @override
@@ -6249,6 +7327,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     churches,
     massTimes,
     prayers,
+    userEvents,
   ];
 }
 
@@ -9829,6 +10908,483 @@ typedef $$PrayersTableProcessedTableManager =
       Prayer,
       PrefetchHooks Function()
     >;
+typedef $$UserEventsTableCreateCompanionBuilder =
+    UserEventsCompanion Function({
+      Value<int> id,
+      required String type,
+      required String title,
+      Value<String?> note,
+      required String calendarSystem,
+      required int anchorYear,
+      required int anchorMonth,
+      required int anchorDay,
+      Value<bool> isLeapMonth,
+      required String recurrence,
+      Value<int?> eventHour,
+      Value<int?> eventMinute,
+      Value<int?> reminderOffsetMinutes,
+      Value<String> color,
+      Value<int?> reminderOffsetDays,
+      Value<int?> reminderHour,
+      Value<int?> reminderMinute,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+typedef $$UserEventsTableUpdateCompanionBuilder =
+    UserEventsCompanion Function({
+      Value<int> id,
+      Value<String> type,
+      Value<String> title,
+      Value<String?> note,
+      Value<String> calendarSystem,
+      Value<int> anchorYear,
+      Value<int> anchorMonth,
+      Value<int> anchorDay,
+      Value<bool> isLeapMonth,
+      Value<String> recurrence,
+      Value<int?> eventHour,
+      Value<int?> eventMinute,
+      Value<int?> reminderOffsetMinutes,
+      Value<String> color,
+      Value<int?> reminderOffsetDays,
+      Value<int?> reminderHour,
+      Value<int?> reminderMinute,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+    });
+
+class $$UserEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $UserEventsTable> {
+  $$UserEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get calendarSystem => $composableBuilder(
+    column: $table.calendarSystem,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anchorYear => $composableBuilder(
+    column: $table.anchorYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anchorMonth => $composableBuilder(
+    column: $table.anchorMonth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get anchorDay => $composableBuilder(
+    column: $table.anchorDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isLeapMonth => $composableBuilder(
+    column: $table.isLeapMonth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recurrence => $composableBuilder(
+    column: $table.recurrence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get eventHour => $composableBuilder(
+    column: $table.eventHour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get eventMinute => $composableBuilder(
+    column: $table.eventMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderOffsetMinutes => $composableBuilder(
+    column: $table.reminderOffsetMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderOffsetDays => $composableBuilder(
+    column: $table.reminderOffsetDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderHour => $composableBuilder(
+    column: $table.reminderHour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderMinute => $composableBuilder(
+    column: $table.reminderMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserEventsTable> {
+  $$UserEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get calendarSystem => $composableBuilder(
+    column: $table.calendarSystem,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anchorYear => $composableBuilder(
+    column: $table.anchorYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anchorMonth => $composableBuilder(
+    column: $table.anchorMonth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get anchorDay => $composableBuilder(
+    column: $table.anchorDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isLeapMonth => $composableBuilder(
+    column: $table.isLeapMonth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recurrence => $composableBuilder(
+    column: $table.recurrence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get eventHour => $composableBuilder(
+    column: $table.eventHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get eventMinute => $composableBuilder(
+    column: $table.eventMinute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderOffsetMinutes => $composableBuilder(
+    column: $table.reminderOffsetMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderOffsetDays => $composableBuilder(
+    column: $table.reminderOffsetDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderHour => $composableBuilder(
+    column: $table.reminderHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderMinute => $composableBuilder(
+    column: $table.reminderMinute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserEventsTable> {
+  $$UserEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get calendarSystem => $composableBuilder(
+    column: $table.calendarSystem,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anchorYear => $composableBuilder(
+    column: $table.anchorYear,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anchorMonth => $composableBuilder(
+    column: $table.anchorMonth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get anchorDay =>
+      $composableBuilder(column: $table.anchorDay, builder: (column) => column);
+
+  GeneratedColumn<bool> get isLeapMonth => $composableBuilder(
+    column: $table.isLeapMonth,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recurrence => $composableBuilder(
+    column: $table.recurrence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get eventHour =>
+      $composableBuilder(column: $table.eventHour, builder: (column) => column);
+
+  GeneratedColumn<int> get eventMinute => $composableBuilder(
+    column: $table.eventMinute,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderOffsetMinutes => $composableBuilder(
+    column: $table.reminderOffsetMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<int> get reminderOffsetDays => $composableBuilder(
+    column: $table.reminderOffsetDays,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderHour => $composableBuilder(
+    column: $table.reminderHour,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderMinute => $composableBuilder(
+    column: $table.reminderMinute,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$UserEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserEventsTable,
+          UserEvent,
+          $$UserEventsTableFilterComposer,
+          $$UserEventsTableOrderingComposer,
+          $$UserEventsTableAnnotationComposer,
+          $$UserEventsTableCreateCompanionBuilder,
+          $$UserEventsTableUpdateCompanionBuilder,
+          (
+            UserEvent,
+            BaseReferences<_$AppDatabase, $UserEventsTable, UserEvent>,
+          ),
+          UserEvent,
+          PrefetchHooks Function()
+        > {
+  $$UserEventsTableTableManager(_$AppDatabase db, $UserEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String> calendarSystem = const Value.absent(),
+                Value<int> anchorYear = const Value.absent(),
+                Value<int> anchorMonth = const Value.absent(),
+                Value<int> anchorDay = const Value.absent(),
+                Value<bool> isLeapMonth = const Value.absent(),
+                Value<String> recurrence = const Value.absent(),
+                Value<int?> eventHour = const Value.absent(),
+                Value<int?> eventMinute = const Value.absent(),
+                Value<int?> reminderOffsetMinutes = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<int?> reminderOffsetDays = const Value.absent(),
+                Value<int?> reminderHour = const Value.absent(),
+                Value<int?> reminderMinute = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => UserEventsCompanion(
+                id: id,
+                type: type,
+                title: title,
+                note: note,
+                calendarSystem: calendarSystem,
+                anchorYear: anchorYear,
+                anchorMonth: anchorMonth,
+                anchorDay: anchorDay,
+                isLeapMonth: isLeapMonth,
+                recurrence: recurrence,
+                eventHour: eventHour,
+                eventMinute: eventMinute,
+                reminderOffsetMinutes: reminderOffsetMinutes,
+                color: color,
+                reminderOffsetDays: reminderOffsetDays,
+                reminderHour: reminderHour,
+                reminderMinute: reminderMinute,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String type,
+                required String title,
+                Value<String?> note = const Value.absent(),
+                required String calendarSystem,
+                required int anchorYear,
+                required int anchorMonth,
+                required int anchorDay,
+                Value<bool> isLeapMonth = const Value.absent(),
+                required String recurrence,
+                Value<int?> eventHour = const Value.absent(),
+                Value<int?> eventMinute = const Value.absent(),
+                Value<int?> reminderOffsetMinutes = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<int?> reminderOffsetDays = const Value.absent(),
+                Value<int?> reminderHour = const Value.absent(),
+                Value<int?> reminderMinute = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => UserEventsCompanion.insert(
+                id: id,
+                type: type,
+                title: title,
+                note: note,
+                calendarSystem: calendarSystem,
+                anchorYear: anchorYear,
+                anchorMonth: anchorMonth,
+                anchorDay: anchorDay,
+                isLeapMonth: isLeapMonth,
+                recurrence: recurrence,
+                eventHour: eventHour,
+                eventMinute: eventMinute,
+                reminderOffsetMinutes: reminderOffsetMinutes,
+                color: color,
+                reminderOffsetDays: reminderOffsetDays,
+                reminderHour: reminderHour,
+                reminderMinute: reminderMinute,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserEventsTable,
+      UserEvent,
+      $$UserEventsTableFilterComposer,
+      $$UserEventsTableOrderingComposer,
+      $$UserEventsTableAnnotationComposer,
+      $$UserEventsTableCreateCompanionBuilder,
+      $$UserEventsTableUpdateCompanionBuilder,
+      (UserEvent, BaseReferences<_$AppDatabase, $UserEventsTable, UserEvent>),
+      UserEvent,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9857,4 +11413,6 @@ class $AppDatabaseManager {
       $$MassTimesTableTableManager(_db, _db.massTimes);
   $$PrayersTableTableManager get prayers =>
       $$PrayersTableTableManager(_db, _db.prayers);
+  $$UserEventsTableTableManager get userEvents =>
+      $$UserEventsTableTableManager(_db, _db.userEvents);
 }

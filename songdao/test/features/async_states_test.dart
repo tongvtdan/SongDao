@@ -34,7 +34,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Chưa có lịch phụng vụ'), findsOneWidget);
+      expect(find.text('Thêm sự kiện'), findsOneWidget);
+      expect(find.text('CN'), findsOneWidget);
     });
 
     testWidgets('Calendar shows an error and retries without changing state', (
@@ -61,12 +62,14 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Không thể tải nội dung'), findsOneWidget);
+      expect(find.text('Chưa thể cập nhật lịch phụng vụ'), findsOneWidget);
+      expect(find.text('Thêm sự kiện'), findsOneWidget);
       await tester.tap(find.text('Tải lại'));
       await tester.pumpAndSettle();
 
       expect(attempts, 2);
-      expect(find.text('Chưa có lịch phụng vụ'), findsOneWidget);
+      expect(find.text('Chưa thể cập nhật lịch phụng vụ'), findsNothing);
+      expect(find.text('Thêm sự kiện'), findsOneWidget);
     });
 
     testWidgets('Church Finder shows an empty state for an empty dataset', (
